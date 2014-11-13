@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Docks::Parsers::CoffeeScript do
   subject { Docks::Parsers::CoffeeScript }
 
-  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'coffee_parser_fixture_basic.coffee')) }
-  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'coffee_parser_fixture_complex.coffee')) }
+  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'coffee_parser_fixture_basic.coffee')) }
+  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'coffee_parser_fixture_complex.coffee')) }
 
   describe '::page_comment_extractor' do
     it 'correctly captures a page block when one exists' do

@@ -55,7 +55,7 @@ module Docks
       grouper   = Docks::Group
 
       Docks::Tags.register_bundled_tags
-      Docks::Language.register_bundled_languages
+      Docks::Languages.register_bundled_languages
 
       # @src_groups = grouper.group @src_files
 

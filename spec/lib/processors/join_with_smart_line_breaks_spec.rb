@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def content_for_multiline_text_fixture(fixture)
-  file = File.join(File.dirname(__FILE__), '..', 'fixtures', 'processors', "#{fixture}.txt")
+  file = File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'processors', "#{fixture}.txt")
   File.read(file).split("\n")
 end
 

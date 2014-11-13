@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Docks::Parsers::Haml do
   subject { Docks::Parsers::Haml }
 
-  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'haml_parser_fixture_basic.haml')) }
-  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'haml_parser_fixture_complex.haml')) }
+  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'haml_parser_fixture_basic.haml')) }
+  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'haml_parser_fixture_complex.haml')) }
 
   describe '::page_comment_extractor' do
     it 'correctly captures a page block when one exists' do

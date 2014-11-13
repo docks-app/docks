@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Docks::Parsers::SCSS do
   subject { Docks::Parsers::SCSS }
 
-  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'scss_parser_fixture_basic.scss')) }
-  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'scss_parser_fixture_complex.scss')) }
+  let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'scss_parser_fixture_basic.scss')) }
+  let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'scss_parser_fixture_complex.scss')) }
 
   describe '::page_comment_extractor' do
     it 'correctly captures a page block when one exists' do
