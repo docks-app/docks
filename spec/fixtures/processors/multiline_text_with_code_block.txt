@@ -1,0 +1,11 @@
+Here is the first paragraph.
+
+Here is the second paragraph.
+
+```html
+<p>This is a code block</p>
+
+<p>Here is the end.</p>
+```
+
+Here is the third paragraph.

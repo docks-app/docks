@@ -1,0 +1,4 @@
+This is the first paragraph.
+
+this is the second paragraph, even though
+the first line of text is uncapitalized.

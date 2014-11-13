@@ -1,0 +1,54 @@
+-#*
+-# @page Bigfoot
+-# The best footnote plugin around.
+
+-#*
+-# Groups the ID and HREF of a superscript/ anchor tag pair in data attributes.
+-# This resolves the issue of the href and backlink id being separated between the two elements.
+
+-# @param {jQuery} $footnoteAnchors   - Anchors that link to footnotes.
+-# @param {Array}  footnoteLinks ([]) - An array on which the new anchors will be pushed.
+
+-# @returns {undefined}
+
+%div.footnote__anchor
+  %div.footnote__anchor__indicator
+
+  -#*
+  -# Determines what action will be taken on the original footnote markup: `"hide"` (using `display: none;`), `"delete"`, or `"ignore"` (leaves the original content in place). This action will also be taken on any elements containing the footnote if they are now empty.
+  -#
+  -# @access public
+  -# @default "hide"
+  %div.footnote__anchor__sub
+
+  -#*
+  -# Specifies a function to call on a footnote popover that is being instantiated (before it is added to the DOM). The function will be passed two arguments: `$popover`, which is a jQuery object containing the new popover element, and `$button`, the button that was cblicked to instantiate the popover. This option can be useful for adding additional classes or styling information before a popover appears.
+  -#
+  -# @default function() {}
+  %div.footnote__anchor__link= "Hello!"
+
+-#*
+-# Footnote button/ content initializer (run on doc.ready).
+-# Finds the likely footnote links and then uses their target to find the content.
+-#
+-# @returns {undefined}
+
+%div.footnote__button
+
+  -# Filter down to links that:
+  -# - have an HREF referencing a footnote, OR
+  -# - have a rel attribute of footnote
+  -# - aren't a descendant of a footnote (prevents backlinks)
+  %div.footnote__button__styler
+    %span
+    %span
+
+      -#*
+      -# Removes any links from the footnote back to the footnote link as these don't make sense when the footnote is shown inline
+      -#
+      -# @param {String} footnoteHTML - The string version of the new footnote.
+      -# @param {String} backlinkID   - The ID of the footnote link (that is to be removed from the footnote HTML).
+      -#
+      -# @returns {String} - The new HTML string with the relevant links taken out.
+
+      %span.footnote__button__number= footnote.number
