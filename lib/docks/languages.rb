@@ -10,6 +10,7 @@ module Docks
     }
 
     def self.register(language, &block)
+      @@extensions = nil
       @@details[language] = {
         parser: nil,
         extension: language.to_s,
@@ -21,8 +22,12 @@ module Docks
     end
 
     def self.extensions
-      extensions = @@details.values.map { |language| language[:extension] }
-      extensions.compact.uniq
+      if @@extensions.nil?
+        extensions = @@details.values.map { |language| language[:extension] }
+        @@extensions = extensions.compact.uniq
+      end
+
+      @@extensions
     end
 
     def self.markup_extensions; self.extensions_of_type(Docks::Types::Languages::MARKUP) end
