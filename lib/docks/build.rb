@@ -52,8 +52,6 @@ module Docks
       # iframe_dir = File.join(@dest_dir, 'iframes')
       # FileUtils.mkdir_p(iframe_dir) unless File.exists?(iframe_dir)
 
-      grouper   = Docks::Group
-
       Docks::Tags.register_bundled_tags
       Docks::Languages.register_bundled_languages
 
