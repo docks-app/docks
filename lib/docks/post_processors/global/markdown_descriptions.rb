@@ -19,7 +19,7 @@ module Docks
         end
       end
 
-      @@markdown = Redcarpet::Markdown.new(HTMLwithSyntaxHighlighting, fenced_code_blocks: true)
+      @@markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, fenced_code_blocks: true)
 
       public
 

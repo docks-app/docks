@@ -38,7 +38,7 @@ module Docks
       @errors.clear
       validate_src
 
-      errors.empty?
+      @errors.empty?
     end
 
     def build
@@ -48,11 +48,11 @@ module Docks
       Process.register_bundled_post_processors
       Languages.register_bundled_languages
 
-      Group.group(@src_files).each do |group|
+      Group.group(@src_files).each do |group_identifier, group|
         next unless should_render_group?(group)
-        cache_file = File.join(Docks::CACHE_DIR, Group.group_identifier(group.first))
+        cache_file = File.join(Docks::CACHE_DIR, group_identifier.to_s)
 
-        File.open(cache_file, 'w') { file.write(Parse.parse_group(group).to_yaml) }
+        File.open(cache_file, 'w') { |file| file.write(Parse.parse_group(group).to_yaml) }
       end
 
       Messenger.succeed("\nDocs successfully generated. Enjoy!")
@@ -64,7 +64,7 @@ module Docks
     private
 
     def should_render_group?(group)
-      cache_file = File.join(CACHE_DIR, Group.group_identifier(group.first))
+      cache_file = File.join(CACHE_DIR, Group.group_identifier(group.first).to_s)
       return true unless File.exists?(cache_file)
 
       File.mtime(cache_file) < most_recent_modified_date(group)

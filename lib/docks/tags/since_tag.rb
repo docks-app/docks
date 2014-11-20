@@ -11,7 +11,7 @@ register :since do
   synonyms :introduced_in
 
   process do |content|
-    content = Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
+    Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
       match = first_line.match(/\s*(?<version>[0-9a-zA\.\-_]*)(?:\s+\-?\s*(?<description>.*))?/)
       return nil if match.nil?
 
@@ -21,7 +21,5 @@ register :since do
         description: description.nil? || description.length == 0 ? nil : match[:description]
       }
     end
-
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
   end
 end

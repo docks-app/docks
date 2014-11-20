@@ -11,7 +11,6 @@ register :author do
   synonyms :authors
 
   process do |content|
-    content = Docks::Processors::NameAndParenthetical.process(content, :name, :email)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::NameAndParenthetical.process(content, :name, :email)
   end
 end

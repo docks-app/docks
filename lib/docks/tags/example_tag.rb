@@ -9,7 +9,6 @@ register :example do
   multiple_per_block
 
   process do |content|
-    content = Docks::Processors::CodeBlockWithLanguage.process(content)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::CodeBlockWithLanguage.process(content)
   end
 end

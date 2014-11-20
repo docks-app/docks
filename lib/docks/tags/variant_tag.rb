@@ -14,8 +14,7 @@ register :variants do
   synonyms :modifier, :modifiers, :variant
 
   process do |content|
-    content = Docks::Processors::BreakApartStatesAndVariants.process(content)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::BreakApartStatesAndVariants.process(content)
   end
 
   post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,

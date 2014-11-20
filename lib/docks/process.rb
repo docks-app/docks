@@ -27,7 +27,7 @@ module Docks
 
     def self.post_process(parse_results)
       @@post_processors.each do |post_processor|
-        post_processor.post_process(parse_results)
+        parse_result = post_processor.post_process(parse_results)
       end
 
       parse_results

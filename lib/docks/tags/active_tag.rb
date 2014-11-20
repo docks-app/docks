@@ -10,8 +10,4 @@ register :active do
     content = Docks::Processors::JoinWithBlanks.process(content)
     Docks::Processors::StringyBoolean(content)
   end
-
-  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
-               Docks::PostProcessors::CleanUpVariantsAndStates,
-               Docks::PostProcessors::MirrorPrecludes
 end

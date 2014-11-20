@@ -11,7 +11,6 @@ register :link do
   synonyms :see, :links
 
   process do |content|
-    content = Docks::Processors::NameAndParenthetical.process(content, :url, :caption)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::NameAndParenthetical.process(content, :url, :caption)
   end
 end

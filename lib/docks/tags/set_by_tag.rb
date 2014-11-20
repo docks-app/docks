@@ -8,11 +8,6 @@ register :set_by do
 
   process do |content|
     content = Docks::Processors::BreakApartOnCommasAndPipes.process(content)
-    content = Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
   end
-
-  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
-               Docks::PostProcessors::CleanUpVariantsAndStates,
-               Docks::PostProcessors::MirrorPrecludes
 end

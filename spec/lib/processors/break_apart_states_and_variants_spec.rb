@@ -145,7 +145,7 @@ describe Docks::Processors::BreakApartStatesAndVariants do
   it 'correctly sets the set_by parameter' do
     result = subject.process("#{name} (set by :  #{set_by})")
     expect(result[:name]).to eq name
-    expect(result[:set_by]).to eq Docks::Processors::ReplaceHashWithOpenStruct.process(Docks::Processors::NameAndParenthetical.process(Docks::Processors::BreakApartOnCharacters.process(set_by, "\|"), :setter, :constant))
+    expect(result[:set_by]).to eq Docks::Processors::NameAndParenthetical.process(Docks::Processors::BreakApartOnCharacters.process(set_by, "\|"), :setter, :constant)
 
     expect_default_for_optionals_with_exclusions(result, :set_by)
   end
@@ -165,7 +165,7 @@ describe Docks::Processors::BreakApartStatesAndVariants do
       [:include_with, :activate_with, :precludes].each do |param|
         expect(result[param]).to eq Docks::Processors::BreakApartOnCharacters.process(eval(param.to_s), "\s\|")
       end
-      expect(result[:set_by]).to eq Docks::Processors::ReplaceHashWithOpenStruct.process(Docks::Processors::NameAndParenthetical.process(Docks::Processors::BreakApartOnCharacters.process(set_by, "\|"), :setter, :constant))
+      expect(result[:set_by]).to eq Docks::Processors::NameAndParenthetical.process(Docks::Processors::BreakApartOnCharacters.process(set_by, "\|"), :setter, :constant)
     end
   end
 end

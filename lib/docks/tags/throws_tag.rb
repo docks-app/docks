@@ -12,7 +12,7 @@ register :throws do
   synonyms :throw, :exception
 
   process do |content|
-    content = Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
+    Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
       match = first_line.match(/\s*\{(?<type>[^\}]*)\}(?:\s*\-?\s*(?<description>.*))?/)
       return nil if match.nil?
 
@@ -22,7 +22,5 @@ register :throws do
         description: description.nil? || description.length == 0 ? nil : match[:description]
       }
     end
-
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
   end
 end

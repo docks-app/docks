@@ -13,7 +13,7 @@ register :param do
   synonyms :arg, :argument
 
   process do |content|
-    content = Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
+    Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
       match = first_line.match(/(?:\s*\{(?<type>[^\}]*)\})?\s*(?<name>[a-zA-Z\-_0-9]*)(?:\s*\((?<paren>[^\)]*)\))?(?:\s*\-?\s*(?<description>.*))?/)
       return nil if match.nil?
 
@@ -32,7 +32,5 @@ register :param do
 
       main_result
     end
-
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
   end
 end

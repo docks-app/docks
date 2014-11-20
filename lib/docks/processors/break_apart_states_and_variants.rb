@@ -53,7 +53,7 @@ module Docks
               result[array_param] = result[array_param].nil? ? [] : BreakApartOnCharacters.process(result[array_param], "\s\|")
             end
 
-            result[:set_by] = ReplaceHashWithOpenStruct.process(NameAndParenthetical.process(BreakApartOnCharacters.process(result[:set_by], "\|"), :setter, :constant))
+            result[:set_by] = NameAndParenthetical.process(BreakApartOnCharacters.process(result[:set_by], "\|"), :setter, :constant)
           end
 
           result

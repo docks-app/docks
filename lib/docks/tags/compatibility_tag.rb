@@ -11,7 +11,6 @@ register :compatibility do
   synonyms :compatible_with
 
   process do |content|
-    content = Docks::Processors::NameAndParenthetical.process(content, :browser, :version)
-    Docks::Processors::ReplaceHashWithOpenStruct.process(content)
+    Docks::Processors::NameAndParenthetical.process(content, :browser, :version)
   end
 end
