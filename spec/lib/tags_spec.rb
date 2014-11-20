@@ -7,6 +7,7 @@ describe Docks::Tags do
 
   before :each do
     subject.send(:clear_tags)
+    Docks::Process.clear_post_processors
   end
 
   it 'correctly indicates that no tag exists when not previously registered' do
@@ -18,7 +19,6 @@ describe Docks::Tags do
 
     expect(subject.has_tag?(example_tag)).to be true
     expect(subject.processors_for(example_tag).length).to eq 0
-    expect(subject.post_processors_for(example_tag).length).to eq 0
     expect(subject.multiple_allowed?(example_tag)).to be false
     expect(subject.multiple_per_line_allowed?(example_tag)).to be false
   end
@@ -37,42 +37,15 @@ describe Docks::Tags do
                    Docks::PostProcessors::ReplaceHashesWithOpenStructs
     end
 
-    expect(subject.post_processors_for(example_tag).length).to eq 2
-    expect(subject.post_processors_for(example_tag)).to include(Docks::PostProcessors::MarkdownDescriptions)
-    expect(subject.post_processors_for(example_tag)).to include(Docks::PostProcessors::ReplaceHashesWithOpenStructs)
-  end
-
-  it 'correctly register global post-processors' do
-    subject.register_globals Docks::PostProcessors::MarkdownDescriptions,
-                             Docks::PostProcessors::ReplaceHashesWithOpenStructs
-
-    global_post_processors = subject.global_post_processors
-    expect(global_post_processors.length).to eq 2
-    expect(global_post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
-    expect(global_post_processors).to include(Docks::PostProcessors::ReplaceHashesWithOpenStructs)
-  end
-
-  it 'correctly register multiple global post-processors' do
-    subject.register_globals Docks::PostProcessors::MarkdownDescriptions
-
-    global_post_processors = subject.global_post_processors
-    expect(global_post_processors.length).to eq 1
-    expect(global_post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
-    expect(global_post_processors).to_not include(Docks::PostProcessors::ReplaceHashesWithOpenStructs)
-
-    subject.register_globals Docks::PostProcessors::ReplaceHashesWithOpenStructs
-
-    global_post_processors = subject.global_post_processors
-    expect(global_post_processors.length).to eq 2
-    expect(global_post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
-    expect(global_post_processors).to include(Docks::PostProcessors::ReplaceHashesWithOpenStructs)
+    expect(Docks::Process.post_processors.length).to eq 2
+    expect(Docks::Process.post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
+    expect(Docks::Process.post_processors).to include(Docks::PostProcessors::ReplaceHashesWithOpenStructs)
   end
 
   it 'correctly retrieves details for synonyms' do
     subject.register(example_tag) do
       synonyms :nom, :nome
       process { |content| :foo! }
-      post_process Docks::PostProcessors::MarkdownDescriptions
 
       multiple_per_line
     end
@@ -80,7 +53,6 @@ describe Docks::Tags do
     example_synonyms.each do |synonym|
       expect(subject.has_tag?(synonym)).to be true
       expect(subject.processors_for(synonym).length).to eq 1
-      expect(subject.post_processors_for(synonym).length).to eq 1
       expect(subject.multiple_allowed?(synonym)).to be true
       expect(subject.multiple_per_line_allowed?(synonym)).to be true
     end
@@ -101,6 +73,11 @@ describe Docks::Tags do
     subject.register(example_tag) { multiple_per_line }
     expect(subject.multiple_allowed?(example_tag)).to be true
     expect(subject.multiple_per_line_allowed?(example_tag)).to be true
+  end
+
+  it 'correctly registers the tag as being a single line only' do
+    subject.register(example_tag) { single_line }
+    expect(subject.multiline?(example_tag)).to be false
   end
 
   it 'correctly prevents setting one per file when multiplicity has already been established' do
@@ -184,13 +161,13 @@ describe Docks::Tags do
         post_process Docks::PostProcessors::MarkdownDescriptions
       end
 
-      expect(subject.post_processors_for(example_tag).length).to eq 1
+      expect(Docks::Process.post_processors.length).to eq 1
 
       subject.extend(example_tag) do
         post_process Docks::PostProcessors::ReplaceHashesWithOpenStructs
       end
 
-      expect(subject.post_processors_for(example_tag).length).to eq 2
+      expect(Docks::Process.post_processors.length).to eq 2
     end
 
     it 'correctly extends :multiple_per_block' do

@@ -2,47 +2,33 @@ require 'spec_helper'
 
 describe Docks::Parsers::SCSS do
   subject { Docks::Parsers::SCSS }
+  before :all do
+    Docks::Tags.register_bundled_tags
+  end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'scss_parser_fixture_basic.scss')) }
   let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'scss_parser_fixture_complex.scss')) }
 
-  describe '::page_comment_extractor' do
-    it 'correctly captures a page block when one exists' do
-      expect(complex_fixture.index('// @page')).to_not be nil
-      expect(complex_fixture.scan(subject.page_comment_extractor).length).to eq 1
+  describe '::parse' do
+    let(:basic_parse_results) { subject.parse(basic_fixture) }
+    let(:complex_parse_results) { subject.parse(complex_fixture) }
+
+    it 'captures the correct number of documentation blocks' do
+      expect(basic_parse_results.length).to eq 2
+      expect(complex_parse_results.length).to eq 6
     end
 
-    it 'correctly fails to capture a page block when none exists' do
-      expect(basic_fixture.index('// @page')).to be nil
-      expect(basic_fixture.scan(subject.page_comment_extractor).length).to eq 0
+    it 'captures the page comment block when one exists' do
+      expect(basic_parse_results.first[:page]).to be nil
+      expect(complex_parse_results.first[:page]).to_not be nil
     end
   end
 
   describe '::comment_extractor' do
-    let(:complex_fixture_cleaned) { subject.clean_page_comment(complex_fixture) }
-
-    it 'captures the correct number of documentation blocks' do
-      basic_captures = basic_fixture.scan(subject.comment_extractor).length
-      expect(basic_captures).to be 2
-
-      complex_captures = complex_fixture_cleaned.scan(subject.comment_extractor).length
-      expect(complex_captures).to be 5
-    end
-
     it 'provides the first non-comment line as the second capture group' do
-      captures = complex_fixture_cleaned.match(subject.comment_extractor).captures
+      captures = basic_fixture.match(subject.comment_extractor).captures
 
-      captures.each { |capture| expect(capture[1].strip.start_with?('//')).to be false }
-    end
-  end
-
-  describe '::clean_page_comment' do
-    it 'does nothing to a file without a page documentation block' do
-      expect(subject.clean_page_comment(basic_fixture)).to eq basic_fixture
-    end
-
-    it 'removes only the page documentation block from a file where a normal documentation block directly follows the page block' do
-      expect(subject.clean_page_comment(complex_fixture)).to eq complex_fixture[complex_fixture.index('//*', 1)..-1]
+      captures.each { |capture| expect(captures[1].strip.start_with?('#')).to be false }
     end
   end
 

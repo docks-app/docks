@@ -7,12 +7,17 @@
 #
 # Multiple allowed.
 
-register :state do
+register :states do
   multiple_per_block
+  synonyms :state
 
   process do |content|
     content = Docks::Processors::BreakApartStatesAndVariants.process(content)
 
     Docks::Processors::ReplaceHashWithOpenStruct.process(content)
   end
+
+  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
+               Docks::PostProcessors::CleanUpVariantsAndStates,
+               Docks::PostProcessors::MirrorPrecludes
 end

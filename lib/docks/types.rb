@@ -9,6 +9,7 @@ module Docks
       FUNCTION    = 'function'
       VARIABLE    = 'variable'
       CLASS       = 'class'
+      PAGE        = 'page'
     end
 
     module Access

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Docks::Grouper do
-  subject { Docks::Grouper }
+describe Docks::Group do
+  subject { Docks::Group }
 
   before :all do
     Docks::Languages.register_bundled_languages

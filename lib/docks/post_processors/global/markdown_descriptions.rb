@@ -23,12 +23,18 @@ module Docks
 
       public
 
-      def self.process(key, value)
-        if key == :description
-          @@markdown.render(value.strip)
-        else
-          self.recursive_markdown_description(value)
+      def self.post_process(parsed_file)
+        parsed_file.each do |parse_result|
+          parse_result.each do |key, value|
+            parse_result[key] = if key == :description
+              @@markdown.render(value.strip)
+            else
+              recursive_markdown_description(value)
+            end
+          end
         end
+
+        parsed_file
       end
 
       private

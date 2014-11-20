@@ -4,19 +4,24 @@ module Docks
       # Public: Processes the passed content by openstructifying all hashes,
       # including those within arrays or other hashes.
       #
-      # key   - The tag being processed.
-      # value - The content for the tag being processed.
+      # parsed_file - The processed result of parsing the file.
       #
       # Examples
       #
       #   ReplaceHashesWithOpenStructs.process(:state, { name: 'tab--is-active', set_by: [{setter: ':active'}] })
       #   # => OpenStruct.new({ name: 'tab--is-active', set_by: [OpenStruct.new({setter: ':active'})] })
       #
-      # Returns an the value with all Hashes OpenStructified.
+      # Returns the parsed file value with all Hashes OpenStructified.
 
-      def self.process(key, value)
-        self.recursive_openstructify(value)
+      def self.post_process(parsed_file)
+        parsed_file.map! do |parse_result|
+          recursive_openstructify(parse_result)
+        end
+
+        parsed_file
       end
+
+
 
       private
 

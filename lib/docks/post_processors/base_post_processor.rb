@@ -1,7 +1,7 @@
 module Docks
   module PostProcessors
     class Base
-      def self.process(result); end
+      def self.post_process(parsed_file); parsed_file end
     end
   end
 end

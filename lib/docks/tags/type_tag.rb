@@ -6,6 +6,8 @@
 # Only one allowed.
 
 register :type do
+  single_line
+
   process do |content|
     Docks::Processors::JoinWithBlanks.process(content)
   end

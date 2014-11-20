@@ -2,7 +2,7 @@ require 'spec_helper'
 
 tag = :since
 Docks::Tags.register_bundled_tags
-processor = Docks::Process.new
+processor = Docks::Process
 
 describe tag do
   let(:version) { '1.5.0-beta003' }

@@ -7,9 +7,6 @@
 
 register :subtitle do
   one_per_file
+  single_line
   synonyms :tagline
-
-  process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
-  end
 end

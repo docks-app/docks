@@ -6,8 +6,7 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
   let(:complex_hash) do
     { foo: simple_hash,
       bar: [simple_hash, simple_hash],
-      baz: 'foo',
-       }
+      baz: 'foo' }
   end
   let(:simple_array) { %w(foo bar baz) }
   let(:complex_array) { [simple_hash, complex_hash, simple_array, 'bar'] }
@@ -20,7 +19,7 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
       complex_array: complex_array }
   end
 
-  let(:expected_simple_hash_result) { OpenStruct.new(content[:simple_hash]) }
+  let(:expected_simple_hash_result) { OpenStruct.new(simple_hash) }
   let(:expected_complex_hash_result) do
     OpenStruct.new({
       foo: expected_simple_hash_result,
@@ -30,16 +29,11 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
   end
 
   let(:result) do
-    result = {}
-    content.each do |key, value|
-      result[key] = subject.process(key, value)
-    end
-
-    result
+    subject.post_process([content]).first
   end
 
   it 'correctly handles simple arrays' do
-    expect(result[:simple_array]).to eq content[:simple_array]
+    expect(result.simple_array).to eq content[:simple_array]
   end
 
   it 'correctly handles complex arrays (containing hashes and other arrays)' do
@@ -49,14 +43,14 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
       simple_array,
       'bar'
     ]
-    expect(result[:complex_array]).to eq expected_result
+    expect(result.complex_array).to eq expected_result
   end
 
   it 'correctly handles simple hashes' do
-    expect(result[:simple_hash]).to eq expected_simple_hash_result
+    expect(result.simple_hash).to eq expected_simple_hash_result
   end
 
   it 'correctly handles complex hashes (containing arrays and other hashes)' do
-    expect(result[:complex_hash]).to eq expected_complex_hash_result
+    expect(result.complex_hash).to eq expected_complex_hash_result
   end
 end

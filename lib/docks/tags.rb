@@ -37,8 +37,8 @@ module Docks
         multiple_per_line:  false,
         multiple_per_block: false,
         one_per_page:       false,
-        processors:         [],
-        post_processors:    []
+        multiline:          true,
+        processors:         []
       }
 
       self.class_eval(&block) if block_given?
@@ -67,27 +67,14 @@ module Docks
         multiple_per_line:  false,
         multiple_per_block: false,
         one_per_page:       false,
-        processors:         [],
-        post_processors:    []
+        multiline:          true,
+        processors:         []
       }
       @@current_details = @@details[tag]
 
       self.class_eval(&block) if block_given?
     end
 
-
-    # Public: Registers global post-processors. If global post-processors already
-    # exist, this will append the passed post-processors to the end of the list.
-    #
-    # post_processors - One or more post-processor classes conforming to
-    # Docks::PostProcessors::Base (that is, they must have a ::process class method).
-    #
-    # Returns nothing.
-
-    def self.register_globals(*post_processors)
-      @@details[@@global_tag] ||= { post_processors: [] }
-      @@details[@@global_tag][:post_processors].concat post_processors
-    end
 
 
     # Public: Joins together keys in a hash based on the synonym relationships
@@ -133,29 +120,6 @@ module Docks
     end
 
 
-    # Public: Retrieve the list of post-processors for a given tag.
-    #
-    # tag - The tag whose post-processors you want to retrieve. Synonymous tags
-    # share a single post-processor store, so calling this method on each yields the
-    # same result.
-    #
-    # Returns an Array of post-processing classes (if post-processors were found)
-    # or nil if the tag is not registered.
-
-    def self.post_processors_for(tag)
-      details_for(tag)[:post_processors]
-    end
-
-
-    # Public: Retrieve the list of post-processors registered globally.
-    #
-    # Returns an Array of post-processing classes (if post-processors were found)
-    # or nil if no global post-processors have been registered.
-
-    def self.global_post_processors
-      details_for(@@global_tag)[:post_processors]
-    end
-
 
     # Public: Check whether the passed tag can be used multiple times per block.
     #
@@ -199,6 +163,19 @@ module Docks
     end
 
 
+    # Public: Check whether the passed tag can have multiline content.
+    #
+    # tag - The tag whose status you want to retrieve. Synonymous tags
+    # share a single set of details, so calling this method on each yields the
+    # same result.
+    #
+    # Returns a Boolean indicating whether or not the tag can have multine comments.
+
+    def self.multiline?(tag)
+      details_for(tag)[:multiline]
+    end
+
+
     # Public: Check whether the passed tag has been registered. This also checks
     # whether the tag has been declared as a synonym for another tag.
     #
@@ -208,6 +185,14 @@ module Docks
 
     def self.has_tag?(tag)
       @@table.key?(tag.to_sym)
+    end
+
+
+    # Public: Gets all of the tags that have been registered.
+    # Returns an Array of Symbols representing the supported tags.
+
+    def self.supported_tags
+      @@table.keys
     end
 
 
@@ -233,7 +218,7 @@ module Docks
 
     def self.details_for(tag)
       tag = tag.to_sym
-      (tag == @@global_tag ? @@details[@@global_tag] : @@details[@@table[tag]]) || {}
+      @@details[@@table[tag]] || {}
     end
 
 
@@ -298,6 +283,16 @@ module Docks
     end
 
 
+    # Private: Marks the currently registered tag as being a single line comment
+    # (that is, any lines after this comment will not be appended to it).
+    #
+    # Returns nothing.
+
+    def self.single_line
+      @@current_details[:multiline] = false
+    end
+
+
     # Private: Registers a block to be called when processing the tag.
     #
     # block - The block to register for future processing operations.
@@ -318,7 +313,7 @@ module Docks
     # Returns nothing.
 
     def self.post_process(*post_processors)
-      @@current_details[:post_processors].concat post_processors
+      Docks::Process.add_post_processors(*post_processors)
     end
   end
 end

@@ -9,4 +9,8 @@ register :include_with do
   process do |content|
     content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
   end
+
+  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
+               Docks::PostProcessors::CleanUpVariantsAndStates,
+               Docks::PostProcessors::MirrorPrecludes
 end

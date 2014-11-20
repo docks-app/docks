@@ -2,7 +2,7 @@ require 'spec_helper'
 
 tag = :markup
 Docks::Tags.register_bundled_tags
-processor = Docks::Process.new
+processor = Docks::Process
 
 array = [
   "<div class='thing__outer'>",

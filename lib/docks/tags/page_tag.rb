@@ -5,8 +5,5 @@
 
 register :page do
   one_per_file
-
-  process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
-  end
+  single_line
 end

@@ -1,5 +1,5 @@
 module Docks
-  class Grouper
+  class Group
 
     # Private: the process by which to create group IDs from filenames.
     # Files with the same group ID will be grouped together by ::group.

@@ -1,41 +1,104 @@
 module Docks
   module Parsers
     class Base
-      # Public: Removes the optional 'Page' documentation block from
-      # the file contents. An optional block can be passed to the method
-      # to perform additional operations on the 'Page' documentation block.
-      #
-      # file_contents - The full contents of the file.
-      #
-      # Yields the 'Page' documentation section to the optional block.
-      #
-      # Returns the passed string, with the page block removed.
+      def self.comment_symbol; "#" end
+      def self.page_comment_extractor; /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m end
+      def self.comment_extractor; /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m end
+      def self.comment_pattern; /^\s*#\s?\n?/m end
 
-      def self.clean_page_comment(file_contents, &block)
-        file_contents.sub(self.page_comment_extractor) do |page_comment_block|
-          page_comment_block.sub!(/#{self.comment_symbol}\*\s*\n?/, '')
+      # Public: Parses out all blocks from the passed file contents.
+      #
+      # file_contents - A String of the text to be parsed.
+      #
+      # Returns a an Array of Hashes that each represent the parsed result for
+      # each comment block.
 
-          if (index_of_other_comment = page_comment_block.index("#{self.comment_symbol}*")).nil?
-            ''
-          else
-            yield(page_comment_block[0..index_of_other_comment]) if block_given?
-            page_comment_block[index_of_other_comment..-1]
-          end
+      def self.parse(file_contents)
+        docs = []
+
+        # Get rid of the page block and, in the process, add the page block
+        # to the set of parse results.
+        file_contents.sub!(page_comment_extractor) do |page_comment_block|
+          page_comment_block.sub!(/#{comment_symbol}\*\s*/, '')
+          index_of_other_comment = page_comment_block.index("#{comment_symbol}*")
+          replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
+
+          page_parse_result = { type: Docks::Types::Symbol::PAGE }
+          docs << parse_comment_block(page_comment_block[0..index_of_other_comment], page_parse_result)
+
+          replacement
         end
+
+        # Scan through each docs comment block and add it to the list of parsed docs.
+        file_contents.scan(comment_extractor).each do |m|
+          parse_result = {}
+          parse_result[:name], parse_result[:type] = parse_result_details(m[1])
+          docs << parse_comment_block(m[0], parse_result)
+        end
+
+        docs
       end
 
 
-
-      # Public: Identifies the name and type of the parse result that is being parsed.
+      # Public: Parses the tags and associated content out of a comment block.
       #
-      # first_code_line - The first line of actual code following a documentation
-      #                   comment block (should be the last matching group returned
-      #                   by #comment_extractor)
+      # comment_block - A String representing a single comment block. All comment
+      #                 symbols should be stripped out before being passed here.
+      # docs          - A Hash in which to place the tags (keys) and content (values).
+      #                 Defaults to a new Hash.
       #
-      # Returns a touple of the name and type, both as Strings.
+      # Returns a Hash with the tags and their associated content for the block.
 
-      def self.parse_result_details(first_code_line)
-        return nil, nil
+      def self.parse_comment_block(comment_block, docs = {})
+        @@tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tags.supported_tags.join("|")}))?\s*(?<text>.*)/
+
+        last_tag = nil
+
+        comment_block.strip!
+        comment_block.gsub(comment_pattern, '').split("\n").each do |comment_line|
+          line_details = comment_line.match(@@tag_pattern)
+          next if line_details.nil? || line_details[:text].nil?
+
+          tag, text = line_details[:tag], line_details[:text]
+
+          if tag.nil?
+            if last_tag.nil?
+              # No tag and no previous tag — must be description
+              docs[:description] ||= []
+              docs[:description] << text
+            else
+              # No tag, but has a previous tag — bundle with last tag. As discussed below,
+              # multiple_allowed tags will be represented by an array of arrays, so append
+              # this line to the last array within the main array. Otherwise, just append
+              # the text to the main array.
+              (docs[last_tag].first.kind_of?(Array) ? docs[last_tag].last : docs[last_tag]) << text
+            end
+          else
+            # New tag declaration
+            tag = tag.to_sym
+            multiline = Docks::Tags.multiline?(tag)
+            last_tag = multiline ? tag : nil
+
+            # If multiple tags are allowed, each one (the tag declaration, plus the following lines)
+            # should be in an array inside the main array for that tag. Otherwise, the array
+            # for the tag should only contain strings. If only one of that tag is available per tag,
+            # overwrite the existing content. Non-multiline comments are always as minimally-Array-ed
+            # as possible (if only one is allowed per file, the tag value will be the line. Otherwise,
+            # it is added to a single-dimensional array).
+            if Docks::Tags.only_one_per_file_allowed?(tag)
+              docs[tag] = multiline ? [text] : text
+            else
+              docs[tag] ||= []
+              if !multiline
+                docs[tag] << text
+              else
+                docs[tag] << (Docks::Tags.multiple_allowed?(tag) ? [text] : text)
+              end
+            end
+          end
+        end
+
+        docs
       end
     end
   end

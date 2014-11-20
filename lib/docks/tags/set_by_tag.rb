@@ -11,4 +11,8 @@ register :set_by do
     content = Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
     Docks::Processors::ReplaceHashWithOpenStruct.process(content)
   end
+
+  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
+               Docks::PostProcessors::CleanUpVariantsAndStates,
+               Docks::PostProcessors::MirrorPrecludes
 end

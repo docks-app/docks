@@ -2,7 +2,7 @@ require 'spec_helper'
 
 tag = :compatibility
 Docks::Tags.register_bundled_tags
-processor = Docks::Process.new
+processor = Docks::Process
 
 describe tag do
   let(:simple_content) { ['Chrome'] }

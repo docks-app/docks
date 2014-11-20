@@ -2,7 +2,7 @@ require 'spec_helper'
 
 tag = :access
 Docks::Tags.register_bundled_tags
-processor = Docks::Process.new
+processor = Docks::Process
 
 describe tag do
   it 'correctly allows one of the included access types' do
