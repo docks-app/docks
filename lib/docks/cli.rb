@@ -42,8 +42,8 @@ module Docks
 
     def setup
       Build.init
-    rescue => e
-      Messenger.error "#{e}"
+    # rescue => e
+    #   Messenger.error "#{e}"
     end
   end
 end

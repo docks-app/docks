@@ -13,5 +13,5 @@ Dir[File.join(File.dirname(__FILE__), 'docks', 'post_processors/**/*.rb')].each 
 module Docks
   CACHE_DIR = '.docks_cache'
   CACHE_FILE = File.join(CACHE_DIR, '.docks')
-  TEMPLATE_DIR = File.expand_path('./template/', File.dirname(__FILE__))
+  TEMPLATE_DIR = File.join(File.dirname(__FILE__), 'docks', 'template/')
 end

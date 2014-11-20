@@ -22,6 +22,7 @@ module Docks
     def self.init
       return Messenger.warn('You already have a docks_config.yml file. Please delete this and run this command again.') if File.exists?('docks_config.yml')
 
+      puts TEMPLATE_DIR
       FileUtils.cp_r Dir["#{TEMPLATE_DIR}/*"], Dir.pwd
       files = Dir["#{TEMPLATE_DIR}/*"]
       files_path = files.select { |file| file =~ /docks_config/ }
