@@ -2,7 +2,6 @@ module Docks
   class Tags
     @@table      = {}
     @@details    = {}
-    @@global_tag = :global
 
 
     # Public: Registers all tags bundled with the gem.

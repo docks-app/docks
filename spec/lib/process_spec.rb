@@ -44,4 +44,40 @@ describe Docks::Process do
       expect(result).to include(subject.process_tag(:set_by, [[set_by_three]]).first)
     end
   end
+
+  describe '.add_post_processors' do
+    before :each do
+      subject.clear_post_processors
+      subject.add_post_processors Docks::PostProcessors::MarkdownDescriptions,
+                                  Docks::PostProcessors::MirrorPrecludes
+    end
+
+    it 'adds all post-processors passed in' do
+      post_processors = subject.post_processors
+      expect(post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
+      expect(post_processors).to include(Docks::PostProcessors::MirrorPrecludes)
+    end
+
+    it 'does not re-add a previously-added post-processor' do
+      expect {
+        subject.add_post_processors Docks::PostProcessors::MarkdownDescriptions,
+                                    Docks::PostProcessors::MirrorPrecludes
+      }.to_not change { subject.post_processors.length }
+    end
+  end
+
+  describe '.post_process' do
+    it 'Runs post_process with each registered post-processor on the passed content' do
+      content = [{ foo: :bar }]
+      post_processors = [Docks::PostProcessors::MarkdownDescriptions, Docks::PostProcessors::MirrorPrecludes]
+      subject.clear_post_processors
+      subject.add_post_processors(*post_processors)
+
+      post_processors.each do |post_processor|
+        expect(post_processor).to receive(:post_process).with(content)
+      end
+
+      subject.post_process(content)
+    end
+  end
 end

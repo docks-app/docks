@@ -18,29 +18,32 @@ module Docks
     end
 
 
-    # TODO
 
-    def self.register_bundled_post_processors
-      add_post_processors Docks::PostProcessors::MarkdownDescriptions,
-                          Docks::PostProcessors::ReplaceHashesWithOpenStructs
-    end
+    # Public: Runs all registered post-processors on the passed content.
+    #
+    # parse_results - The content on which to run the post-processors. This should
+    #                 be an Array of Hashes for post-processors conforming to
+    #                 Docks::PostProcessors::Base to function correctly.
+    #
+    # Returns the processed content.
 
     def self.post_process(parse_results)
       @@post_processors.each do |post_processor|
-        parse_result = post_processor.post_process(parse_results)
+        post_processor.post_process(parse_results)
       end
 
       parse_results
     end
 
-    def self.post_processors
-      @@post_processors
-    end
 
-    def self.clear_post_processors
-      @@post_processors = []
-    end
 
+    # Public: Add the passed post-processors to the list of post-processors
+    # that are to be executed, if it does not already exist.
+    #
+    # post_processors - One or more classes conforming to Docks::PostProcessors::Base.
+    #
+    # Returns an Array of post-processors (which should each be a class reference)
+    # showing the new (full) list of registered post-processors.
 
     def self.add_post_processors(*post_processors)
       post_processors.each_with_index do |post_processor, i|
@@ -48,6 +51,34 @@ module Docks
       end
 
       @@post_processors
+    end
+
+
+
+    # Public: Registers all post-processors bundled with the gem.
+    # Returns nothing.
+
+    def self.register_bundled_post_processors
+      add_post_processors Docks::PostProcessors::MarkdownDescriptions,
+                          Docks::PostProcessors::ReplaceHashesWithOpenStructs
+    end
+
+
+
+    # Public: Gets all registered post-processors.
+    # Returns an Array of post-processors (which should each be a class reference).
+
+    def self.post_processors
+      @@post_processors
+    end
+
+
+
+    # Public: Clears all registered post-processors.
+    # Returns nothing.
+
+    def self.clear_post_processors
+      @@post_processors = []
     end
 
 
