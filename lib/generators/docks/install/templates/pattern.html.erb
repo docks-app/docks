@@ -1,0 +1,80 @@
+<div class="page">
+
+  <div class="page__sidebar">
+    <%= render_partial :sidebar, components: @sitemap %>
+  </div>
+
+  <div class="page__main">
+    <%= render_partial :header %>
+
+    <section class="page__content">
+      <header class="page__header">
+        <% unless @container.title.nil? %>
+          <h1>
+            <%= @container.title %>
+          </h1>
+          <% unless @container.tagline.nil? %>
+            <h2>
+              <%= @container.tagline %>
+            </h2>
+          <% end %>
+        <% end %>
+
+        <ul class="tab-list tab-list--large" role="tablist">
+          <li role="presentation">
+            <a class="tab-list__tab" controls="page__content--design" href="page__content--design" id="page__content__tab--design" role="tab" tabindex="-1">Design</a>
+            <a class="tab-list__tab tab-list__tab--is-active" controls="page__content--markup" href="page__content--markup" id="page__content__tab--markup" role="tab" tabindex="-1">Markup</a>
+            <a class="tab-list__tab" controls="page__content--behavior" href="page__content--behavior" id="page__content__tab--behavior" role="tab" tabindex="-1">Behavior</a>
+          </li>
+        </ul>
+      </header>
+
+      <% @container.own_demos.each do |main| %>
+        <section class="page__section">
+          <header class="page__section__header">
+            <h3>
+              <%= main.title %>
+            </h3>
+            <div class="grid">
+              <div class="grid__item grid__item--no-flex">
+                <div class="page__section__meta">
+                  <h4 class="title--minor">Details</h4>
+                  <p>Last modified on #{@container.modified_date}</p>
+                  <% unless @container.since.nil? %>
+                    <p>Available since Version #{@container.since.version}</p>
+                  <% end %>
+                </div>
+              </div>
+              <% if main.respond_to?(:author) && main.author.length > 0 %>
+                <div class="grid__item">
+                  <div class="page__section__contributors">
+                    <h4 class="title--minor">Contributors</h4>
+                    <div>
+                      <% main.author.each do |author| %>
+                        <%= render_partial :avatar, profile_name: author.details %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </header>
+
+          <% joint_demos = [main.name] %>
+          <% joint_demos += (main.respond_to?(:states_and_variants_with_joint_demo) ? main.states_and_variants_with_joint_demo : []).map! { |joint_demo| joint_demo.name } %>
+
+          <%= render_partial :resizable, src_url: "/iframes/#{main.name}.html", markup: syntax_highlighted_markup(main.markup), id: main.name, joint_demos: joint_demos, haml_markup: syntax_highlighted_markup(main.haml_markup, :haml) %>
+
+          <%= render_partial :class_changers, items: main.states_and_variants_select %>
+
+          <% if !main.description.nil? && main.description.length > 0 %>
+            <div class="description">
+              <h4>Discussion</h4>
+              <%= find_and_preserve main.description %>
+            </div>
+          <% end %>
+        </section>
+      <% end %>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<% items ||= {} %>
+<% group_by_base_class ||= false %>
+<% filter_to ||= '' %>
+<% unless items.empty? %>
+  <div class="class-changer__container">
+    <% items.each do |klass, selects| %>
+      <% if group_by_base_class %>
+        <section class="class-changer__sub-container">
+          <h3 class="class-changer__heading">
+            <%= klass.split(/(?:\-\-|__|\-)/).map(&:capitalize).join(' ') %>
+          </h3>
+          <div class="class-changers">
+            <% selects.each do |select| %>
+              <%= render_partial :class_changer, changer: select %>
+            <% end %>
+          </div>
+        </section>
+      <% else %>
+        <% selects.each do |select| %>
+          <%= render_partial :class_changer, changer: select %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <div class="class-changer__explain">
+      <div class="class-changer__explain__card">
+        <div class="class-changer__explain__section">
+          <div class="grid grid--vertically-centered">
+            <div class="grid__item">
+              <h6 class="class-changer__explain__subtitle">Details for</h6>
+              <h5 class="class-changer__explain__name">
+                <code></code>
+              </h5>
+            </div>
+            <div class="grid__item grid__item--no-flex">
+              <button class="class-changer__explain__close">x</button>
+            </div>
+          </div>
+        </div>
+        <div class="class-changer__explain__section class-changer__explain__description"></div>
+        <div class="class-changer__explain__section">
+          <p class="class-changer__explain__activate-with">When using this <span class='class-changer__explain__type'></span>, always also use <span class='class-changer__explain__activate-with__items'></span>.</p>
+          <p class="class-changer__explain__precludes">Don't use this <span class='class-changer__explain__type'></span> with <span class='class-changer__explain__precludes__items'></span>.</p>
+          <p class="class-changer__explain__set-by">This class is set by <span class='class-changer__explain__set-by__items'></span>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

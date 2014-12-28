@@ -1,0 +1,38 @@
+<div class="demo" data-iframe-id="<%= @component.unique_identifier %>">
+  <% class_name    = @component.name %>
+  <% base_class    = @component.base_class %>
+  <% type          = @component.type %>
+  <% activate_with = '' %>
+  <% precludes     = '' %>
+  <% set_by        = '' %>
+  <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= class_name %>">
+    <section class="demo__content">
+      <%= @component.markup %>
+    </section>
+  </section>
+
+  <% joint_demos = @component.respond_to?(:states_and_variants_with_joint_demo) ? @component.states_and_variants_with_joint_demo : [] %>
+
+  <% joint_demos.each do |joint_demo| %>
+    <% class_name    = joint_demo.name %>
+    <% base_class    = joint_demo.base_class %>
+    <% description   = joint_demo.description || '' %>
+    <% type          = joint_demo.type %>
+    <% activate_with = joint_demo.activate_with.join ', ' %>
+    <% precludes     = joint_demo.precludes.join ', ' %>
+    <% set_by        = (joint_demo.set_by.map { |set_by| "#{set_by[:setter]} (#{set_by[:constant] || ''})" }).join ', ' %>
+    <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-description="<%= description %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= joint_demo.name %>">
+      <demo>__header
+        <h2 class="demo__heading">
+          <span>
+            <%= joint_demo.name %>
+          </span>
+          <button class="docks-button docks-button--unstyled demo__details">?</button>
+        </h2>
+      </demo>
+      <section class="demo__content">
+        <%= @component.markup.gsub(/class\s?=[ '"].*?#{joint_demo.base_class}[ '"]/) { |before| "#{before[0..-2]} #{joint_demo.name}#{before[-1]}" } %>
+      </section>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,14 @@
+<%
+  classes ||= ''
+  options ||= []
+%>
+
+<div class="<%= classes %> select">
+  <select class="select__input">
+    <% options.each do |option| %>
+      <option>
+        <%= option %>
+      </option>
+    <% end %>
+  </select>
+</div>

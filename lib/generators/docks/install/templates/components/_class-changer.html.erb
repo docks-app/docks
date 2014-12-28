@@ -1,0 +1,20 @@
+<% class_name    = changer.name %>
+<% base_class    = changer.base_class %>
+<% description   = changer.description || '' %>
+<% type          = changer.type %>
+<% active        = changer.active %>
+<% activate_with = changer.activate_with.join ', ' %>
+<% precludes     = changer.precludes.join ', ' %>
+<% set_by        = (changer.set_by.map { |set_by| "#{set_by[:setter]} (#{set_by[:constant] || ''})" }).join ', ' %>
+<% js_action     = changer.javascript_action || '' %>
+<div class="class-changer" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-default-on="<%= active.to_s %>" data-description="<%= description %>" data-filter-to="<%= filter_to %>" data-javascript-action="<%= js_action %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="<%= class_name %>" role="button" tabindex="0" type="checkbox">
+  <div class="class-changer__main">
+    <span class="class-changer__type">
+      <%= type %>
+    </span>
+    <span class="class-changer__name">
+      <%= class_name.sub base_class, '' %>
+    </span>
+  </div>
+  <span class="class-changer__info">?</span>
+</div>

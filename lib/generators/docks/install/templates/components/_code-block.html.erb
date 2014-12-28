@@ -1,0 +1,82 @@
+<%
+  markup ||= ''
+  html ||= ''
+  hideable ||= false
+  full_width ||= false
+  options ||= []
+  demo ||= false
+  has_multiple_languages ||= false
+  has_header = full_width || has_multiple_languages
+  haml_markup ||= ''
+  has_haml = haml_markup.length > 0
+  hide ||= false
+  postfix = defined?(postfix) ? "--#{postfix}" : ''
+
+  extra_classes = []
+  extra_classes << 'code-block--full-width' if full_width
+  extra_classes << 'code-block--has-demo' if demo
+  extra_classes << 'code-block--has-header' if has_header
+  extra_classes << 'code-block--is-hidden' if hide
+  extra_classes = extra_classes.join(' ')
+%>
+
+<div class="<%= extra_classes %> code-block">
+  <% if has_header %>
+    <header class="code-block__header">
+      <ul class="tab-list" role="tablist">
+        <% if has_haml %>
+          <li role="presentation">
+            <a class="<%= 'tab-list__tab--is-active' if has_haml %> tab-list__tab" controls="language-tab-panel-2<%= postfix %>" href="#language-tab-panel-2<%= postfix %>" id="language-tab-2<%= postfix %>" role="tab" tabindex="<%= has_haml ? 0 : -1 %>">
+              <span class="code-block__language-tab">Helper</span>
+            </a>
+          </li>
+        <% end %>
+        <li role="presentation">
+          <a class="<%= 'tab-list__tab--is-active' unless has_haml %> tab-list__tab" controls="language-tab-panel-1<%= postfix %>" href="#language-tab-panel-1<%= postfix %>" id="language-tab-1<%= postfix %>" role="tab" tabindex="<%= has_haml ? -1 : 0 %>">
+            <span class="code-block__language-tab">Markup</span>
+          </a>
+        </li>
+      </ul>
+      <div class="code-block__actions">
+        <% if options.length > 1 %>
+          <%= render_partial :select, options: options, classes: 'code-block__demo-selector' %>
+        <% end %>
+        <% if hideable %>
+          <button class="docks-button code-block__hide-button">
+            <%= "#{hide ? 'Show' : 'Hide'} Code" %>
+          </button>
+        <% end %>
+      </div>
+    </header>
+  <% end %>
+  <div class="tab-list__panel-container">
+    <% if has_haml %>
+      <div aria-hidden="<%= has_haml.to_s %>" aria-labelledby="language-tab-2<%= postfix %>" class="<%= 'tab-list__panel--is-active' if has_haml %> tab-list__panel" id="language-tab-panel-2<%= postfix %>">
+        <div class="code-block__code__wrapper code-block__code__wrapper--haml" style="<%= 'max-height: 0;' if hide %>">
+          <div class="code-block__code__scroller">
+            <%= preserve do %>
+              <%= haml_markup.gsub "\'", "\"" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div aria-hidden="<%= (!has_haml).to_s %>" aria-labelledby="language-tab-1<%= postfix %>" class="<%= 'tab-list__panel--is-active' unless has_haml %> tab-list__panel" id="language-tab-panel-1<%= postfix %>">
+      <div class="code-block__code__wrapper code-block__code__wrapper--html" style="<%= 'max-height: 0;' if hide %>">
+        <div class="code-block__code__scroller">
+          <%= preserve do %>
+            <%= markup.gsub "\'", "\"" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if demo %>
+    <div class="code-block__demo">
+      <h5 class="code-block__demo__heading">Result</h5>
+      <div class="code-block__demo__content">
+        <%= html %>
+      </div>
+    </div>
+  <% end %>
+</div>

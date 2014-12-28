@@ -1,0 +1,28 @@
+<% joint_demos ||= [] %>
+<% hide_source ||= false %>
+
+<div class="resizable__container">
+  <div class="resizable__wrapper">
+    <div class="resizable" id="<%= id %>">
+      <div class="card">
+        <iframe class="resizable__content" data-iframe-id="<%= id %>" frameborder="0" src="<%= src_url %>"></iframe>
+        <div class="resizable__handle" tabindex="0">
+          <span class="helper--visually-hidden">Use the arrow keys to resize the component demo window.</span>
+        </div>
+        <div class="resizable__width-indicator">
+          <span class="resizable__width-indicator__px"></span>px / <span class="resizable__width-indicator__em"></span>em
+        </div>
+        <div class="resizable__size-buttons">
+          <% %w[small medium large full].each_with_index do |size, index| %>
+            <div class="resizable__size-button--<%= size %> resizable__size-button" role="button" tabindex="<%= index == 0 ? '0' : '-1' %>">
+              <span class="helper--visually-hidden">Set the component demo window to size <%= size %>.</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="resizable__source-code">
+    <%= render_partial :code_block, markup: markup, haml_markup: haml_markup, hideable: true, full_width: true, options: joint_demos, hide: hide_source, postfix: id %>
+  </div>
+</div>
