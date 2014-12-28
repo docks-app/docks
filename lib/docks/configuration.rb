@@ -1,9 +1,9 @@
-module Docks
-  class Configuration
-    include Singleton
+require 'utils/singleton.rb'
 
+module Docks
+  class Configuration < SingletonClass
     cattr_accessor :mount_at
-    @@mount_at '/pattern-library'
+    @@mount_at = '/pattern-library'
     @@root = nil
 
     cattr_accessor :src_files, :dest_dir, :partials_dir,
@@ -13,6 +13,10 @@ module Docks
 
   @@configured = false
   @@configuration = Configuration
+
+  def self.configuration
+    @@configuration
+  end
 
   def self.configure
     yield @@configuration
