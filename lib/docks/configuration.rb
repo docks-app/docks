@@ -1,4 +1,4 @@
-require 'utils/singleton.rb'
+require './utils/singleton.rb'
 
 module Docks
   class Configuration < SingletonClass
