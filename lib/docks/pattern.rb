@@ -1,16 +1,105 @@
-class Pattern
-  def self.for(pattern)
-    cache_file = File.join(Docks.configuration.cache_dir, pattern)
-    Docks::Builder.build unless File.exists?(cache_file)
+module Docks
+  class Pattern
+    def self.for(pattern)
+      Docks::Builder.build
+      cache_file = File.join(Docks.configuration.cache_dir, pattern)
 
-    if File.exists?(cache_file)
-      Pattern.new(YAML::load_file(cache_file))
-    else
-      raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
+      if File.exists?(cache_file)
+        puts cache_file
+        puts YAML::load_file(cache_file)
+        Pattern.new(YAML::load_file(cache_file))
+      else
+        raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
+      end
+    end
+
+    attr_reader :components, :name, :title, :description, :demos
+
+    def initialize(parse_results)
+      @parse_results = parse_results
+      @name = parse_results[:name].to_s
+
+      page = parse_results_of_type(Docks::Types::Symbol::PAGE).first
+      @title = page.nil? ? @name : page.page
+      @description = page.description unless page.nil?
+
+      @components = parse_results_of_type(Docks::Types::Symbol::COMPONENT).map do |component|
+        Component.new(component)
+      end
+
+      build_demos
+    end
+
+    def build_demos
+      @demos = []
+      @components.each do |component|
+        @demos.push(Demo.new(component)) if component.has_demo?
+      end
+    end
+
+    def to_s
+      @parse_results.to_s
+    end
+
+    def inspect
+      to_s
+    end
+
+    private
+
+    def parse_results_of_type(type)
+      @flattened_parse_results ||= @parse_results[:markup] + @parse_results[:style] + @parse_results[:script]
+      @flattened_parse_results.select { |parse_result| parse_result.type == type.to_s }
     end
   end
 
-  def initialize(parse_results)
-    @parse_results = parse_results
+  class Component
+    def initialize(component)
+      @component = component
+      @states = component.states
+      @variants = component.variants
+    end
+
+    def has_demo?
+      !@component.markup.nil? && @component.markup.length > 0 && !@component.no_demo
+    end
+
+    def method_missing(meth)
+      @component.send(meth) rescue nil
+    end
+  end
+
+  class Demo
+    attr_reader :component, :joint_components
+
+    def initialize(component, joint_components = [])
+      @component = component
+      @joint_components = joint_components
+    end
+
+    def select_states_and_variants
+      states_and_variants_of_demo_type(Docks::Types::Demo::SELECT)
+    end
+
+    def joint_states_and_variants
+      states_and_variants_of_demo_type(Docks::Types::Demo::JOINT)
+    end
+
+    private
+
+    def states_and_variants_of_demo_type(type)
+      matches = {}
+
+      ([@component] + @joint_components).each do |c|
+        (c.variants + c.states).each do |v|
+          if v.demo_type == type
+            matches[c.name] ||= []
+            matches[c.name].push(v)
+          end
+        end
+      end
+
+      matches
+    end
   end
 end

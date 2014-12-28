@@ -1,4 +1,6 @@
-class PatternGroup
-  def initialize
+module Docks
+  class PatternGroup
+    def initialize
+    end
   end
 end

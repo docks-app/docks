@@ -1,0 +1,35 @@
+.sidebar {
+  background-color: color(blue-darkest);
+  min-width: 12rem;
+
+  ul {
+    padding: 1rem;
+    list-style: none;
+    margin: 0;
+  }
+
+  li {
+    padding: 0.25rem 0.25rem 0.25rem 0;
+  }
+
+  a {
+    color: rgba(white, 0.6);
+    text-decoration: none;
+
+    &:hover { color: white; }
+  }
+}
+
+
+.sidebar__header {
+  background: color(blue);
+  color: color(white);
+  padding: 2rem 1rem;
+
+  h1 {
+    margin: 0;
+    line-height: 1;
+    font-size: 1.8rem;
+    font-weight: normal;
+  }
+}

@@ -17,15 +17,22 @@ module Docks
                  desc: 'Specify an extension for the default partials (available: erb, haml, or slim)'
 
     def copy_partials
-      copy_file 'application.html.erb', 'app/views/layouts/docks/application.html.erb'
-      copy_file 'index.html.erb', 'app/views/docks/home/index.html.erb'
-      copy_file 'pattern.html.erb', 'app/views/docks/home/pattern.html.erb'
-      copy_file 'demo.html.erb', 'app/views/docks/home/demo.html.erb'
-      FileUtils.cp_r File.expand_path('../../template/components', __FILE__), 'app/views/docks/shared/components'
+      copy_file 'views/application.html.erb', 'app/views/layouts/docks/application.html.erb'
+      copy_file 'views/index.html.erb', 'app/views/docks/home/index.html.erb'
+      copy_file 'views/pattern.html.erb', 'app/views/docks/home/pattern.html.erb'
+      copy_file 'views/demo.html.erb', 'app/views/docks/home/demo.html.erb'
+
+      FileUtils.mkdir_p 'app/views/docks/shared'
+      FileUtils.cp_r File.expand_path('../templates/views/components', __FILE__), 'app/views/docks/shared'
+    end
+
+    def copy_styles
+      FileUtils.mkdir_p 'app/assets/stylesheets/docks'
+      FileUtils.cp_r File.expand_path('../templates/styles', __FILE__), 'app/assets/stylesheets/docks'
     end
 
     def display_readme
-      readme "POST_INSTALL" if behavior == :invoke
+      readme "../POST_INSTALL" if behavior == :invoke
     end
   end
 end

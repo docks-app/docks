@@ -57,16 +57,22 @@ module Docks
     def self.build
       # return false unless is_valid?
 
+      Docks.configure do |config|
+        config.cache_dir = defined?(::Rails) ? Rails.root.join("tmp", "docks_cache").to_s : '.docks_cache'
+      end
+
       Tags.register_bundled_tags
       Process.register_bundled_post_processors
       Languages.register_bundled_languages
 
-      # Group.group(@src_files).each do |group_identifier, group|
-      #   next unless should_render_group?(group)
-      #   cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
+      FileUtils.mkdir_p Docks.configuration.cache_dir
 
-      #   File.open(cache_file, 'w') { |file| file.write(Parse.parse_group(group).to_yaml) }
-      # end
+      Group.group("#{::Rails::root}/app/assets/stylesheets/**/*.scss").each do |group_identifier, group|
+        next unless should_render_group?(group)
+        cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
+
+        File.open(cache_file, 'w') { |file| file.write(Parse.parse_group(group).to_yaml) }
+      end
 
       Messenger.succeed("\nDocs successfully generated. Enjoy!")
       true
@@ -82,8 +88,8 @@ module Docks
     #
     # Returns a Boolean indicating whether or not to render the group.
 
-    def should_render_group?(group)
-      cache_file = File.join(CACHE_DIR, Group.group_identifier(group.first).to_s)
+    def self.should_render_group?(group)
+      cache_file = File.join(Docks.configuration.cache_dir, Group.group_identifier(group.first).to_s)
       return true unless File.exists?(cache_file)
 
       File.mtime(cache_file) < most_recent_modified_date(group)
@@ -100,7 +106,7 @@ module Docks
     #
     # Returns the Time of the most recent modification date.
 
-    def most_recent_modified_date(files)
+    def self.most_recent_modified_date(files)
       sorted_files = files.select { |file| File.exists?(file) }
       sorted_files.sort_by! { |file| File.mtime(file).to_i * -1 }
       return nil if sorted_files.empty?

@@ -1,0 +1,16 @@
+body {
+  background-color: color(slate);
+}
+
+.page {
+  background-color: color(white);
+}
+
+.page__content {
+  overflow: auto;
+  position: relative;
+}
+
+.page__sidebar {
+  display: none;
+}

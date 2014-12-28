@@ -1,0 +1,41 @@
+.docks-button {
+  display: inline-block;
+  padding: 0 0.5rem;
+  border: none;
+  color: rgba(color(white), 0.8);
+  line-height: 1;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 30px;
+  background-color: rgba(color(sky), 0.35);
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &:hover,
+  &:focus {
+    outline: none;
+    opacity: 0.75;
+  }
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.docks-button--unstyled {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  opacity: 1;
+  line-height: 1;
+  color: color(slate);
+  font-size: 1rem;
+  border-radius: 0;
+
+  &:hover,
+  &:focus,
+  &:active {
+    opacity: 1;
+  }
+}

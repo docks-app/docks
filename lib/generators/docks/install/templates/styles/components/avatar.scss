@@ -1,0 +1,16 @@
+$avatar-size: 2.5rem;
+
+.avatar {
+  display: inline-block;
+  background-color: color(sky);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.avatar__image {
+  height: $avatar-size;
+  width: $avatar-size;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}

@@ -42,7 +42,8 @@ module Docks
           end
         end
 
-        text.strip.length > 0 ? text : nil
+        text.strip!
+        text.length > 0 ? text : nil
       end
     end
   end

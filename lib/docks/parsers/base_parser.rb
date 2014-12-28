@@ -24,7 +24,7 @@ module Docks
           replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
 
           page_parse_result = { type: Docks::Types::Symbol::PAGE }
-          docs << parse_comment_block(page_comment_block[0..index_of_other_comment], page_parse_result)
+          docs << parse_comment_block(page_comment_block[0..index_of_other_comment - 1], page_parse_result)
 
           replacement
         end

@@ -24,21 +24,25 @@ module Docks
             precludes: [],
             set_by: [],
             include_with: [],
-            javascript_action: nil
+            javascript_action: nil,
+            type: Docks::Types::Symbol::STATE
           }
 
           parse_result[:variants] ||= []
           parse_result[:states] ||= []
 
-          (parse_result[:variants] + parse_result[:states]).each do |item|
-            item[:base_class] = parse_result[:name]
-            item[:name] = clean_class_name(item[:name], item[:base_class])
-            item.merge!(default) { |k, passed, default| passed || default }
-            item[:activate_with].push(item[:base_class])
+          [:states, :variants].each do |type|
+            parse_result[type].each do |item|
+              item[:base_class] = parse_result[:name]
+              item[:name] = clean_class_name(item[:name], item[:base_class])
+              item[:type] = Docks::Types::Symbol::VARIANT if type == :variants
+              item.merge!(default) { |k, passed, default| passed || default }
+              item[:activate_with].push(item[:base_class])
 
-            [:activate_with, :precludes, :include_with].each do |arr_attr|
-              item[arr_attr].map! { |arr_attr_item| clean_class_name(arr_attr_item, item[:base_class]) }
-              item[arr_attr].uniq!
+              [:activate_with, :precludes, :include_with].each do |arr_attr|
+                item[arr_attr].map! { |arr_attr_item| clean_class_name(arr_attr_item, item[:base_class]) }
+                item[arr_attr].uniq!
+              end
             end
           end
         end

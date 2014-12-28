@@ -1,4 +1,4 @@
-require './utils/singleton.rb'
+require File.join(File.dirname(__FILE__), "utils", "singleton.rb")
 
 module Docks
   class Configuration < SingletonClass
@@ -7,8 +7,7 @@ module Docks
     @@root = nil
 
     cattr_accessor :src_files, :dest_dir, :partials_dir,
-                   :custom_templates, :cache_dir
-    @@cache_dir = defined?(Rails) ? "#{::Rails.root}/tmp/docks_cache" : '.docks_cache'
+                   :custom_templates, :cache_dir, :root
   end
 
   @@configured = false
