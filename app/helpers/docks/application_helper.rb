@@ -7,7 +7,7 @@ module Docks
     def ui_segmented_button(options = {})
       html = "<div class='segmented-button'>\n"
       html << options[:buttons].map { |button| "<button class='button'>#{button}</button>" }.join("\n")
-      html << "</div>"
+      html << "\n</div>"
       html.html_safe
     end
   end

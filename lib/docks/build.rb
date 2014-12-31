@@ -64,6 +64,7 @@ module Docks
 
       Docks.configure do |config|
         config.cache_dir = defined?(::Rails) ? Rails.root.join("tmp", "docks_cache").to_s : '.docks_cache'
+        config.src_files = Group.group_files_by_type(group_of_files)
       end
 
       Tags.register_bundled_tags
@@ -72,14 +73,10 @@ module Docks
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
 
-      markup_files = Group.markup_files(group_of_files)
-      puts markup_files
-
       Group.group(group_of_files).each do |group_identifier, group|
         next unless should_render_group?(group)
         parse_result = Parse.parse_group(group)
         next unless Pattern.is_valid?(parse_result)
-        associate_markup_files_with_parse_results(parse_result, markup_files)
 
         cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
 

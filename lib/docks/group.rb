@@ -77,8 +77,19 @@ module Docks
     end
 
 
-    def self.markup_files(globs)
-      file_list_from_globs(globs).select { |filename| Docks::Languages.file_type(filename) == Docks::Types::Languages::MARKUP }
+
+    def self.group_files_by_type(globs)
+      files = {}
+      files[Docks::Types::Languages::MARKUP] = []
+      files[Docks::Types::Languages::STYLE] = []
+      files[Docks::Types::Languages::SCRIPT] = []
+      files[Docks::Types::Languages::STUB] = []
+
+      file_list_from_globs(globs).each do |filename|
+        puts filename
+        puts Docks::Languages.file_type(filename)
+        files[Docks::Languages.file_type(filename)] << filename
+      end
     end
 
 

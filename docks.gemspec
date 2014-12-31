@@ -3,7 +3,7 @@ $:.push File.expand_path('../lib', __FILE__)
 require 'docks/version'
 
 Gem::Specification.new do |s|
-  s.name                = 'docks_rails'
+  s.name                = 'docks'
   s.version             = Docks::VERSION
   s.platform            = Gem::Platform::RUBY
   s.authors             = ['Chris Sauve']
