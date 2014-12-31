@@ -34,23 +34,17 @@ module Docks
     # Arrays of filenames that are part of that group.
 
     def self.group(globs)
-      globs = Array(globs)
+      files = file_list_from_globs(globs)
       groups = {}
-      return groups if globs.empty?
+      return groups if files.empty?
 
-      globs.each do |glob|
-        next unless glob.kind_of?(String)
-        filenames = Dir.glob(glob)
-        next unless filenames.length > 0
-
-        # Cycle through all files identified by the glob, then assign them to
-        # the group matching their group ID.
-        filenames.each do |filename|
-          if should_include_file?(filename)
-            identifier = group_identifier(filename)
-            groups[identifier] ||= []
-            groups[identifier] << filename
-          end
+      # Cycle through all files identified by the glob, then assign them to
+      # the group matching their group ID.
+      files.each do |filename|
+        if should_include_file?(filename)
+          identifier = group_identifier(filename)
+          groups[identifier] ||= []
+          groups[identifier] << filename
         end
       end
 
@@ -83,6 +77,11 @@ module Docks
     end
 
 
+    def self.markup_files(globs)
+      file_list_from_globs(globs).select { |filename| Docks::Languages.file_type(filename) == Docks::Types::Languages::MARKUP }
+    end
+
+
 
     private
 
@@ -98,6 +97,10 @@ module Docks
 
     def self.should_include_file?(filename)
       Docks::Languages.extensions.include?(File.extname(filename)[1..-1]) && !filename.include?('.min.')
+    end
+
+    def self.file_list_from_globs(globs)
+      Array(globs).map { |glob| Dir.glob(glob) }.flatten
     end
   end
 end

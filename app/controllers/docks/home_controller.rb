@@ -11,13 +11,9 @@ module Docks
     end
 
     def demo
+      @pattern = params[:pattern]
       @name = params[:name]
-    end
-
-    private
-
-    def parse
-      Docks::Builder.build
+      @demo = Docks::Pattern.for(@pattern).demo_for(@name)
     end
   end
 end

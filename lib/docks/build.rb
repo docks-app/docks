@@ -55,6 +55,11 @@ module Docks
     end
 
     def self.build
+      group_of_files = [
+        "#{::Rails::root}/app/assets/stylesheets/**/*.scss",
+        "#{::Rails::root}/app/views/components/**/*.erb"
+      ]
+
       # return false unless is_valid?
 
       Docks.configure do |config|
@@ -67,11 +72,19 @@ module Docks
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
 
-      Group.group("#{::Rails::root}/app/assets/stylesheets/**/*.scss").each do |group_identifier, group|
+      markup_files = Group.markup_files(group_of_files)
+      puts markup_files
+
+      Group.group(group_of_files).each do |group_identifier, group|
         next unless should_render_group?(group)
+        parse_result = Parse.parse_group(group)
+        next unless Pattern.is_valid?(parse_result)
         cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
 
-        File.open(cache_file, 'w') { |file| file.write(Parse.parse_group(group).to_yaml) }
+        File.open(cache_file, 'w') do |file|
+          associate_markup_files_with_parse_results(parse_result, markup_files)
+          file.write(parse_result.to_yaml)
+        end
       end
 
       Messenger.succeed("\nDocs successfully generated. Enjoy!")
@@ -116,6 +129,25 @@ module Docks
     def validate_src
       if @src_files.empty?
         @errors << 'No source files were specified in your config file.'
+      end
+    end
+
+    def self.associate_markup_files_with_parse_results(parse_result, markup_files)
+      (parse_result[Docks::Types::Languages::MARKUP] + parse_result[Docks::Types::Languages::STYLE]).each do |item|
+        puts "id: #{Group.group_identifier(item.name)}"
+        puts item.type
+        puts (item.respond_to?(:markup) && item.markup.length > 0)
+        next if !(item.type == Types::Symbol::COMPONENT) || (item.respond_to?(:markup) && item.markup.length > 0)
+
+        group_id = Group.group_identifier(item.name)
+        puts "id: #{group_id}"
+        markup_files.each do |file|
+          puts file
+          if id == Group.group_identifier(file)
+            item.markup = File.read(file)
+            break
+          end
+        end
       end
     end
   end
