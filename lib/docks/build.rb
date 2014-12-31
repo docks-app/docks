@@ -79,10 +79,11 @@ module Docks
         next unless should_render_group?(group)
         parse_result = Parse.parse_group(group)
         next unless Pattern.is_valid?(parse_result)
+        associate_markup_files_with_parse_results(parse_result, markup_files)
+
         cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
 
         File.open(cache_file, 'w') do |file|
-          associate_markup_files_with_parse_results(parse_result, markup_files)
           file.write(parse_result.to_yaml)
         end
       end
@@ -134,16 +135,11 @@ module Docks
 
     def self.associate_markup_files_with_parse_results(parse_result, markup_files)
       (parse_result[Docks::Types::Languages::MARKUP] + parse_result[Docks::Types::Languages::STYLE]).each do |item|
-        puts "id: #{Group.group_identifier(item.name)}"
-        puts item.type
-        puts (item.respond_to?(:markup) && item.markup.length > 0)
         next if !(item.type == Types::Symbol::COMPONENT) || (item.respond_to?(:markup) && item.markup.length > 0)
 
-        group_id = Group.group_identifier(item.name)
-        puts "id: #{group_id}"
+        id = Group.group_identifier(item.name)
         markup_files.each do |file|
-          puts file
-          if id == Group.group_identifier(file)
+          if id == Group.group_identifier(file) && File.exists?(file)
             item.markup = File.read(file)
             break
           end

@@ -70,7 +70,8 @@ module Docks
     end
 
     def has_demo?
-      !@component.markup.nil? && @component.markup.length > 0 && !@component.no_demo
+      puts helper
+      !no_demo && ((!markup.nil? && markup.length > 0) || (!helper.nil? && helper.length > 0))
     end
 
     def method_missing(meth)

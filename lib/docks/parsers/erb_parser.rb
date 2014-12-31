@@ -1,6 +1,6 @@
 module Docks
   module Parsers
-    class Haml < Docks::Parsers::Base
+    class ERB < Docks::Parsers::Base
       # Public: Returns the symbol used to identify comments.
       def self.comment_symbol; "<%#" end
 
@@ -18,6 +18,7 @@ module Docks
 
 
 
+      # TODO
       # Public: Identifies the name and type of the parse result that is being parsed.
       #
       # first_code_line - The first line of actual code following a documentation

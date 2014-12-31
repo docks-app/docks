@@ -52,6 +52,8 @@ module Docks
       def self.parse_comment_block(comment_block, docs = {})
         @@tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tags.supported_tags.join("|")}))?\s*(?<text>.*)/
 
+        puts @@tag_pattern
+
         last_tag = nil
 
         comment_block.strip!

@@ -23,12 +23,14 @@ module Docks
       copy_file 'views/demo.html.erb', 'app/views/docks/home/demo.html.erb'
 
       FileUtils.mkdir_p 'app/views/docks/shared'
-      FileUtils.cp_r File.expand_path('../templates/views/components', __FILE__), 'app/views/docks/shared'
+      Dir[File.expand_path('../templates/views/components/*', __FILE__)].each do |file|
+        copy_file file, "app/views/docks/components/#{file.split("/").last}"
+      end
     end
 
     def copy_styles
-      FileUtils.mkdir_p 'app/assets/stylesheets/docks'
-      FileUtils.cp_r File.expand_path('../templates/styles', __FILE__), 'app/assets/stylesheets/docks'
+      # FileUtils.mkdir_p 'app/assets/stylesheets/docks'
+      # FileUtils.cp_r File.expand_path('../templates/styles', __FILE__), 'app/assets/stylesheets/docks'
     end
 
     def display_readme
