@@ -86,10 +86,10 @@ module Docks
       files[Docks::Types::Languages::STUB] = []
 
       file_list_from_globs(globs).each do |filename|
-        puts filename
-        puts Docks::Languages.file_type(filename)
         files[Docks::Languages.file_type(filename)] << filename
       end
+
+      files
     end
 
 

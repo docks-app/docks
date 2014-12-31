@@ -10,7 +10,7 @@ module Docks
 
           id = Group.group_identifier(parse_result[:name])
           markup_files.each do |file|
-            item[:markup] = File.read(file)
+            parse_result[:markup] = File.read(file)
             break
           end
         end

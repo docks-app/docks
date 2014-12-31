@@ -70,7 +70,6 @@ module Docks
     end
 
     def has_demo?
-      puts helper
       !no_demo && ((!markup.nil? && markup.length > 0) || (!helper.nil? && helper.length > 0))
     end
 

@@ -62,14 +62,14 @@ module Docks
 
       # return false unless is_valid?
 
+      Tags.register_bundled_tags
+      Process.register_bundled_post_processors
+      Languages.register_bundled_languages
+
       Docks.configure do |config|
         config.cache_dir = defined?(::Rails) ? Rails.root.join("tmp", "docks_cache").to_s : '.docks_cache'
         config.src_files = Group.group_files_by_type(group_of_files)
       end
-
-      Tags.register_bundled_tags
-      Process.register_bundled_post_processors
-      Languages.register_bundled_languages
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
 

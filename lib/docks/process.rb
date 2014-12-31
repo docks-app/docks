@@ -59,7 +59,9 @@ module Docks
     # Returns nothing.
 
     def self.register_bundled_post_processors
-      add_post_processors Docks::PostProcessors::MarkdownDescriptions,
+      add_post_processors Docks::PostProcessors::AssociateExternalMarkupFiles,
+                          Docks::PostProcessors::CleanUpHelperAndMarkup,
+                          Docks::PostProcessors::MarkdownDescriptions,
                           Docks::PostProcessors::ReplaceHashesWithOpenStructs
     end
 
