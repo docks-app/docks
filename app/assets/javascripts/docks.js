@@ -9679,6 +9679,7 @@ var hljs=new function(){function j(v){return v.replace(/&/gm,"&amp;").replace(/<
 
     CodeBlock.prototype.updateHelperCode = function(styleChange, code) {
       var codeProvided, helperParam, _ref;
+      console.log(this);
       console.log(styleChange);
       if (!this.$helperCodeBlockCode.length || !((_ref = styleChange.setBy) != null ? _ref.length : void 0)) {
         return;

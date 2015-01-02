@@ -22,7 +22,8 @@ module Docks
       @@details[language] = {
         parser: nil,
         extension: nil,
-        type: nil
+        type: nil,
+        stub_loader: nil
       }
       @@current_language = language
       @@current_details = @@details[language]
@@ -97,6 +98,7 @@ module Docks
       @@details.each_value do |language_detail|
         if language_detail[:extension] == extension
           parser = language_detail[:parser]
+          break
         end
       end
 
@@ -141,6 +143,22 @@ module Docks
       Dir[File.join(File.dirname(__FILE__), 'languages/*.rb')].each do |file|
         class_eval(File.read(file))
       end
+    end
+
+
+
+    def self.load_stub_for(file)
+      extension = extension_for_file(file)
+      stub = nil
+
+      @@details.each_value do |language_detail|
+        if language_detail[:extension] == extension
+          stub = language_detail[:stub_loader].call(file)
+          break
+        end
+      end
+
+      stub
     end
 
 
@@ -226,5 +244,12 @@ module Docks
 
       extensions.compact.uniq
     end
+
+
+
+    def self.stub_loader(&block)
+      @@current_details[:stub_loader] = block
+    end
+
   end
 end

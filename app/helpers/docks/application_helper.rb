@@ -1,7 +1,14 @@
 module Docks
   module ApplicationHelper
-    def button(text)
-      content_tag(:button, text, class: "button")
+    def ui_button(text, options = {})
+      klass = "button"
+      klass << " button--is-active" if options[:active?]
+      klass << " button--is-great" if options[:great?]
+      klass << " button--large" if options[:size] == :large
+      klass << " button--small" if options[:size] == :small
+      klass << " button--disabled" if options[:disabled?]
+
+      content_tag(:button, text, class: klass)
     end
 
     def ui_segmented_button(options = {})
