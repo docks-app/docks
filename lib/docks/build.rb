@@ -36,45 +36,23 @@ module Docks
       @errors.empty?
     end
 
-    def build
-      return false unless is_valid?
-
-      Tags.register_bundled_tags
-      Process.register_bundled_post_processors
-      Languages.register_bundled_languages
-
-      Group.group(@src_files).each do |group_identifier, group|
-        next unless should_render_group?(group)
-        cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
-
-        File.open(cache_file, 'w') { |file| file.write(Parse.parse_group(group).to_yaml) }
-      end
-
-      Messenger.succeed("\nDocs successfully generated. Enjoy!")
-      true
-    end
-
     def self.build
       group_of_files = [
         "#{::Rails::root}/app/assets/stylesheets/**/*.scss",
-        "#{::Rails::root}/app/views/components/**/*.erb"
+        "#{::Rails::root}/app/views/components/**/*.erb",
+        "#{::Rails::root}/app/views/stubs/**/*.yml"
       ]
 
       # return false unless is_valid?
 
-      Tags.register_bundled_tags
-      Process.register_bundled_post_processors
-      Languages.register_bundled_languages
-
-      Docks.configure do |config|
-        config.cache_dir = defined?(::Rails) ? Rails.root.join("tmp", "docks_cache").to_s : '.docks_cache'
-        config.src_files = Group.group_files_by_type(group_of_files)
-      end
+      register_everything
+      configure
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
 
       Group.group(group_of_files).each do |group_identifier, group|
         next unless should_render_group?(group)
+
         parse_result = Parse.parse_group(group)
         next unless Pattern.is_valid?(parse_result)
 
@@ -109,6 +87,19 @@ module Docks
 
 
     private
+
+    def self.register_everything
+      Tags.register_bundled_tags
+      Process.register_bundled_post_processors
+      Languages.register_bundled_languages
+    end
+
+    def self.configure
+      Docks.pre_configuration
+      if File.exists?(Docks.configuration.config_file)
+        Docks.configure_with(YAML::load_file(Docks.configuration.config_file))
+      end
+    end
 
     # Private: Figures out the newest file modification date of the passed file
     # paths.

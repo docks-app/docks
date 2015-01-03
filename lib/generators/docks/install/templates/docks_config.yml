@@ -1,0 +1,4 @@
+---
+src_files:
+  - app/assets/stylesheets/**/*
+custom_templates:

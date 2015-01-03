@@ -1,6 +1,6 @@
 module Docks
   module PostProcessors
-    class AssociateExternalMarkupFiles < Base
+    class AssociateExternalStubFiles < Base
       def self.post_process(parsed_file)
         stub_files = Docks.configuration.src_files[Docks::Types::Languages::STUB]
         return parsed_file if stub_files.empty?

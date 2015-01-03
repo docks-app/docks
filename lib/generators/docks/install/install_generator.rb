@@ -28,6 +28,10 @@ module Docks
       end
     end
 
+    def copy_config
+      copy_file Docks::CONFIG_FILE, "config/#{CONFIG_FILE}"
+    end
+
     def copy_styles
       # FileUtils.mkdir_p 'app/assets/stylesheets/docks'
       # FileUtils.cp_r File.expand_path('../templates/styles', __FILE__), 'app/assets/stylesheets/docks'

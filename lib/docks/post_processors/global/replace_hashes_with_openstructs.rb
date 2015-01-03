@@ -48,7 +48,7 @@ module Docks
       def self.recursive_openstructify(item)
         if item.kind_of?(Hash)
           item.keys.each do |key|
-            item[key] = self.recursive_openstructify(item[key])
+            item[key] = self.recursive_openstructify(item[key]) unless key == :stub
           end
           OpenStruct.new(item)
         elsif item.kind_of?(Array)

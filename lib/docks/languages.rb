@@ -83,6 +83,11 @@ module Docks
     end
 
 
+    def self.is_parseable_file_type?(file)
+      !parser_for(file).nil?
+    end
+
+
 
     # Public: Returns the parser that has been registered for the passed file.
     #

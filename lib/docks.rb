@@ -13,7 +13,6 @@ Dir[File.join(File.dirname(__FILE__), 'docks', 'post_processors/**/*.rb')].each 
 require 'docks/rails/engine.rb' if defined?(Rails)
 
 module Docks
-  CACHE_DIR = '.docks_cache'
-  CACHE_FILE = File.join(CACHE_DIR, '.docks')
-  TEMPLATE_DIR = File.join(File.dirname(__FILE__), 'docks', 'template/')
+  CACHE_DIR = "docks_cache"
+  CONFIG_FILE = "docks_config.yml"
 end

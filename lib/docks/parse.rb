@@ -24,6 +24,7 @@ module Docks
         # or b) does not exist
         next unless File.exists?(file)
         next unless Docks::Languages.is_supported_file_type?(file)
+        next unless Docks::Languages.is_parseable_file_type?(file)
         parsed_file_group[Docks::Languages.file_type(file)].concat(parse_file(file))
       end
 
