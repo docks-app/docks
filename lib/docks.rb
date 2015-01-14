@@ -14,5 +14,6 @@ require 'docks/rails/engine.rb' if defined?(Rails)
 
 module Docks
   CACHE_DIR = "docks_cache"
+  GROUP_CACHE_FILE = "docks_cache_groups"
   CONFIG_FILE = "docks_config.yml"
 end

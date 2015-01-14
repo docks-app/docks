@@ -11,6 +11,33 @@ module Docks
       end
     end
 
+    def self.group_details(parse_results)
+      name = parse_results[:name]
+      (
+        parse_results[Docks::Types::Languages::MARKUP] +
+        parse_results[Docks::Types::Languages::STYLE] +
+        parse_results[Docks::Types::Languages::SCRIPT]
+      ).each do |parse_result|
+        if parse_result.type == Docks::Types::Symbol::PAGE
+          return {
+            name: name,
+            title: parse_result.page || name.capitalize,
+            group: parse_result.group || default_group(parse_results).capitalize
+          }
+        end
+      end
+
+      return {
+        name: name,
+        title: name.capitalize,
+        group: default_group(parse_results).capitalize
+      }
+    end
+
+    def self.default_group(parse_results)
+      Docks::Types::Symbol::COMPONENT
+    end
+
     def self.is_valid?(parse_results)
       !(parse_results[Docks::Types::Languages::MARKUP].empty?) ||
         !(parse_results[Docks::Types::Languages::SCRIPT].empty?) ||

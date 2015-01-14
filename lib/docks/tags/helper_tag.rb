@@ -13,6 +13,6 @@
 
 register :helper do
   process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
+    Docks::Processors::JoinWithLineBreaks.process(content)
   end
 end

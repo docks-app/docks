@@ -1,17 +1,18 @@
 module Docks
   module PostProcessors
-    class AssociateExternalStubFiles < Base
+    class AssociateExternalDescriptionFiles < Base
       def self.post_process(parsed_file)
-        stub_files = Docks.configuration.files[Docks::Types::Languages::STUB]
-        return parsed_file if stub_files.empty?
+        description_files = Docks.configuration.files[Docks::Types::Languages::DESCRIPTION]
+        return parsed_file if description_files.empty?
 
         parsed_file.each do |parse_result|
           next unless parse_result[:type] == Docks::Types::Symbol::COMPONENT
+          next unless parse_result[:description].nil?
 
           id = Group.group_identifier(parse_result[:name])
-          stub_files.each do |file|
+          description_files.each do |file|
             if Group.group_identifier(file) == id
-              parse_result[:stub] = Languages.load_stub_for(file)
+              parse_result[:description] = File.read(file)
               break
             end
           end

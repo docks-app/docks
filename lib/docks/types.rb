@@ -30,6 +30,7 @@ module Docks
       SCRIPT      = :script
       STYLE       = :style
       STUB        = :stub
+      DESCRIPTION = :description
     end
   end
 end

@@ -5,21 +5,17 @@ module Docks
 
       class HTMLwithSyntaxHighlighting < Redcarpet::Render::HTML
         def block_code(code, language)
-          # formatter = Rouge::Formatters::HTML.new css_class: "highlight"
-          # lexer_html = Rouge::Lexers::HTML.new
-          # highlighted_code = formatter.format(lexer_html.lex(code))
+          return nil unless language
+          "<fenced_code_block #{"data-has-demo='true'" unless (language =~ /demo/).nil?} data-language='#{language.sub(/_?demo/, "")}'>#{code}</fenced_code_block>"
+        end
 
-          # render = Docks::Render.new
-          # render.extension = '.haml'
-          # highlighted_code = render.render_partial :code_block, markup: highlighted_code, html: code, demo: language.match(/_demo/)
-
-          # highlighted_code
-
-          super
+        def header(text, header_level)
+          header_level = [header_level + 4, 6].min
+          "<h#{header_level}>#{text}</h#{header_level}>"
         end
       end
 
-      @@markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, fenced_code_blocks: true)
+      @@markdown = Redcarpet::Markdown.new(HTMLwithSyntaxHighlighting, fenced_code_blocks: true)
 
       public
 

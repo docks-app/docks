@@ -37,12 +37,6 @@ module Docks
     end
 
     def self.build
-      group_of_files = [
-        "#{::Rails::root}/app/assets/stylesheets/**/*.scss",
-        "#{::Rails::root}/app/views/components/**/*.erb",
-        "#{::Rails::root}/app/views/stubs/**/*.yml"
-      ]
-
       # return false unless is_valid?
 
       register_everything
@@ -50,18 +44,18 @@ module Docks
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
 
-      Group.group(group_of_files).each do |group_identifier, group|
+      Group.group(Docks.configuration.src_files).each do |group_identifier, group|
         next unless should_render_group?(group)
 
         parse_result = Parse.parse_group(group)
         next unless Pattern.is_valid?(parse_result)
 
-        cache_file = File.join(Docks.configuration.cache_dir, group_identifier.to_s)
-
-        File.open(cache_file, 'w') do |file|
-          file.write(parse_result.to_yaml)
-        end
+        id = group_identifier.to_s
+        add_to_group_cache(parse_result, id)
+        cache(parse_result, id)
       end
+
+      cache_groups
 
       Messenger.succeed("\nDocs successfully generated. Enjoy!")
       true
@@ -88,6 +82,24 @@ module Docks
 
     private
 
+    def self.add_to_group_cache(parse_result, id)
+      @@group_cache[id] = Pattern.group_details(parse_result)
+    end
+
+    def self.cache_groups
+      File.open(@@group_cache_file, "w") do |file|
+        file.write(@@group_cache.to_yaml)
+      end
+    end
+
+    def self.cache(parse_result, id)
+      cache_file = File.join(Docks.configuration.cache_dir, id)
+
+      File.open(cache_file, 'w') do |file|
+        file.write(parse_result.to_yaml)
+      end
+    end
+
     def self.register_everything
       Tags.register_bundled_tags
       Process.register_bundled_post_processors
@@ -99,6 +111,9 @@ module Docks
       if File.exists?(Docks.configuration.config_file)
         Docks.configure_with(YAML::load_file(Docks.configuration.config_file))
       end
+
+      @@group_cache_file ||= File.join(Docks.configuration.cache_dir, Docks::GROUP_CACHE_FILE)
+      @@group_cache ||= File.exists?(@@group_cache_file) ? YAML::load_file(@@group_cache_file) : {}
     end
 
     # Private: Figures out the newest file modification date of the passed file

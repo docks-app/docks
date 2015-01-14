@@ -22,7 +22,7 @@ module Docks
     configure do |config|
       options.each do |key, val|
         key = "#{key}=".to_sym
-        config.send(key, val) config.respond_to?(key)
+        config.send(key, val) if config.respond_to?(key)
       end
     end
   end

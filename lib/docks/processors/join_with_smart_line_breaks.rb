@@ -1,5 +1,6 @@
 module Docks
   module Processors
+    # TESTS TO ADD: symbols at the start of the line
     class JoinWithSmartLineBreaks < Base
       # Public: Processes the passed content by joining it with line breaks as required.
       # to create markdown-parsable paragraphs and code blocks.
@@ -38,7 +39,7 @@ module Docks
             text = line
           else
             first_char = line[0, 1]
-            text << (first_char == first_char.upcase ? "#{join}#{line}" : " #{line}")
+            text << (first_char =~ /[A-Za-z]/ && first_char == first_char.upcase ? "#{join}#{line}" : " #{line}")
           end
         end
 
