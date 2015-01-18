@@ -1,48 +1,39 @@
+require "set"
+
 module Docks
   class Languages
-    @@default_language = "html"
-    @@details = {}
+    def self.default_language; "html" end
 
-
-
-    # Public: Registers a language. This will overwrite any previously registered
-    # languages of the same name. A new, default details Hash will be created for the
-    # symbol.
-    #
-    # language - The language to register.
-    #
-    # Yields nothing to the passed block, but the block will be evaluated
-    # in the context of this class and, as such, have access to all the private
-    # registration methods (::extension, ::parser, and ::type).
-    #
-    # Returns nothing.
-
-    def self.register(language, &block)
-      @@extensions = nil
-      @@details[language] = {
-        parser: nil,
-        extension: nil,
-        type: nil,
-        stub_loader: nil
-      }
-      @@current_language = language
-      @@current_details = @@details[language]
-      class_eval(&block) if block_given?
+    @@extensions = {}
+    Docks::Types::Languages.constants.each do |const|
+      @@extensions[Docks::Types::Languages.const_get(const)] = Set.new
     end
 
 
 
-    # Public: Gets all extensions that have been registered.
-    # Returns an Array of Strings representing the accepted extensions.
+    def self.register_bundled_languages
+      Docks::Language.bundled_languages.each do |language|
+        [language.extensions].flatten.each do |extension|
+          @@extensions[language.type].add(extension)
+        end
+      end
+    end
 
     def self.extensions
-      if @@extensions.nil?
-        extensions = @@details.values.map { |language| language[:extension] }
-        @@extensions = extensions.compact.uniq
-      end
-
-      @@extensions
+      @@extensions.values.inject([]) { |all, all_of_type| all.concat(all_of_type) }
     end
+
+    Docks::Types::Languages.constants.each do |const|
+      type = Docks::Types::Languages.const_get(const)
+      define_method("#{type}_extensions") { @@extensions[type].to_a }
+    end
+
+    def self.is_supported_file_type?(file)
+      extensions.include?(extension_for_file(file))
+    end
+
+
+
 
 
 
@@ -59,9 +50,9 @@ module Docks
       extension = extension_for_file(file)
       type = nil
 
-      @@details.each_value do |language_detail|
-        if language_detail[:extension] == extension
-          type = language_detail[:type]
+      @@extensions.each do |extensions_type, the_extensions|
+        if the_extensions.include?(extension)
+          type = extension_type
           break
         end
       end
@@ -69,23 +60,6 @@ module Docks
       type
     end
 
-
-
-    # Public: Determines whether the passed file has a language with a matching
-    # extension that has been registered.
-    #
-    # file - The file whose type should be evaluated.
-    #
-    # Returns a boolean indicating whether the file is a supported type.
-
-    def self.is_supported_file_type?(file)
-      extensions.include?(extension_for_file(file))
-    end
-
-
-    def self.is_parseable_file_type?(file)
-      !parser_for(file).nil?
-    end
 
 
 
@@ -112,43 +86,10 @@ module Docks
 
 
 
-    # Public: Gets all extensions that have been registered with a markup type.
-    # Returns an Array of Strings representing the relevant extensions.
-
-    def self.markup_extensions; extensions_of_type(Docks::Types::Languages::MARKUP) end
-
-
-
-    # Public: Gets all extensions that have been registered with a script type.
-    # Returns an Array of Strings representing the relevant extensions.
-
-    def self.script_extensions; extensions_of_type(Docks::Types::Languages::SCRIPT) end
-
-
-
-    # Public: Gets all extensions that have been registered with a style type.
-    # Returns an Array of Strings representing the relevant extensions.
-
-    def self.style_extensions; extensions_of_type(Docks::Types::Languages::STYLE) end
-
-
 
     # Public: Gets the default language.
     # Returns a String with the default language (for any item that requires
     # a language but where it is optional to actually provide one).
-
-    def self.default_language; @@default_language end
-
-
-
-    # Public: Registers all lanugages that are bundled as part of the gem.
-    # Returns nothing.
-
-    def self.register_bundled_languages
-      Dir[File.join(File.dirname(__FILE__), 'languages/*.rb')].each do |file|
-        class_eval(File.read(file))
-      end
-    end
 
 
 
@@ -174,7 +115,9 @@ module Docks
     # Returns nothing.
 
     def self.clear_languages
-      @@details = {}
+      @@extensions.each_key do |type|
+        @@extensions[type] = Set.new
+      end
     end
 
 
@@ -187,73 +130,6 @@ module Docks
 
     def self.extension_for_file(file)
       File.extname(file)[1..-1]
-    end
-
-
-
-    # Private: Registers a parser for the extension that is currently being
-    # registered by `::register`.
-    #
-    # parser - The parser (class conforming to Docks::Parsers::Base) to use for
-    #          this language.
-    #
-    # Returns nothing.
-
-    def self.parser(parser)
-      @@current_details[:parser] = parser
-    end
-
-
-
-    # Private: Registers a file name extensions for the language that is currently being
-    # registered by `::register`.
-    #
-    # extension - The extension (as a String) to use for this language.
-    #
-    # Returns nothing.
-
-    def self.extension(extension)
-      @@current_details[:extension] = extension
-    end
-
-
-
-    # Private: Registers a type (script, style, or markup) for the language that
-    # is currently being registered by `::register`.
-    #
-    # type - The type (should be a constant under Docks::Types::Languages) to use
-    #        for this language.
-    #
-    # Returns nothing.
-
-    def self.type(type)
-      @@current_details[:type] = type
-    end
-
-
-
-    # Private: Gets all extensions for languages that have been registered with
-    # the passed type.
-    #
-    # type - The type (should be a constant under Docks::Types::Languages) for
-    #        which extensions should be retrieved.
-    #
-    # Returns an Array of Strings representing the extensions for languages whose
-    # registered type matches `type`.
-
-    def self.extensions_of_type(type)
-      extensions = []
-      @@details.values.each do |language|
-        extensions << language[:extension] if language[:type] == type
-      end
-
-      extensions.compact.uniq
-    end
-
-
-
-    def self.stub_loader(&block)
-      @@current_details[:stub_loader] = block
     end
 
   end

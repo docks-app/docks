@@ -1,7 +1,9 @@
-# SCSS
-
-register :scss do
-  extension 'scss'
-  parser Docks::Parsers::SCSS
-  type Docks::Types::Languages::STYLE
+module Docks
+  module Language
+    class SCSS < Base
+      @@type = Docks::Types::Languages::STYLE
+      @@extensions = "scss"
+      @@parser = Docks::Parsers::SCSS
+    end
+  end
 end

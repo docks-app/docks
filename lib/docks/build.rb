@@ -103,6 +103,7 @@ module Docks
     def self.register_everything
       Tags.register_bundled_tags
       Process.register_bundled_post_processors
+
       Languages.register_bundled_languages
     end
 
