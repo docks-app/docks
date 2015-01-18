@@ -9,6 +9,7 @@ module Docks
           if helper_present && !markup_present
             unless parse_result[:stub].nil?
               parse_result[:helper] = functionize(parse_result[:helper], parse_result[:stub])
+              parse_result[:stub] = nil
             end
           elsif markup_present && helper_present
             unless parse_result[:markup].index(parse_result[:helper]).nil?
@@ -24,8 +25,9 @@ module Docks
       private
 
       def self.functionize(helper, stub)
+        return helper if stub.keys.empty?
         arguments = stub[:arguments] || stub["arguments"]
-        return helper if arguments.nil? || !arguments.kind_of?(Array)
+        arguments = [stub] if arguments.nil?
         first = true
 
         function_sting = arguments.inject("<%= #{helper} ") do |func, arg|
@@ -38,6 +40,9 @@ module Docks
           func << stringify_val(arg) if arg.kind_of?(String)
           func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(", ") if arg.kind_of?(Hash)
 
+          puts "STRING\n\n\n"
+          puts func
+
           func
         end
 
@@ -47,8 +52,12 @@ module Docks
       def self.stringify_val(val)
         if val.kind_of?(String)
           "\"#{val}\""
+        elsif val.kind_of?(Hash)
+          "{ #{val.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(", ")} }"
         elsif !!val == val
           val
+        elsif val.nil?
+          "nil"
         else
           ":#{val}"
         end

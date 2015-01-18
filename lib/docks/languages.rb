@@ -1,6 +1,6 @@
 module Docks
   class Languages
-    @@default_language = 'html'
+    @@default_language = "html"
     @@details = {}
 
 

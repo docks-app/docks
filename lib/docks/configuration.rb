@@ -6,8 +6,10 @@ module Docks
     @@mount_at = '/pattern-library'
     @@root = nil
 
+    @@custom_parsers = []
+
     cattr_accessor :src_files, :files, :dest_dir, :partials_dir,
-                   :config_file, :custom_templates, :cache_dir, :root
+                   :config_file, :cache_dir, :root, :custom_parsers
   end
 
   @@configured = false

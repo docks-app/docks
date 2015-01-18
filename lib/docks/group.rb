@@ -84,6 +84,7 @@ module Docks
       files[Docks::Types::Languages::STYLE] = []
       files[Docks::Types::Languages::SCRIPT] = []
       files[Docks::Types::Languages::STUB] = []
+      files[Docks::Types::Languages::DESCRIPTION] = []
 
       file_list_from_globs(globs).each do |filename|
         files[Docks::Languages.file_type(filename)] << filename
