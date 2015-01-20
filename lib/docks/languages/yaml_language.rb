@@ -1,9 +1,9 @@
 module Docks
-  module Language
+  module Languages
     class YAML < Base
-      @@type = Docks::Types::Languages::STUB
-      @@extensions = "yml"
-      @@stub_loader = { |file| ::YAML::load_file(file) }
+      def self.type; Docks::Types::Languages::STUB end
+      def self.extensions; "yml" end
+      def self.stub_loader; lambda { |file| ::YAML::load_file(file) } end
     end
   end
 end

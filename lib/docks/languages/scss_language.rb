@@ -1,9 +1,9 @@
 module Docks
-  module Language
+  module Languages
     class SCSS < Base
-      @@type = Docks::Types::Languages::STYLE
-      @@extensions = "scss"
-      @@parser = Docks::Parsers::SCSS
+      def self.type; Docks::Types::Languages::STYLE end
+      def self.parser; Docks::Parsers::SCSS end
+      def self.extensions; "scss" end
     end
   end
 end

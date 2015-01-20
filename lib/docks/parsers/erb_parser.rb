@@ -1,6 +1,6 @@
 module Docks
   module Parsers
-    class ERB < Docks::Parsers::Base
+    class ERB < Base
       # Public: Returns the symbol used to identify comments.
       def self.comment_symbol; "<%#" end
 

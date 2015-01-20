@@ -1,6 +1,6 @@
 module Docks
   module Parsers
-    class SCSS < Docks::Parsers::Base
+    class SCSS < Base
       # Public: Returns the symbol used to identify comments.
       def self.comment_symbol; "\/\/" end
 

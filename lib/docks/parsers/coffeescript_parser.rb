@@ -1,6 +1,6 @@
 module Docks
   module Parsers
-    class CoffeeScript < Docks::Parsers::Base
+    class CoffeeScript < Base
       # Public: Returns the symbol used to identify comments.
       def self.comment_symbol; '#' end
 

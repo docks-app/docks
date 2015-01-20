@@ -10,6 +10,18 @@ module Docks
 
     cattr_accessor :src_files, :files, :dest_dir, :partials_dir,
                    :config_file, :cache_dir, :root, :custom_parsers
+
+    def self.custom_parsers
+      yield Docks::Parser
+    end
+
+    def self.custom_languages
+      yield Docks::Language
+    end
+
+    def self.custom_tags
+      yield Docks::Tags
+    end
   end
 
   @@configured = false
@@ -17,6 +29,14 @@ module Docks
 
   def self.configuration
     @@configuration
+  end
+
+  def self.configured
+    @@configured
+  end
+
+  def self.configured=(config_status)
+    @@configured = config_status
   end
 
   def self.configure_with(options)

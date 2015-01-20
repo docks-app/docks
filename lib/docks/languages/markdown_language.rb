@@ -1,8 +1,8 @@
 module Docks
-  module Language
+  module Languages
     class Markdown < Base
-      @@type = Docks::Types::Languages::DESCRIPTION
-      @@extensions = ["md", "markdown"]
+      def self.type; Docks::Types::Languages::DESCRIPTION end
+      def self.extensions; ["md", "markdown"] end
     end
   end
 end

@@ -1,6 +1,6 @@
 module Docks
   module Parsers
-    class Haml < Docks::Parsers::Base
+    class Haml < Base
       # Public: Returns the symbol used to identify comments.
       def self.comment_symbol; "\-#" end
 

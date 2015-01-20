@@ -1,9 +1,9 @@
 module Docks
-  module Language
+  module Languages
     class CoffeeScript < Base
-      @@type = Docks::Types::Languages::SCRIPT
-      @@extensions = ["coffee", "coffeescript"]
-      @@parser = Docks::Parsers::CoffeeScript
+      def self.type; Docks::Types::Languages::SCRIPT end
+      def self.parser; Docks::Parsers::CoffeeScript end
+      def self.extensions; ["coffee", "coffeescript"] end
     end
   end
 end

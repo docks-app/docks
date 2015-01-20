@@ -5,10 +5,12 @@ require "ostruct"
 
 require "redcarpet"
 
+require File.join(File.dirname(__FILE__), "docks", "types.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "*.rb")].each { |file| require file }
 Dir[File.join(File.dirname(__FILE__), "docks", "parsers/**/*.rb")].each { |file| require file }
 Dir[File.join(File.dirname(__FILE__), "docks", "processors/**/*.rb")].each { |file| require file }
 Dir[File.join(File.dirname(__FILE__), "docks", "post_processors/**/*.rb")].each { |file| require file }
+Dir[File.join(File.dirname(__FILE__), "docks", "languages/**/*.rb")].each { |file| require file }
 
 require "docks/rails/engine.rb" if defined?(Rails)
 

@@ -1,7 +1,7 @@
 require "set"
 
 module Docks
-  class Languages
+  class Language
     def self.default_language; "html" end
 
     @@extensions = {}
@@ -9,23 +9,25 @@ module Docks
       @@extensions[Docks::Types::Languages.const_get(const)] = Set.new
     end
 
-
-
     def self.register_bundled_languages
-      Docks::Language.bundled_languages.each do |language|
-        [language.extensions].flatten.each do |extension|
-          @@extensions[language.type].add(extension)
-        end
+      Docks::Languages.bundled_languages.each do |language|
+        register(language)
+      end
+    end
+
+    def self.register(language)
+      [language.extensions].flatten.each do |extension|
+        @@extensions[language.type].add(extension)
       end
     end
 
     def self.extensions
-      @@extensions.values.inject([]) { |all, all_of_type| all.concat(all_of_type) }
+      @@extensions.values.inject([]) { |all, all_of_type| all.concat(all_of_type.to_a) }
     end
 
     Docks::Types::Languages.constants.each do |const|
       type = Docks::Types::Languages.const_get(const)
-      define_method("#{type}_extensions") { @@extensions[type].to_a }
+      define_singleton_method("#{type}_extensions") { @@extensions[type].to_a }
     end
 
     def self.is_supported_file_type?(file)
@@ -52,39 +54,13 @@ module Docks
 
       @@extensions.each do |extensions_type, the_extensions|
         if the_extensions.include?(extension)
-          type = extension_type
+          type = extensions_type
           break
         end
       end
 
       type
     end
-
-
-
-
-    # Public: Returns the parser that has been registered for the passed file.
-    #
-    # file - The file whose parser should be retrieved.
-    #
-    # Returns the parser for the passed file, or nil if no parser has been registered
-    # with that extension.
-
-    def self.parser_for(file)
-      extension = extension_for_file(file)
-      parser = nil
-
-      @@details.each_value do |language_detail|
-        if language_detail[:extension] == extension
-          parser = language_detail[:parser]
-          break
-        end
-      end
-
-      parser
-    end
-
-
 
 
     # Public: Gets the default language.

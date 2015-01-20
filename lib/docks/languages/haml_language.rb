@@ -1,9 +1,9 @@
 module Docks
-  module Language
+  module Languages
     class Haml < Base
-      @@type = Docks::Types::Languages::MARKUP
-      @@extensions = "haml"
-      @@parser = Docks::Parsers::Haml
+      def self.type; Docks::Types::Languages::MARKUP end
+      def self.parser; Docks::Parsers::Haml end
+      def self.extensions; "haml" end
     end
   end
 end

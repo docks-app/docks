@@ -1,9 +1,9 @@
 module Docks
-  module Language
+  module Languages
     class ERB < Base
-      @@type = Docks::Types::Languages::MARKUP
-      @@extensions = "erb"
-      @@parser = Docks::Parsers::ERB
+      def self.type; Docks::Types::Languages::MARKUP end
+      def self.parser; Docks::Parsers::ERB end
+      def self.extensions; "erb" end
     end
   end
 end
