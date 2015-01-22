@@ -1,9 +1,16 @@
 # @description
 # The description for this symbol, that's it!
 
-register :description do
-  process do |content|
-    Docks::Processors::JoinWithSmartLineBreaks.process(content)
+module Docks
+  module Tags
+    class Description < Base
+      def initialize
+        @name = :description
+      end
+
+      def process(content)
+        Docks::Processors::JoinWithSmartLineBreaks.process(content)
+      end
+    end
   end
 end
-# TODO

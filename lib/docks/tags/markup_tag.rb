@@ -3,8 +3,16 @@
 #
 # Only one allowed.
 
-register :markup do
-  process do |content|
-    Docks::Processors::JoinWithLineBreaks.process(content)
+module Docks
+  module Tags
+    class Markup < Base
+      def initialize
+        @name = :markup
+      end
+
+      def process(content)
+        Docks::Processors::JoinWithLineBreaks.process(content)
+      end
+    end
   end
 end

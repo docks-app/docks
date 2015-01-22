@@ -9,6 +9,8 @@ module Docks
       @@extensions[Docks::Types::Languages.const_get(const)] = Set.new
     end
 
+    @@stub_loaders = {}
+
     def self.register_bundled_languages
       Docks::Languages.bundled_languages.each do |language|
         register(language)
@@ -18,6 +20,7 @@ module Docks
     def self.register(language)
       [language.extensions].flatten.each do |extension|
         @@extensions[language.type].add(extension)
+        @@stub_loaders[extension] = language.stub_loader unless language.stub_loader.nil?
       end
     end
 
@@ -73,9 +76,9 @@ module Docks
       extension = extension_for_file(file)
       stub = nil
 
-      @@details.each_value do |language_detail|
-        if language_detail[:extension] == extension
-          stub = language_detail[:stub_loader].call(file)
+      @@stub_loaders.each_key do |ext|
+        if ext == extension
+          stub = @@stub_loaders[ext].call(file)
           break
         end
       end

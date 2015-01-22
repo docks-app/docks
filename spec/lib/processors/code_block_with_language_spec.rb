@@ -6,7 +6,7 @@ describe Docks::Processors::CodeBlockWithLanguage do
   let(:code) { ['.foo {', "  content: 'bar';", '}'] }
 
   before :all do
-    Docks::Languages.register_bundled_languages
+    Docks::Language.register_bundled_languages
   end
 
   it 'correctly returns an empty hash when a non-array is passed' do
@@ -14,8 +14,8 @@ describe Docks::Processors::CodeBlockWithLanguage do
     expect(subject.process(val)).to eq Hash.new
   end
 
-  it 'defaults to Docks::Languages::DEFAULT when no language is provided' do
-    expect(subject.process(code)[:language]).to eq Docks::Languages.default_language
+  it 'defaults to the defualt language when no language is provided' do
+    expect(subject.process(code)[:language]).to eq Docks::Language.default_language
   end
 
   it 'correctly uses the passed language if one is provided' do

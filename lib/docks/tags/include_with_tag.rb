@@ -3,10 +3,17 @@
 #
 # Multiple allowed.
 
-register :include_with do
-  multiple_per_line
+module Docks
+  module Tags
+    class IncludeWith < Base
+      def initialize
+        @name = :include_with
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(content)
+        content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      end
+    end
   end
 end

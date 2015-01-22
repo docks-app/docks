@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Docks::Parsers::SCSS do
   subject { Docks::Parsers::SCSS }
   before :all do
-    Docks::Tags.register_bundled_tags
+    Docks::Tag.register_bundled_tags
   end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'scss_parser_fixture_basic.scss')) }

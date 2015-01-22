@@ -1,3 +1,5 @@
+require "set"
+
 module Docks
   class Process
     @@post_processors = []
@@ -46,7 +48,7 @@ module Docks
     # showing the new (full) list of registered post-processors.
 
     def self.add_post_processors(*post_processors)
-      post_processors.each_with_index do |post_processor, i|
+      post_processors.each do |post_processor|
         @@post_processors << post_processor unless @@post_processors.include?(post_processor)
       end
 
@@ -82,7 +84,7 @@ module Docks
     # Returns nothing.
 
     def self.clear_post_processors
-      @@post_processors = []
+      @@post_processors = Set.new
     end
 
 
@@ -103,46 +105,27 @@ module Docks
     # the processors and on the multiplicity of the tags).
 
     def self.process_tag(tag, content)
-      actions = Docks::Tags.processors_for(tag.to_sym)
-      return content unless actions.kind_of?(Array)
+      tag = Docks::Tag.tag_for(tag.to_sym)
+      return content unless tag
 
-      if Docks::Tags.multiple_per_line_allowed?(tag)
+      if tag.multiple_per_line_allowed?
         # Multiple allowed per block, and each line may contain
         # more than one result.
-        result = []
-        content.each do |item|
-          new_results = Array(process_content_with_actions(item, actions))
-          result.concat(new_results)
+        content.inject([]) do |results, item|
+          results.concat(tag.process(item))
         end
 
-        result
-
-      elsif Docks::Tags.multiple_allowed?(tag)
+      elsif tag.multiple_allowed?
         # Multiple allowed per block, but each was created with a
         # separate tag.
         content.map do |item|
-          process_content_with_actions(item, actions)
+          tag.process(item)
         end
+
       else
         # Only one allowed per block.
-        process_content_with_actions(content, actions)
+        tag.process(content)
       end
-    end
-
-
-
-    private
-
-    # Private: Calls each of the actions in `actions` on content.
-    #
-    # content - The content to be processed.
-    # actions - An Array of Blocks to call on content.
-    #
-    # Returns the processed content.
-
-    def self.process_content_with_actions(content, actions)
-      actions.each { |action| content = action.call(content) if action.respond_to?(:call) }
-      content
     end
   end
 end

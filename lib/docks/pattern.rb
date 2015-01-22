@@ -81,8 +81,6 @@ module Docks
       to_s
     end
 
-    private
-
     def parse_results_of_type(type)
       @flattened_parse_results ||= @parse_results[:markup] + @parse_results[:style] + @parse_results[:script]
       @flattened_parse_results.select { |parse_result| parse_result.type == type.to_s }
@@ -98,10 +96,6 @@ module Docks
 
     def has_demo?
       !no_demo && ((!markup.nil? && markup.length > 0) || (!helper.nil? && helper.length > 0))
-    end
-
-    def method_missing(meth)
-      @component.send(meth) rescue nil
     end
   end
 
@@ -138,6 +132,41 @@ module Docks
       end
 
       matches
+    end
+  end
+end
+
+
+
+module Docks
+  module Containers
+    class Base
+      def initialize(item)
+        @item = item
+      end
+
+      def method_missing(meth)
+        @item.send(Docks::Tag.default_tag_name(meth)) rescue nil
+      end
+    end
+
+    class Function < Base
+      def initialize(function)
+        super(function)
+      end
+    end
+
+    class Component < Base
+      def initialize(component)
+        super(component)
+      end
+
+      def has_demo?
+        return false if no_demo
+
+        the_markup, the_helper = markup, helper
+        (!the_markup.nil? && the_markup.length > 0) || (!the_helper.nil? && the_helper.length > 0)
+      end
     end
   end
 end

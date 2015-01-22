@@ -2,18 +2,16 @@ module Docks
   class HomeController < Docks::ApplicationController
     def index
     end
-    helper_method :index
 
     def pattern
-      @name = params[:name]
-      @pattern = Docks::Pattern.for(@name)
+      @pattern = Docks::Pattern.for(params[:pattern])
       @pattern_groups = Docks::PatternGroup.new
+
+      render(Docks.template_for(params[:pattern]) || :pattern)
     end
 
     def demo
-      @pattern = params[:pattern]
-      @name = params[:name]
-      @demo = Docks::Pattern.for(@pattern).demo_for(@name)
+      @demo = Docks::Pattern.for(params[:pattern]).demo_for(params[:demo])
     end
   end
 end

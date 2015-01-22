@@ -3,7 +3,14 @@
 #
 # Only one allowed.
 
-register :page do
-  one_per_file
-  single_line
+module Docks
+  module Tags
+    class Page < Base
+      def initialize
+        @name = :page
+        @type = Docks::Types::Tag::ONE_PER_FILE
+        @multiline = false
+      end
+    end
+  end
 end

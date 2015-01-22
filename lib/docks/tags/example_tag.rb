@@ -5,10 +5,17 @@
 #
 # Multiple allowed.
 
-register :example do
-  multiple_per_block
+module Docks
+  module Tags
+    class Example < Base
+      def initialize
+        @name = :example
+        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+      end
 
-  process do |content|
-    Docks::Processors::CodeBlockWithLanguage.process(content)
+      def process(content)
+        Docks::Processors::CodeBlockWithLanguage.process(content)
+      end
+    end
   end
 end

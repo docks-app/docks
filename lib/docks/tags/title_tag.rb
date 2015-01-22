@@ -3,8 +3,12 @@
 #
 # Only one allowed.
 
-register :title do
-  process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
+module Docks
+  module Tags
+    class Title < Base
+      def initialize
+        @name = :title
+      end
+    end
   end
 end

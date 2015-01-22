@@ -66,10 +66,15 @@ module Docks
       configuration.cache_dir = rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}")
     end
 
-    if configuration.config_file.nil?
-      config_file = rails ? File.join(configuration.root, "config", Docks::CONFIG_FILE) : File.join(configuration.root, Docks::CONFIG_FILE)
-      configuration.config_file = config_file if File.exists?(config_file)
-    end
+    Tag.register_bundled_tags
+    Process.register_bundled_post_processors
+    Language.register_bundled_languages
+    Parser.register_parsers_for_bundled_languages
+
+    # if configuration.config_file.nil?
+    #   config_file = rails ? File.join(configuration.root, "config", Docks::CONFIG_FILE) : File.join(configuration.root, Docks::CONFIG_FILE)
+    #   configuration.config_file = config_file if File.exists?(config_file)
+    # end
   end
 
   def self.post_configuration

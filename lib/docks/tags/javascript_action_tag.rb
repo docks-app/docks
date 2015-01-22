@@ -4,8 +4,16 @@
 #
 # Only one allowed.
 
-register :javascript_action do
-  process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
+module Docks
+  module Tags
+    class JavascriptAction < Base
+      def initialize
+        @name = :javascript_action
+      end
+
+      def process(content)
+        Docks::Processors::JoinWithBlanks.process(content)
+      end
+    end
   end
 end

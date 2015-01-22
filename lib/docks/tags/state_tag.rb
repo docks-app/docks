@@ -7,15 +7,24 @@
 #
 # Multiple allowed.
 
-register :states do
-  multiple_per_block
-  synonyms :state
+module Docks
+  module Tags
+    class State < Base
+      def initialize
+        @name = :state
+        @synonyms = [:states]
+        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
 
-  process do |content|
-    Docks::Processors::BreakApartStatesAndVariants.process(content)
+        @post_processors = [
+          Docks::PostProcessors::JoinOrphanedVariantsAndStates,
+          Docks::PostProcessors::CleanUpVariantsAndStates,
+          Docks::PostProcessors::MirrorPrecludes
+        ]
+      end
+
+      def process(content)
+        Docks::Processors::BreakApartStatesAndVariants.process(content)
+      end
+    end
   end
-
-  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
-               Docks::PostProcessors::CleanUpVariantsAndStates,
-               Docks::PostProcessors::MirrorPrecludes
 end

@@ -51,12 +51,11 @@ module Docks
       # Returns a Hash with the tags and their associated content for the block.
 
       def self.parse_comment_block(comment_block, docs = {})
-        @@tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tags.supported_tags.join("|")}))?\s*(?<text>.*)/
+        @@tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tag.supported_tags.join("|")}))?\s?(?<text>.*)/
 
         last_tag = nil
 
-        comment_block.strip!
-        comment_block.gsub(comment_pattern, '').split("\n").each do |comment_line|
+        comment_block.strip.gsub(comment_pattern, '').split("\n").each do |comment_line|
           line_details = comment_line.match(@@tag_pattern)
           next if line_details.nil? || line_details[:text].nil?
 
@@ -77,7 +76,8 @@ module Docks
           else
             # New tag declaration
             tag = tag.to_sym
-            multiline = Docks::Tags.multiline?(tag)
+            tag_handler = Docks::Tag.tag_for(tag)
+            multiline = tag_handler.multiline?
             last_tag = multiline ? tag : nil
 
             # If multiple tags are allowed, each one (the tag declaration, plus the following lines)
@@ -86,14 +86,14 @@ module Docks
             # overwrite the existing content. Non-multiline comments are always as minimally-Array-ed
             # as possible (if only one is allowed per file, the tag value will be the line. Otherwise,
             # it is added to a single-dimensional array).
-            if Docks::Tags.only_one_per_file_allowed?(tag)
+            if tag_handler.only_one_per_file_allowed?
               docs[tag] = multiline ? [text] : text
             else
               docs[tag] ||= []
               if !multiline
                 docs[tag] << text
               else
-                docs[tag] << (Docks::Tags.multiple_allowed?(tag) ? [text] : text)
+                docs[tag] << (tag_handler.multiple_allowed? ? [text] : text)
               end
             end
           end

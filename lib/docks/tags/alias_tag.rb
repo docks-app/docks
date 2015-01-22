@@ -3,10 +3,17 @@
 #
 # Multiple allowed.
 
-register :alias do
-  multiple_per_line
+module Docks
+  module Tags
+    class Alias < Base
+      def initialize
+        @name = :alias
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(content)
+        Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      end
+    end
   end
 end

@@ -1,15 +1,22 @@
 module Docks
   module Types
     module Symbol
-      COMPONENT   = 'component'
-      VARIANT     = 'variant'
-      STATE       = 'state'
-      MIXIN       = 'mixin'
-      PLACEHOLDER = 'placeholder'
-      FUNCTION    = 'function'
-      VARIABLE    = 'variable'
-      CLASS       = 'class'
-      PAGE        = 'page'
+      COMPONENT   = "component"
+      VARIANT     = "variant"
+      STATE       = "state"
+      MIXIN       = "mixin"
+      PLACEHOLDER = "placeholder"
+      FUNCTION    = "function"
+      VARIABLE    = "variable"
+      CLASS       = "class"
+      PAGE        = "page"
+    end
+
+    module Tag
+      ONE_PER_BLOCK      = :opb
+      ONE_PER_FILE       = :opf
+      MULTIPLE_PER_BLOCK = :mpb
+      MULTIPLE_PER_LINE  = :mpl
     end
 
     module Access

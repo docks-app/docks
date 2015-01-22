@@ -10,7 +10,7 @@ describe Docks::Parser do
 
   describe '.parse_group' do
     it 'includes the parse result of a file in the appropriate group' do
-      Docks::Tags.register_bundled_tags
+      Docks::Tag.register_bundled_tags
       file = File.join(File.dirname(__FILE__), '..', 'fixtures', 'parsers', 'scss_parser_fixture_basic.scss')
       expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to include(subject.send(:parse_file, file).first)
     end

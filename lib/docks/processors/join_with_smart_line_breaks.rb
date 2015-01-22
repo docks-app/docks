@@ -10,10 +10,10 @@ module Docks
       #
       # Examples
       #
-      #   JoinWithSmartLineBreaks.process(['One paragraph that', 'spans two lines.', 'And another!'])
+      #   JoinWithSmartLineBreaks.process(["One paragraph that", "spans two lines.", "And another!"])
       #   # => "One paragraph that spans two lines.\n\nAnd another!"
       #
-      #   JoinWithSmartLineBreaks.process(['One paragraph', '```html', '<p>A code block</p>', '```', 'another paragraph.'])
+      #   JoinWithSmartLineBreaks.process(["One paragraph", "```html", "<p>A code block</p>", "```", "another paragraph."])
       #   # => "One paragraph.\n\n```html\n<p>A code block</p>\n```\n\nanother paragraph"
       #
       # Returns the processed string.
@@ -21,11 +21,11 @@ module Docks
       def self.process(content, join = "\n\n")
         return content unless content.kind_of?(Array)
 
-        text = ''
+        text = ""
         in_code_block = false
 
         content.each do |line|
-          if line.start_with?('```')
+          if line.start_with?("```")
             if in_code_block
               in_code_block = false
               text << "\n#{line}#{join}"
@@ -35,8 +35,10 @@ module Docks
             end
           elsif in_code_block
             text << "\n#{line}"
-          elsif text == ''
+          elsif text == ""
             text = line
+          elsif line.strip.length == 0
+            text << join
           else
             first_char = line[0, 1]
             text << (first_char =~ /[A-Za-z]/ && first_char == first_char.upcase ? "#{join}#{line}" : " #{line}")

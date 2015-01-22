@@ -37,7 +37,7 @@ module Docks
 
       def self.recursive_markdown_description(item)
         if item.kind_of?(Hash)
-          @@markdown.render(item[:description].strip) if item[:description].kind_of?(String)
+          item[:description] = @@markdown.render(item[:description].strip) if item[:description].kind_of?(String)
         elsif item.kind_of?(Array)
           item.map! { |arr_item| self.recursive_markdown_description(arr_item) }
         end

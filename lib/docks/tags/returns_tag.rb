@@ -7,19 +7,26 @@
 #
 # Only one allowed.
 
-register :returns do
-  synonyms :return
+module Docks
+  module Tags
+    class Returns < Base
+      def initialize
+        @name = :returns
+        @synonyms = [:return]
+      end
 
-  process do |content|
-    Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-      match = first_line.match(/\s*\{(?<type>[^\}]*)\}(?:\s*\-?\s*(?<description>.*))?/)
-      return nil if match.nil?
+      def process(content)
+        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
+          match = first_line.match(/\s*\{(?<type>[^\}]*)\}(?:\s*\-?\s*(?<description>.*))?/)
+          return nil if match.nil?
 
-      description = match[:description]
-      {
-        types: Docks::Processors::BreakApartTypes.process(match[:type]),
-        description: description.nil? || description.length == 0 ? nil : match[:description]
-      }
+          description = match[:description]
+          {
+            types: Docks::Processors::BreakApartTypes.process(match[:type]),
+            description: description.nil? || description.length == 0 ? nil : match[:description]
+          }
+        end
+      end
     end
   end
 end

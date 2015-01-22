@@ -5,4 +5,4 @@ contains two lines.
 
 This is the third paragraph. It contains only a single line.
 This is the
-fourth paragraph.
+"fourth" paragraph.

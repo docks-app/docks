@@ -39,7 +39,6 @@ module Docks
     def self.build
       # return false unless is_valid?
 
-      register_everything
       configure
 
       FileUtils.mkdir_p Docks.configuration.cache_dir
@@ -47,7 +46,7 @@ module Docks
       Group.group(Docks.configuration.src_files).each do |group_identifier, group|
         next unless should_render_group?(group)
 
-        parse_result = Parse.parse_group(group)
+        parse_result = Parser.parse_group(group)
         next unless Pattern.is_valid?(parse_result)
 
         id = group_identifier.to_s
@@ -100,18 +99,11 @@ module Docks
       end
     end
 
-    def self.register_everything
-      Tags.register_bundled_tags
-      Process.register_bundled_post_processors
-
-      Languages.register_bundled_languages
-    end
-
     def self.configure
-      Docks.pre_configuration
-      if File.exists?(Docks.configuration.config_file)
-        Docks.configure_with(YAML::load_file(Docks.configuration.config_file))
-      end
+      # Docks.pre_configuration
+      # if File.exists?(Docks.configuration.config_file)
+      #   Docks.configure_with(YAML::load_file(Docks.configuration.config_file))
+      # end
 
       @@group_cache_file ||= File.join(Docks.configuration.cache_dir, Docks::GROUP_CACHE_FILE)
       @@group_cache ||= File.exists?(@@group_cache_file) ? YAML::load_file(@@group_cache_file) : {}

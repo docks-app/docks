@@ -5,9 +5,17 @@
 #
 # Only one allowed.
 
-register :active do
-  process do |content|
-    content = Docks::Processors::JoinWithBlanks.process(content)
-    Docks::Processors::StringyBoolean(content)
+module Docks
+  module Tags
+    class Active < Base
+      def initialize
+        @name = :active
+      end
+
+      def process(content)
+        content = Docks::Processors::JoinWithBlanks.process(content)
+        Docks::Processors::StringyBoolean(content)
+      end
+    end
   end
 end

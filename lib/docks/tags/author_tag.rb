@@ -6,11 +6,18 @@
 #
 # Multiple allowed, one per line.
 
-register :author do
-  multiple_per_line
-  synonyms :authors
+module Docks
+  module Tags
+    class Author < Base
+      def initialize
+        @name = :author
+        @synonyms = [:authors]
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    Docks::Processors::NameAndParenthetical.process(content, :name, :email)
+      def process(content)
+        Docks::Processors::NameAndParenthetical.process(content, :name, :email)
+      end
+    end
   end
 end

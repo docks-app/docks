@@ -42,7 +42,7 @@ describe Docks::Language do
     end
   end
 
-  describe "#file_type" do
+  describe ".file_type" do
     it "correctly recognizes a registered file type" do
       subject.register(OpenStruct.new(type: Docks::Types::Languages::SCRIPT, extensions: ["coffee", "coffeescript"]))
       expect(subject.file_type("foo/bar/baz.coffee")).to be Docks::Types::Languages::SCRIPT

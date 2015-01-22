@@ -3,10 +3,17 @@
 #
 # Multiple allowed.
 
-register :precludes do
-  multiple_per_line
+module Docks
+  module Tags
+    class Precludes < Base
+      def initialize
+        @name = :precludes
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(content)
+        content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      end
+    end
   end
 end

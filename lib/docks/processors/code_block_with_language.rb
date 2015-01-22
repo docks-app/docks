@@ -23,11 +23,11 @@ module Docks
 
         content.each do |line|
           if result[:language].nil?
-            result[:language] = if Docks::Languages.extensions.include?(line.strip)
+            result[:language] = if Docks::Language.extensions.include?(line.strip)
               line.strip
             else
               code << line
-              Docks::Languages.default_language
+              Docks::Language.default_language
             end
           else
             code << line

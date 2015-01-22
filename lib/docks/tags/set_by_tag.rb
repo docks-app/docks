@@ -3,11 +3,18 @@
 # followed by an (optional) parenthesis containing the required
 # constant or value required.
 
-register :set_by do
-  multiple_per_line
+module Docks
+  module Tags
+    class SetBy < Base
+      def initialize
+        @name = :set_by
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    content = Docks::Processors::BreakApartOnCommasAndPipes.process(content)
-    Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
+      def process(content)
+        content = Docks::Processors::BreakApartOnCommasAndPipes.process(content)
+        Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
+      end
+    end
   end
 end

@@ -38,10 +38,7 @@ module Docks
           end
 
           func << stringify_val(arg) if arg.kind_of?(String)
-          func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(", ") if arg.kind_of?(Hash)
-
-          puts "STRING\n\n\n"
-          puts func
+          func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n") if arg.kind_of?(Hash)
 
           func
         end
@@ -53,7 +50,7 @@ module Docks
         if val.kind_of?(String)
           "\"#{val}\""
         elsif val.kind_of?(Hash)
-          "{ #{val.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(", ")} }"
+          "{ #{val.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n")} }"
         elsif !!val == val
           val
         elsif val.nil?

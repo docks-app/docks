@@ -5,8 +5,15 @@
 #
 # Only one allowed.
 
-register :subtitle do
-  one_per_file
-  single_line
-  synonyms :tagline
+module Docks
+  module Tags
+    class Subtitle < Base
+      def initialize
+        @name = :subtitle
+        @synonyms = [:tagline]
+        @type = Docks::Types::Tag::ONE_PER_FILE
+        @multiline = false
+      end
+    end
+  end
 end

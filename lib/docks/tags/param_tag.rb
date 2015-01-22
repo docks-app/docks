@@ -8,29 +8,36 @@
 #
 # Multiple allowed.
 
-register :param do
-  multiple_per_block
-  synonyms :arg, :argument
-
-  process do |content|
-    Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-      match = first_line.match(/(?:\s*\{(?<type>[^\}]*)\})?\s*(?<name>[a-zA-Z\-_0-9]*)(?:\s*\((?<paren>[^\)]*)\))?(?:\s*\-?\s*(?<description>.*))?/)
-      return nil if match.nil?
-
-      description = match[:description]
-      main_result = {
-        name: match[:name],
-        types: Docks::Processors::BreakApartTypes.process(match[:type]),
-        description: description.nil? || description.length == 0 ? nil : match[:description]
-      }
-      paren_result = Docks::Processors::ParentheticalOptionsWithDefault.process(match[:paren], :default)
-      if paren_result.kind_of?(Hash)
-        main_result = paren_result.merge(main_result)
-      else
-        main_result[:default] = nil
+module Docks
+  module Tags
+    class Param < Base
+      def initialize
+        @name = :param
+        @synonyms = [:arg, :argument]
+        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
       end
 
-      main_result
+      def process(content)
+        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
+          match = first_line.match(/(?:\s*\{(?<type>[^\}]*)\})?\s*(?<name>[a-zA-Z\-_0-9\$]*)(?:\s*\((?<paren>[^\)]*)\))?(?:\s*\-?\s*(?<description>.*))?/)
+          return nil if match.nil?
+
+          description = match[:description]
+          main_result = {
+            name: match[:name],
+            types: Docks::Processors::BreakApartTypes.process(match[:type]),
+            description: description.nil? || description.length == 0 ? nil : match[:description]
+          }
+          paren_result = Docks::Processors::ParentheticalOptionsWithDefault.process(match[:paren], :default)
+          if paren_result.kind_of?(Hash)
+            main_result = paren_result.merge(main_result)
+          else
+            main_result[:default] = nil
+          end
+
+          main_result
+        end
+      end
     end
   end
 end

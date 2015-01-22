@@ -3,10 +3,17 @@
 #
 # Multiple allowed.
 
-register :activate_with do
-  multiple_per_line
+module Docks
+  module Tags
+    class ActivateWith < Base
+      def initialize
+        @name = :activate_with
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(content)
+        Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      end
+    end
   end
 end

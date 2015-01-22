@@ -11,8 +11,16 @@
 #
 # Only one allowed.
 
-register :helper do
-  process do |content|
-    Docks::Processors::JoinWithLineBreaks.process(content)
+module Docks
+  module Tags
+    class Helper < Base
+      def initialize
+        @name = :helper
+      end
+
+      def process(content)
+        Docks::Processors::JoinWithLineBreaks.process(content)
+      end
+    end
   end
 end

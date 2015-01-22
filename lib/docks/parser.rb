@@ -81,7 +81,7 @@ module Docks
 
       parse_results = parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
       parse_results.map! do |parse_result|
-        parse_result = Docks::Tags.join_synonymous_tags(parse_result)
+        parse_result = Docks::Tag.join_synonymous_tags(parse_result)
         Docks::Process.process(parse_result)
       end
 

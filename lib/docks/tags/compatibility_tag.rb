@@ -6,11 +6,18 @@
 #
 # Multiple allowed, one per line.
 
-register :compatibility do
-  multiple_per_line
-  synonyms :compatible_with
+module Docks
+  module Tags
+    class Compatibility < Base
+      def initialize
+        @name = :compatibility
+        @synonyms = [:compatible_with]
+        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+      end
 
-  process do |content|
-    Docks::Processors::NameAndParenthetical.process(content, :browser, :version)
+      def process(content)
+        Docks::Processors::NameAndParenthetical.process(content, :browser, :version)
+      end
+    end
   end
 end

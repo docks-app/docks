@@ -36,7 +36,7 @@ module Docks
               item[:base_class] = parse_result[:name]
               item[:name] = clean_class_name(item[:name], item[:base_class])
               item[:type] = Docks::Types::Symbol::VARIANT if type == :variants
-              item.merge!(default) { |k, passed, default| passed || default }
+              assign_defaults(item)
               item[:activate_with].push(item[:base_class])
 
               [:activate_with, :precludes, :include_with].each do |arr_attr|
@@ -51,6 +51,22 @@ module Docks
 
 
       private
+
+      def self.assign_defaults(variation)
+        default = {
+          demo_type: Docks::Types::Demo::DEFAULT,
+          active: 'false',
+          description: nil,
+          activate_with: [],
+          precludes: [],
+          set_by: [],
+          include_with: [],
+          javascript_action: nil,
+          type: Docks::Types::Symbol::STATE
+        }
+
+        variation.merge!(default) { |k, passed, default| passed || default }
+      end
 
       # Private: Cleans up the class name by prepending `base_class` if
       # necessary and removing any non-class name characters from the start.

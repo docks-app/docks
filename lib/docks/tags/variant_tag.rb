@@ -9,15 +9,24 @@
 #
 # Multiple allowed.
 
-register :variants do
-  multiple_per_block
-  synonyms :modifier, :modifiers, :variant
+module Docks
+  module Tags
+    class Variant < Base
+      def initialize
+        @name = :variant
+        @synonyms = [:variants, :modifier, :modifiers]
+        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
 
-  process do |content|
-    Docks::Processors::BreakApartStatesAndVariants.process(content)
+        @post_processors = [
+          Docks::PostProcessors::JoinOrphanedVariantsAndStates,
+          Docks::PostProcessors::CleanUpVariantsAndStates,
+          Docks::PostProcessors::MirrorPrecludes
+        ]
+      end
+
+      def process(content)
+        Docks::Processors::BreakApartStatesAndVariants.process(content)
+      end
+    end
   end
-
-  post_process Docks::PostProcessors::JoinOrphanedVariantsAndStates,
-               Docks::PostProcessors::CleanUpVariantsAndStates,
-               Docks::PostProcessors::MirrorPrecludes
 end

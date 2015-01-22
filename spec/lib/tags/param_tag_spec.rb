@@ -1,64 +1,62 @@
-require 'spec_helper'
+require "spec_helper"
 
-tag = :param
-Docks::Tags.register_bundled_tags
-processor = Docks::Process
+describe Docks::Tags::Param do
+  subject { Docks::Tags::Param.instance }
 
-describe tag do
-  let(:name) { '_tabList2' }
-  let(:types) { 'Array | DOMElement' }
-  let(:default) { '[]' }
-  let(:description) { 'The list of tabs.' }
+  let(:name) { "_tabList2" }
+  let(:types) { "Array | DOMElement" }
+  let(:default) { "[]" }
+  let(:description) { "The list of tabs." }
 
-  it 'correctly creats the param when only the name is provided' do
-    result = processor.process_tag(tag, [name]).first
+  it "correctly creats the param when only the name is provided" do
+    result = subject.process([name])
     expect(result[:name]).to eq name
     expect(result[:types]).to eq Array.new
     expect(result[:default]).to be nil
     expect(result[:description]).to be nil
   end
 
-  describe 'types provided' do
+  describe "types provided" do
     let(:processed_types) { Docks::Processors::BreakApartTypes.process(types) }
 
-    it 'correctly creates the param when the name and types are provided' do
-      result = processor.process_tag(tag, ["{#{types}} #{name}"]).first
+    it "correctly creates the param when the name and types are provided" do
+      result = subject.process(["{#{types}} #{name}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to be nil
       expect(result[:description]).to be nil
     end
 
-    it 'correctly creates the param when the name, types, and default are provided' do
-      result = processor.process_tag(tag, ["{#{types}} #{name} (#{default})"]).first
+    it "correctly creates the param when the name, types, and default are provided" do
+      result = subject.process(["{#{types}} #{name} (#{default})"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to eq default
       expect(result[:description]).to be nil
     end
 
-    it 'correctly creates the param when the name, types, and description are provided' do
-      result = processor.process_tag(tag, ["{#{types}} #{name} #{description}"]).first
+    it "correctly creates the param when the name, types, and description are provided" do
+      result = subject.process(["{#{types}} #{name} #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to be nil
       expect(result[:description]).to eq description
 
-      result = processor.process_tag(tag, ["{#{types}} #{name} -  #{description}"]).first
+      result = subject.process(["{#{types}} #{name} -  #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to be nil
       expect(result[:description]).to eq description
     end
 
-    it 'correctly creates the param when the name, types, default, and description are provided' do
-      result = processor.process_tag(tag, ["{#{types}} #{name} (#{default}) #{description}"]).first
+    it "correctly creates the param when the name, types, default, and description are provided" do
+      result = subject.process(["{#{types}} #{name} (#{default}) #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to eq default
       expect(result[:description]).to eq description
 
-      result = processor.process_tag(tag, ["{#{types}} #{name} (#{default}) -  #{description}"]).first
+      result = subject.process(["{#{types}} #{name} (#{default}) -  #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq processed_types
       expect(result[:default]).to eq default
@@ -66,39 +64,47 @@ describe tag do
     end
   end
 
-  describe 'default provided' do
-    it 'correctly creates the param when the name and default are provided' do
-      result = processor.process_tag(tag, ["#{name} (#{default})"]).first
+  describe "default provided" do
+    it "correctly creates the param when the name and default are provided" do
+      result = subject.process(["#{name} (#{default})"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq Array.new
       expect(result[:default]).to eq default
       expect(result[:description]).to be nil
     end
 
-    it 'correctly creates the param when the name, default, and description are provided' do
-      result = processor.process_tag(tag, ["#{name} (#{default}) #{description}"]).first
+    it "correctly creates the param when the name, default, and description are provided" do
+      result = subject.process(["#{name} (#{default}) #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq Array.new
       expect(result[:default]).to eq default
       expect(result[:description]).to eq description
 
-      result = processor.process_tag(tag, ["#{name} (#{default}) -  #{description}"]).first
+      result = subject.process(["#{name} (#{default}) -  #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq Array.new
       expect(result[:default]).to eq default
       expect(result[:description]).to eq description
     end
+
+    it "correctly creates the param when special characters exist in the name" do
+      result = subject.process(["_with_underscore"])
+      expect(result[:name]).to eq "_with_underscore"
+
+      result = subject.process(["$$with-dollars"])
+      expect(result[:name]).to eq "$$with-dollars"
+    end
   end
 
-  describe 'description procided' do
-    it 'correctly creates the param when the name and description are provided' do
-      result = processor.process_tag(tag, ["#{name} #{description}"]).first
+  describe "description provided" do
+    it "correctly creates the param when the name and description are provided" do
+      result = subject.process(["#{name} #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq Array.new
       expect(result[:default]).to be nil
       expect(result[:description]).to eq description
 
-      result = processor.process_tag(tag, ["#{name} -  #{description}"]).first
+      result = subject.process(["#{name} -  #{description}"])
       expect(result[:name]).to eq name
       expect(result[:types]).to eq Array.new
       expect(result[:default]).to be nil

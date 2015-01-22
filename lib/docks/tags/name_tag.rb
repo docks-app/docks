@@ -5,10 +5,13 @@
 #
 # Only one allowed.
 
-register :name do
-  single_line
-
-  process do |content|
-    Docks::Processors::JoinWithBlanks.process(content)
+module Docks
+  module Tags
+    class Name < Base
+      def initialize
+        @name = :name
+        @multiline = false
+      end
+    end
   end
 end
