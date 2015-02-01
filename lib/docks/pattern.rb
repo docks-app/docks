@@ -18,7 +18,7 @@ module Docks
         parse_results[Docks::Types::Languages::STYLE] +
         parse_results[Docks::Types::Languages::SCRIPT]
       ).each do |parse_result|
-        if parse_result.type == Docks::Types::Symbol::PAGE
+        if parse_result.symbol_type == Docks::Types::Symbol::PAGE
           return {
             name: name,
             title: parse_result.page || name.capitalize,
@@ -83,7 +83,7 @@ module Docks
 
     def parse_results_of_type(type)
       @flattened_parse_results ||= @parse_results[:markup] + @parse_results[:style] + @parse_results[:script]
-      @flattened_parse_results.select { |parse_result| parse_result.type == type.to_s }
+      @flattened_parse_results.select { |parse_result| parse_result.symbol_type == type.to_s }
     end
   end
 
@@ -96,6 +96,10 @@ module Docks
 
     def has_demo?
       !no_demo && ((!markup.nil? && markup.length > 0) || (!helper.nil? && helper.length > 0))
+    end
+
+    def method_missing(meth)
+      @component.send(meth) rescue nil
     end
   end
 

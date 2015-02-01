@@ -1,0 +1,44 @@
+/**
+
+A simple button. Nice.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis.
+ Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
+
+*/
+
+.button {
+  cursor: pointer;
+  display: inline-block;
+  height: 32px;
+  line-height: 30px;
+}
+
+.button:hover,
+.button:focus {
+  background: #efefef; /* slightly different on hover/ focus */
+}
+
+
+/**
+ * A button that is indicating the loading of content.
+ *
+ * @demo_type joint
+ * @set_by :loading? */
+
+.button--is-loading {
+}
+
+/* Don't do this for disabled buttons */
+.button--is-loading:not(.button--is-disabled) {
+  color: transparent;
+  cursor: default;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.button--is-loading:not(.button--is-disabled):hover,
+.button--is-loading:not(.button--is-disabled):focus {
+  background-color: #fcfcfc;
+}

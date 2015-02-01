@@ -1,20 +1,13 @@
 module Docks
   module Parsers
     class SCSS < Base
-      # Public: Returns the symbol used to identify comments.
-      def self.comment_symbol; "\/\/" end
 
-      # Public: Returns the RegExp used to extract the 'Page' portion of
-      # a file's documentation.
-      def self.page_comment_extractor; /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)*(?:^\s*?\/\/[^\n]*@page[^\n]*\n)(?:^\s*?\/\/[^\n]*\n)*)/m end
-
-      # Public: Returns the RegExp used to extract a documentation comment
-      # block.
-      def self.comment_extractor; /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)+)\s*((?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m end
-
-      # Public: Returns the RegExp used to identify a commented line within
-      # the comment block.
-      def self.comment_pattern; /^\s*\/\/\s?\n?/m end
+      def initialize
+        @comment_symbol = "\/\/"
+        @page_comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)*(?:^\s*?\/\/[^\n]*@page[^\n]*\n)(?:^\s*?\/\/[^\n]*\n)*)/m
+        @comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)+)\s*((?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m
+        @comment_pattern = /^\s*\/\/\s?\n?/m
+      end
 
 
 
@@ -26,18 +19,18 @@ module Docks
       #
       # Examples
       #
-      #   Docks::Parsers::SCSS.parse_result_details('@mixin clearfix() {')
-      #   # => 'clearfix', 'mixin'
+      #   Docks::Parsers::SCSS.instance.parse_result_details("@mixin clearfix() {")
+      #   # => "clearfix", "mixin"
       #
-      #   Docks::Parsers::SCSS.parse_result_details('&--is-active {')
-      #   # => '--is-active', 'state'
+      #   Docks::Parsers::SCSS.instance.parse_result_details("&--is-active {")
+      #   # => "--is-active", "state"
       #
-      #   Docks::Parsers::SCSS.parse_result_details('%full-width { width: 100% }')
-      #   # => 'full-width', 'placeholder'
+      #   Docks::Parsers::SCSS.instance.parse_result_details("%full-width { width: 100% }")
+      #   # => "full-width", "placeholder"
       #
       # Returns a touple of the name and type, both as Strings.
 
-      def self.parse_result_details(first_code_line)
+      def parse_result_details(first_code_line)
         first_code_line.strip!
 
         type = case first_code_line
@@ -51,7 +44,6 @@ module Docks
         end
 
         name = first_code_line.match(/^@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
-
         return name, type
       end
     end

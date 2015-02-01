@@ -3,7 +3,7 @@ module Docks
     class SCSS < Base
       def self.type; Docks::Types::Languages::STYLE end
       def self.parser; Docks::Parsers::SCSS end
-      def self.extensions; "scss" end
+      def self.extensions; ["scss", "sass"] end
     end
   end
 end

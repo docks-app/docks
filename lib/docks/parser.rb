@@ -1,6 +1,10 @@
 module Docks
   class Parser
 
+    def self.current_file
+      @@current_file
+    end
+
     # Public: Processes each file in a group of files. Each file is individually
     # run through `.parse_file`, and the results are grouped based on the file
     # type of each (markup, script, or style parse results). The result also
@@ -56,7 +60,7 @@ module Docks
 
     def self.parser_for(file)
       @@parsers.reverse_each do |parser_details|
-        return parser_details[:parser] if parser_details[:matcher] =~ file
+        return parser_details[:parser].instance if parser_details[:matcher] =~ file
       end
 
       nil
@@ -79,13 +83,17 @@ module Docks
       parser = parser_for(file)
       return [] if parser.nil?
 
+      @@current_file = file
       parse_results = parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
+
       parse_results.map! do |parse_result|
         parse_result = Docks::Tag.join_synonymous_tags(parse_result)
         Docks::Process.process(parse_result)
       end
 
-      Docks::Process.post_process(parse_results)
+      result = Docks::Process.post_process(parse_results)
+      @@current_file = nil
+      result
     end
   end
 end

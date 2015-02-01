@@ -1,12 +1,13 @@
 require "spec_helper"
 
 describe Docks::Parsers::Base do
-  subject { Docks::Parsers::Base }
+  subject { Docks::Parsers::Base.instance }
+
   before :all do
     Docks::Tag.register_bundled_tags
   end
 
-  describe ".parse_comment_block" do
+  describe "#parse_comment_block" do
     it "correctly adds a description when it is leading without a tag name" do
       description = "This is\na description"
       result = subject.parse_comment_block(description)

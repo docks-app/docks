@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Docks::Parsers::CoffeeScript do
-  subject { Docks::Parsers::CoffeeScript }
+  subject { Docks::Parsers::CoffeeScript.instance }
+
   before :all do
     Docks::Tag.register_bundled_tags
   end
@@ -9,7 +10,7 @@ describe Docks::Parsers::CoffeeScript do
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'coffee_parser_fixture_basic.coffee')) }
   let(:complex_fixture) { File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', 'parsers', 'coffee_parser_fixture_complex.coffee')) }
 
-  describe '::parse' do
+  describe '#parse' do
     let(:basic_parse_results) { subject.parse(basic_fixture) }
     let(:complex_parse_results) { subject.parse(complex_fixture) }
 
@@ -24,7 +25,7 @@ describe Docks::Parsers::CoffeeScript do
     end
   end
 
-  describe '::comment_extractor' do
+  describe '#comment_extractor' do
     it 'provides the first non-comment line as the second capture group' do
       captures = basic_fixture.match(subject.comment_extractor).captures
 
@@ -32,7 +33,7 @@ describe Docks::Parsers::CoffeeScript do
     end
   end
 
-  describe '::comment_pattern' do
+  describe '#comment_pattern' do
     let(:basic_comment) { 'This is a comment' }
     let(:complex_comment) { "# This comment has ##some extra comment-like symbols/characters #" }
 
@@ -49,7 +50,7 @@ describe Docks::Parsers::CoffeeScript do
     end
   end
 
-  describe '::parse_result_details' do
+  describe '#parse_result_details' do
     it 'correctly identifies a class' do
       target_name = 'Tab'
       name, type = subject.parse_result_details(" class #{target_name}  ")

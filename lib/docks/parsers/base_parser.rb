@@ -1,10 +1,21 @@
 module Docks
   module Parsers
     class Base
-      def self.comment_symbol; "#" end
-      def self.page_comment_extractor; /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m end
-      def self.comment_extractor; /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m end
-      def self.comment_pattern; /^\s*#\s?\n?/m end
+      include Singleton
+
+      attr_reader :comment_symbol,
+                  :page_comment_extractor,
+                  :comment_extractor,
+                  :comment_pattern
+
+      def initialize
+        @comment_symbol = "#"
+        @page_comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
+        @comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m
+        @comment_pattern = /^\s*#\s?\n?/m
+      end
+
+
 
       # Public: Parses out all blocks from the passed file contents.
       #
@@ -13,7 +24,7 @@ module Docks
       # Returns a an Array of Hashes that each represent the parsed result for
       # each comment block.
 
-      def self.parse(file_contents)
+      def parse(file_contents)
         docs = []
 
         # Get rid of the page block and, in the process, add the page block
@@ -24,7 +35,7 @@ module Docks
           replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
           parseable_block = index_of_other_comment.nil? ? page_comment_block : page_comment_block[0..index_of_other_comment - 1]
 
-          page_parse_result = { type: Docks::Types::Symbol::PAGE }
+          page_parse_result = { symbol_type: Docks::Types::Symbol::PAGE }
           docs << parse_comment_block(parseable_block, page_parse_result)
 
           replacement
@@ -33,12 +44,13 @@ module Docks
         # Scan through each docs comment block and add it to the list of parsed docs.
         file_contents.scan(comment_extractor).each do |m|
           parse_result = {}
-          parse_result[:name], parse_result[:type] = parse_result_details(m[1])
+          parse_result[:name], parse_result[:symbol_type] = parse_result_details(m[1])
           docs << parse_comment_block(m[0], parse_result)
         end
 
         docs
       end
+
 
 
       # Public: Parses the tags and associated content out of a comment block.
@@ -50,13 +62,13 @@ module Docks
       #
       # Returns a Hash with the tags and their associated content for the block.
 
-      def self.parse_comment_block(comment_block, docs = {})
-        @@tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tag.supported_tags.join("|")}))?\s?(?<text>.*)/
+      def parse_comment_block(comment_block, docs = {})
+        @tag_pattern ||= /(?:\s*@(?<tag>#{Docks::Tag.supported_tags.join("|")}))?\s?(?<text>.*)/
 
         last_tag = nil
 
-        comment_block.strip.gsub(comment_pattern, '').split("\n").each do |comment_line|
-          line_details = comment_line.match(@@tag_pattern)
+        comment_block.gsub(comment_pattern, "").strip.split("\n").each do |comment_line|
+          line_details = comment_line.match(@tag_pattern)
           next if line_details.nil? || line_details[:text].nil?
 
           tag, text = line_details[:tag], line_details[:text]

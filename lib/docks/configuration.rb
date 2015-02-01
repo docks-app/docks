@@ -20,7 +20,11 @@ module Docks
     end
 
     def self.custom_tags
-      yield Docks::Tags
+      yield Docks::Tag
+    end
+
+    def self.custom_templates
+      yield Docks::Template
     end
   end
 

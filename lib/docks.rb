@@ -2,6 +2,7 @@ require "yaml"
 require "pathname"
 require "fileutils"
 require "ostruct"
+require "singleton"
 
 require "redcarpet"
 

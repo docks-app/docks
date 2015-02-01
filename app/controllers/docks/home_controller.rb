@@ -1,5 +1,7 @@
 module Docks
   class HomeController < Docks::ApplicationController
+    layout "docks/demo", only: [:demo]
+
     def index
     end
 

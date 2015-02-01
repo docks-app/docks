@@ -17,10 +17,6 @@ describe Docks::Process do
   end
 
   describe ".process_tag" do
-    it "calls all blocks associated with a one_per_block tag and returns the result" do
-      title = "Title"
-      expect(subject.process_tag(:title, [title])).to eq title
-    end
 
     it "calls all blocks on each element of a multiple_per_block tag (but not multiple_per_line) and returns the mapped result" do
       param_one = "{String} name"
@@ -39,11 +35,11 @@ describe Docks::Process do
       set_by_two = ":state (STATE::ACTIVE)"
       set_by_three = ":is_active?"
 
-      result = subject.process_tag(:set_by, [["#{set_by_one}, #{set_by_two}"], [set_by_three]])
+      result = subject.process_tag(:set_by, ["#{set_by_one}, #{set_by_two}", set_by_three])
       expect(result.length).to eq 3
-      expect(result).to include(subject.process_tag(:set_by, [[set_by_one]]).first)
-      expect(result).to include(subject.process_tag(:set_by, [[set_by_two]]).first)
-      expect(result).to include(subject.process_tag(:set_by, [[set_by_three]]).first)
+      expect(result).to include(subject.process_tag(:set_by, [set_by_one]).first)
+      expect(result).to include(subject.process_tag(:set_by, [set_by_two]).first)
+      expect(result).to include(subject.process_tag(:set_by, [set_by_three]).first)
     end
   end
 

@@ -8,26 +8,17 @@ module Docks
       #
       # Examples
       #
-      #   EnsureValidDemoType.process(:invalid)
-      #   # => "none"
-      #
       #   EnsureValidDemoType.process(Docks::Types::Demo::SELECT)
       #   # => "select"
       #
-      #   EnsureValidDemoType.process('foo')
+      #   EnsureValidDemoType.process("foo")
       #   # => "none"
       #
       # Returns the processed string.
 
       def self.process(content)
-        return Docks::Types::Demo::DEFAULT unless content.kind_of?(String)
-
         @@demo_types ||= Docks::Types::Demo.constants.map { |const| Docks::Types::Demo.const_get(const) }
-        if @@demo_types.include?(content)
-          content
-        else
-          Docks::Types::Demo::DEFAULT
-        end
+        @@demo_types.include?(content) ? content : Docks::Types::Demo::DEFAULT
       end
     end
   end

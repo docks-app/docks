@@ -87,6 +87,17 @@ module Docks
     end
 
 
+    # Private: Gets the extension (without a leading period) for the passed file.
+    #
+    # file - the file whose extension should be retrieved
+    #
+    # Returns a string of the file's extension.
+
+    def self.extension_for_file(file)
+      File.extname(file)[1..-1]
+    end
+
+
 
     private
 
@@ -97,18 +108,6 @@ module Docks
       @@extensions.each_key do |type|
         @@extensions[type] = Set.new
       end
-    end
-
-
-
-    # Private: Gets the extension (without a leading period) for the passed file.
-    #
-    # file - the file whose extension should be retrieved
-    #
-    # Returns a string of the file's extension.
-
-    def self.extension_for_file(file)
-      File.extname(file)[1..-1]
     end
 
   end

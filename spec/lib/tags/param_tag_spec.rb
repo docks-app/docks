@@ -3,7 +3,7 @@ require "spec_helper"
 describe Docks::Tags::Param do
   subject { Docks::Tags::Param.instance }
 
-  let(:name) { "_tabList2" }
+  let(:name) { "_tab_list2" }
   let(:types) { "Array | DOMElement" }
   let(:default) { "[]" }
   let(:description) { "The list of tabs." }
