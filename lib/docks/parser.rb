@@ -56,6 +56,19 @@ module Docks
       !parser_for(file).nil?
     end
 
+    def self.parse_comment_block(comment_block, language, post_process = false)
+      pseudo_file = "foo.#{language.to_s}"
+      parser = parser_for(pseudo_file)
+      return {} if parser.nil?
+      @@current_file = pseudo_file
+      result = parser.parse_comment_block(comment_block)
+      result = Docks::Tag.join_synonymous_tags(result)
+      result = Docks::Process.process(result)
+      result = Docks::Process.post_process([results]).first if post_process
+      @@current_file = nil
+      result
+    end
+
     private
 
     def self.parser_for(file)
@@ -83,8 +96,10 @@ module Docks
       parser = parser_for(file)
       return [] if parser.nil?
 
-      @@current_file = file
+      puts "Parsing #{file} with #{parser}"
       parse_results = parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
+
+      @@current_file = file
 
       parse_results.map! do |parse_result|
         parse_result = Docks::Tag.join_synonymous_tags(parse_result)

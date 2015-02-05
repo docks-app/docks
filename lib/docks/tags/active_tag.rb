@@ -32,7 +32,7 @@ module Docks
       # Returns a Boolean.
 
       def process(content)
-        Docks::Processors::StringyBoolean(content)
+        Docks::Processors::StringyBoolean.process(content)
       end
     end
   end

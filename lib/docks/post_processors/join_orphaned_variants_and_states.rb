@@ -25,11 +25,11 @@ module Docks
         variant_and_state_types = [Docks::Types::Symbol::STATE, Docks::Types::Symbol::VARIANT]
 
         parsed_file.each do |parse_result|
-          last_component = parse_result if parse_result[:type] == Docks::Types::Symbol::COMPONENT
-          next unless variant_and_state_types.include?(parse_result[:type])
+          last_component = parse_result if parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
+          next unless variant_and_state_types.include?(parse_result[:symbol_type])
 
           new_item = parse_result.clone
-          type = "#{new_item[:type]}s".to_sym
+          type = new_item[:symbol_type].to_sym
           base_class = base_class(new_item[:name]) || last_component[:name]
 
           if !last_component.nil? && base_class == last_component[:name]
@@ -48,12 +48,14 @@ module Docks
               if new_component.nil?
                 new_component = {
                   name: base_class,
-                  type: Docks::Types::Symbol::COMPONENT,
-                  variants: [],
-                  states: []
+                  symbol_type: Docks::Types::Symbol::COMPONENT,
+                  variant: [],
+                  state: []
                 }
+
                 new_parse_results << new_component
               end
+
               new_component[type] << new_item
             else
               # Another component matches this base class
@@ -64,7 +66,7 @@ module Docks
         end
 
         # Get rid of all the states and variants.
-        parsed_file.delete_if { |parse_result| variant_and_state_types.include?(parse_result[:type]) }
+        parsed_file.delete_if { |parse_result| variant_and_state_types.include?(parse_result[:symbol_type]) }
         parsed_file.concat(new_parse_results)
       end
 

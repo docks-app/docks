@@ -28,8 +28,6 @@ describe Docks::Process do
       expect(result[1]).to eq subject.process_tag(:param, [param_two]).first
     end
 
-    require "awesome_print"
-
     it "calls all blocks on each element of a multiple_per_line and concatenated each set of results together" do
       set_by_one = ":active"
       set_by_two = ":state (STATE::ACTIVE)"

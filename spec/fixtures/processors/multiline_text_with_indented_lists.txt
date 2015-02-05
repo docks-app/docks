@@ -1,0 +1,13 @@
+The stylesheet exists as a single place to manage all font sizes. To use
+a font size in your stylesheet, follow this procedure:
+
+1. Add a well-named entry to the `$FONT-SIZES` map with the value set to
+   the font size for that element.
+
+2. If you wish to include a `font-size` declaration in your stylesheet,
+   `@include font-size()`, passing it the name of the component to retrieve
+   the font-size for.
+
+3. Retrieving the actual font-size dimension (for example, to be used in a
+   calculation to determine necessary padding) should be done by passing the
+   same argument discussed above to the `font-size` *function*.

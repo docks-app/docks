@@ -7,7 +7,7 @@ module Docks
         return parsed_file if stub_files.empty?
 
         parsed_file.each do |parse_result|
-          next unless parse_result[:type] == Docks::Types::Symbol::COMPONENT
+          next unless parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
 
           id = Docks::Group.group_identifier(parse_result[:name])
           stub_files.each do |file|

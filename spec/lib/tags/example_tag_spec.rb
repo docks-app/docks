@@ -1,3 +1,5 @@
+#TODO: check for leading whitespace when there is no language/ description
+
 require "spec_helper"
 
 describe Docks::Tags::Example do

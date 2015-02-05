@@ -1,3 +1,5 @@
+# TODO: make sure only one space is removed from the part of line after tag/ after bare comment block
+
 require "spec_helper"
 
 describe Docks::Parsers::Base do
@@ -17,7 +19,7 @@ describe Docks::Parsers::Base do
     it "correctly adds a normal tag to an array of results" do
       title = "Next Tab"
       result = subject.parse_comment_block("    @title #{title}")
-      expect(result[:title]).to eq [title]
+      expect(result[:title]).to eq title
     end
 
     it "correctly adds a multiple-per-block tag to an array of arrays" do
@@ -29,7 +31,7 @@ describe Docks::Parsers::Base do
     it "correctly appends a second line of a normal tag to the same result array" do
       line_one = "html"
       line_two = " <p>Hello</p>"
-      result = subject.parse_comment_block(" @example #{line_one}\n #{line_two}")
+      result = subject.parse_comment_block(" @example #{line_one}\n#{line_two}")
       example_result = result[:example].first
       expect(example_result.length).to eq 2
       expect(example_result[0]).to eq line_one
@@ -40,7 +42,7 @@ describe Docks::Parsers::Base do
       title = "Title"
       subtitle = "Subtitle"
       result = subject.parse_comment_block("  @title #{title}\n  @subtitle #{subtitle}")
-      expect(result[:title].first).to eq title
+      expect(result[:title]).to eq title
       expect(result[:subtitle]).to eq subtitle
     end
 
@@ -48,7 +50,7 @@ describe Docks::Parsers::Base do
       title = "Title"
       subtitle = "Subtitle"
       result = subject.parse_comment_block("  @title #{title}\n  @subtitle #{subtitle}")
-      expect(result[:title].first).to eq title
+      expect(result[:title]).to eq title
       expect(result[:subtitle]).to eq subtitle
     end
 
@@ -58,8 +60,8 @@ describe Docks::Parsers::Base do
       title = "Title"
       subtitle = "Subtitle"
 
-      result = subject.parse_comment_block("  @param #{param_one}\n  @title #{title}\n  @subtitle #{subtitle}\n  @param #{param_two}")
-      expect(result[:title].first).to eq title
+      result = subject.parse_comment_block("@param #{param_one}\n@title #{title}\n@subtitle #{subtitle}\n@param #{param_two}")
+      expect(result[:title]).to eq title
       expect(result[:subtitle]).to eq subtitle
       expect(result[:param]).to include(param_one.split("\n"))
       expect(result[:param]).to include(param_two.split("\n"))
@@ -69,7 +71,7 @@ describe Docks::Parsers::Base do
       page_one = "Buttons"
       page_two = "No, wait, Forms!"
 
-      result = subject.parse_comment_block("  @page #{page_one}\n  @page #{page_two}")
+      result = subject.parse_comment_block("@page #{page_one}\n@page #{page_two}")
       expect(result[:page]).not_to eq page_one
       expect(result[:page]).to eq page_two
     end
@@ -78,7 +80,7 @@ describe Docks::Parsers::Base do
       page = "Button"
       following_line = "Here is some more content"
 
-      result = subject.parse_comment_block(" @page #{page}\n #{following_line}")
+      result = subject.parse_comment_block("@page #{page}\n#{following_line}")
       expect(result[:page]).to eq page
       expect(result[:description]).to include(following_line)
     end

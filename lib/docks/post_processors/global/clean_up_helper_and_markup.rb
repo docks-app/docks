@@ -3,7 +3,7 @@ module Docks
     class CleanUpHelperAndMarkup < Base
       def self.post_process(parsed_file)
         parsed_file.each do |parse_result|
-          next unless parse_result[:type] == Docks::Types::Symbol::COMPONENT
+          next unless parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
           markup_present, helper_present = !parse_result[:markup].nil?, !parse_result[:helper].nil?
 
           if helper_present && !markup_present

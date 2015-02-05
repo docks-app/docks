@@ -1,5 +1,24 @@
 require "spec_helper"
 
+# TODO: ensure that this works:
+
+# // @page Font Sizes
+# // @group Helper
+# //
+# // The stylesheet exists as a single place to manage all font sizes. To use
+# // a font size in your stylesheet, follow this procedure:
+# //
+# // 1. Add a well-named entry to the `$FONT-SIZES` map with the value set to
+# //    the font size for that element.
+# //
+# // 2. If you wish to include a `font-size` declaration in your stylesheet,
+# //    `@include font-size()`, passing it the name of the component to retrieve
+# //    the font-size for.
+# //
+# // 3. Retrieving the actual font-size dimension (for example, to be used in a
+# //    calculation to determine necessary padding) should be done by passing the
+# //    same argument discussed above to the `font-size` *function*.
+
 def content_for_multiline_text_fixture(fixture)
   file = File.join(File.dirname(__FILE__), "..", "..", "fixtures", "processors", "#{fixture}.txt")
   File.read(file).split("\n")
@@ -41,6 +60,12 @@ describe Docks::Processors::JoinWithSmartLineBreaks do
     expect(paragraphs).to eq 2
   end
 
+  it "correctly identifies paragraphs with indented lists" do
+    content = content_for_multiline_text_fixture(:multiline_text_with_indented_lists)
+    paragraphs = paragraph_count(subject.process(content))
+    expect(paragraphs).to eq 4
+  end
+
   it "correctly returns nil for an empty array" do
     expect(subject.process([])).to be nil
   end
@@ -49,6 +74,7 @@ describe Docks::Processors::JoinWithSmartLineBreaks do
     expect(subject.process([" "])).to be nil
     expect(subject.process([" ", "   "])).to be nil
   end
+
 
   describe "fenced code blocks" do
     let(:text) do
@@ -79,6 +105,10 @@ describe Docks::Processors::JoinWithSmartLineBreaks do
       content.sub!(/```[^`]*```/, "")
       paragraphs = paragraph_count(subject.process(content))
       expect(paragraphs).to eq 3
+    end
+
+    it "handles numbered lists" do
+      content = []
     end
   end
 end

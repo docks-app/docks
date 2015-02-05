@@ -6,7 +6,7 @@ module Docks
         @comment_symbol = "\/\/"
         @page_comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)*(?:^\s*?\/\/[^\n]*@page[^\n]*\n)(?:^\s*?\/\/[^\n]*\n)*)/m
         @comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)+)\s*((?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m
-        @comment_pattern = /^\s*\/\/\s?\n?/m
+        @comment_pattern = /^ *\/\/ ?/m
       end
 
 

@@ -14,7 +14,7 @@ module Docks
 
       def self.post_process(parsed_file)
         parsed_file.each do |parse_result|
-          next unless parse_result[:type] == Docks::Types::Symbol::COMPONENT
+          next unless parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
 
           default = {
             demo_type: Docks::Types::Demo::DEFAULT,
@@ -28,14 +28,14 @@ module Docks
             type: Docks::Types::Symbol::STATE
           }
 
-          parse_result[:variants] ||= []
-          parse_result[:states] ||= []
+          parse_result[:variant] ||= []
+          parse_result[:state] ||= []
 
-          [:states, :variants].each do |type|
+          [:state, :variant].each do |type|
             parse_result[type].each do |item|
               item[:base_class] = parse_result[:name]
               item[:name] = clean_class_name(item[:name], item[:base_class])
-              item[:type] = Docks::Types::Symbol::VARIANT if type == :variants
+              item[:symbol_type] = Docks::Types::Symbol::VARIANT if type == :variant
               assign_defaults(item)
               item[:activate_with].push(item[:base_class])
 

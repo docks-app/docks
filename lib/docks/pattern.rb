@@ -65,6 +65,7 @@ module Docks
     def build_demos
       @demos = []
       @components.each do |component|
+        puts @component
         @demos.push(Demo.new(component)) if component.has_demo?
       end
     end
@@ -83,7 +84,7 @@ module Docks
 
     def parse_results_of_type(type)
       @flattened_parse_results ||= @parse_results[:markup] + @parse_results[:style] + @parse_results[:script]
-      @flattened_parse_results.select { |parse_result| parse_result.symbol_type == type.to_s }
+      @flattened_parse_results.select { |parse_result| parse_result.symbol_type.to_s == type.to_s }
     end
   end
 
@@ -100,6 +101,14 @@ module Docks
 
     def method_missing(meth)
       @component.send(meth) rescue nil
+    end
+
+    def to_s
+      @component.to_s
+    end
+
+    def inspect
+      to_s
     end
   end
 
@@ -124,7 +133,7 @@ module Docks
     def states_and_variants_of_demo_type(type, group_by_component)
       matches = group_by_component ? {} : []
 
-      (@component.variants + @component.states).each do |v|
+      (@component.variant + @component.state).each do |v|
         if v.demo_type == type
           if group_by_component
             matches[@component.name] ||= []

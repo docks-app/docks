@@ -23,9 +23,14 @@ module Docks
 
         text = ""
         in_code_block = false
+        in_paragraph = false
 
         content.each do |line|
+          stripped_line = line.strip
+
           if line.start_with?("```")
+            in_paragraph = false
+
             if in_code_block
               in_code_block = false
               text << "\n#{line}#{join}"
@@ -33,15 +38,28 @@ module Docks
               in_code_block = true
               text << "#{join}#{line}"
             end
+
           elsif in_code_block
             text << "\n#{line}"
-          elsif text == ""
+          elsif text.length == 0 && stripped_line.length > 0
             text = line
-          elsif line.strip.length == 0
+            in_paragraph = true
+          elsif stripped_line.length == 0
             text << join
+            in_paragraph = false
           else
-            first_char = line[0, 1]
-            text << (first_char =~ /[A-Za-z]/ && first_char == first_char.upcase ? "#{join}#{line}" : " #{line}")
+            first_char = stripped_line[0, 1]
+
+            new_line_chunk = if !in_paragraph
+              line
+            elsif first_char =~ /[A-Za-z]/ && first_char == first_char.upcase
+              "#{join}#{line}"
+            else
+              " #{stripped_line}"
+            end
+
+            in_paragraph = true
+            text << new_line_chunk
           end
         end
 

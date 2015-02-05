@@ -1,3 +1,5 @@
+# TODO: check whether empty lines in paragraphs are preserved
+
 require "spec_helper"
 
 describe Docks::Parsers::SCSS do
@@ -47,6 +49,11 @@ describe Docks::Parsers::SCSS do
 
     it "correctly strips line complex comments" do
       expect("// #{complex_comment}".gsub(subject.comment_pattern, "")).to eq complex_comment
+    end
+
+    it "leaves empty lines intact" do
+      content = "// Foo\n//\n// 1. Bar\n\n// 2. Baz"
+      expect(content.gsub(subject.comment_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
     end
   end
 
