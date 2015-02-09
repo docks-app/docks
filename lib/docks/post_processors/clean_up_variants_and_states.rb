@@ -16,18 +16,6 @@ module Docks
         parsed_file.each do |parse_result|
           next unless parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
 
-          default = {
-            demo_type: Docks::Types::Demo::DEFAULT,
-            active: 'false',
-            description: nil,
-            activate_with: [],
-            precludes: [],
-            set_by: [],
-            include_with: [],
-            javascript_action: nil,
-            type: Docks::Types::Symbol::STATE
-          }
-
           parse_result[:variant] ||= []
           parse_result[:state] ||= []
 
@@ -62,7 +50,7 @@ module Docks
           set_by: [],
           include_with: [],
           javascript_action: nil,
-          type: Docks::Types::Symbol::STATE
+          symbol_type: Docks::Types::Symbol::STATE
         }
 
         variation.merge!(default) { |k, passed, default| passed || default }

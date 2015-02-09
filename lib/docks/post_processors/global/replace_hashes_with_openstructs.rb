@@ -50,12 +50,20 @@ module Docks
           item.keys.each do |key|
             item[key] = self.recursive_openstructify(item[key]) unless [:stub, :value].include?(key)
           end
-          OpenStruct.new(item)
+          CleanJSONOpenStruct.new(item)
         elsif item.kind_of?(Array)
           item.map! { |arr_item| self.recursive_openstructify(arr_item) }
         else
           item
         end
+      end
+    end
+
+    private
+
+    class CleanJSONOpenStruct < OpenStruct
+      def as_json(options = nil)
+        @table.as_json(options)
       end
     end
   end

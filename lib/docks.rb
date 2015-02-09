@@ -1,4 +1,5 @@
 require "yaml"
+require "json"
 require "pathname"
 require "fileutils"
 require "ostruct"

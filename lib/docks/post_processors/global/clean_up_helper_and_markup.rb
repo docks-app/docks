@@ -38,7 +38,10 @@ module Docks
           end
 
           func << stringify_val(arg) if arg.kind_of?(String)
-          func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n") if arg.kind_of?(Hash)
+          if arg.kind_of?(Hash)
+            spaces = " " * func.length
+            func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n#{spaces}")
+          end
 
           func
         end

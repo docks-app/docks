@@ -17,9 +17,9 @@ module Docks
 
       def self.post_process(parsed_file)
         parsed_file.each do |parse_result|
-          next unless parse_result[:type] == Docks::Types::Symbol::COMPONENT
+          next unless parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
 
-          states_and_variants = parse_result[:variants] + parse_result[:states]
+          states_and_variants = parse_result[:variant] + parse_result[:state]
 
           states_and_variants.each do |item|
             next if item[:precludes].empty?

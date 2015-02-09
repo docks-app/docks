@@ -47,7 +47,9 @@ module Docks
         next unless should_render_group?(group)
 
         parse_result = Parser.parse_group(group)
-        next unless Pattern.is_valid?(parse_result)
+        next unless Containers::Pattern.is_valid?(parse_result)
+
+        parse_result[:modified] = most_recent_modified_date(group).to_s
 
         id = group_identifier.to_s
         add_to_group_cache(parse_result, id)
@@ -82,7 +84,7 @@ module Docks
     private
 
     def self.add_to_group_cache(parse_result, id)
-      @@group_cache[id] = Pattern.group_details(parse_result)
+      @@group_cache[id] = Containers::Pattern.group_details(parse_result)
     end
 
     def self.cache_groups

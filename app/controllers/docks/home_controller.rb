@@ -6,14 +6,14 @@ module Docks
     end
 
     def pattern
-      @pattern = Docks::Pattern.for(params[:pattern])
+      @pattern = Docks::Containers::Pattern.for(params[:pattern])
       @pattern_groups = Docks::PatternGroup.new
 
       render(Docks.template_for(params[:pattern]) || :pattern)
     end
 
     def demo
-      @demo = Docks::Pattern.for(params[:pattern]).demo_for(params[:demo])
+      @demo = Docks::Containers::Pattern.for(params[:pattern]).demo_for(params[:demo])
     end
   end
 end

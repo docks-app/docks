@@ -66,7 +66,7 @@ module Docks
         # TODO: ensure that pluralized tags are handled first
         if @tag_pattern.nil?
           supported_tags = Docks::Tag.supported_tags.sort! { |a, b| b.length <=> a.length }
-          @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")})\s)?(?<text>.*)/
+          @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")}) ?)?(?<text>.*)/
         end
 
         last_tag = nil

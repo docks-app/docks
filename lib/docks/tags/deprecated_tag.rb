@@ -41,7 +41,7 @@ module Docks
 
       def process(content)
         Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          match = first_line.match(/\s*(?<version>.*?)(?:\s+\-\s+(?<description>.*))?/)
+          match = first_line.match(/\s*(?<version>.*?)(?:\s+\-\s+(?<description>.*))?$/)
           return nil if match.nil?
 
           description = match[:description]

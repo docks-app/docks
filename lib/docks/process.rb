@@ -64,6 +64,7 @@ module Docks
       add_post_processors Docks::PostProcessors::AssociateExternalMarkupFiles,
                           Docks::PostProcessors::AssociateExternalStubFiles,
                           Docks::PostProcessors::AssociateExternalDescriptionFiles,
+                          Docks::PostProcessors::JoinSubcomponentsToBaseComponent,
                           Docks::PostProcessors::CleanUpHelperAndMarkup,
                           Docks::PostProcessors::MarkdownDescriptions,
                           Docks::PostProcessors::ReplaceHashesWithOpenStructs
