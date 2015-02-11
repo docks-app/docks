@@ -1,13 +1,17 @@
 module Docks
   module Languages
-    @@bundled_languages = nil
-
     class Base
+      include Singleton
+
       def self.type; nil end
       def self.parser; nil end
       def self.extensions; nil end
-      def self.stub_loader; nil end
+
+      def load_stub(file); nil end
+      def friendly_presentation(symbol); symbol[:name] end
     end
+
+    @@bundled_languages = nil
 
     def self.bundled_languages
       if @@bundled_languages.nil?

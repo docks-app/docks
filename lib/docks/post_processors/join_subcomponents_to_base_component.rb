@@ -1,5 +1,3 @@
-require "awesome_print"
-
 module Docks
   module PostProcessors
     class JoinSubcomponentsToBaseComponent < Base

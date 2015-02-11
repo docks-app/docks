@@ -39,13 +39,6 @@ module Docks
 
     @@parsers = []
 
-    def self.register_parsers_for_bundled_languages
-      Docks::Languages.bundled_languages.each do |language|
-        next unless language.parser
-        register(language.parser, extensions: language.extensions)
-      end
-    end
-
     def self.register(parser, options)
       return if !options[:extensions] && !options[:matches]
       options[:matches] = /\.(#{[options[:extensions]].flatten.join("|")})$/ if options[:extensions]
@@ -58,14 +51,18 @@ module Docks
 
     def self.parse_comment_block(comment_block, language, post_process = false)
       pseudo_file = "foo.#{language.to_s}"
-      parser = parser_for(pseudo_file)
-      return {} if parser.nil?
       @@current_file = pseudo_file
-      result = parser.parse_comment_block(comment_block)
+      setup_current_details
+
+      return {} if Docks.current_parser.nil?
+      result = Docks.current_parser.parse_comment_block(comment_block)
       result = Docks::Tag.join_synonymous_tags(result)
       result = Docks::Process.process(result)
       result = Docks::Process.post_process([results]).first if post_process
+
       @@current_file = nil
+      teardown_current_details
+
       result
     end
 
@@ -93,13 +90,13 @@ module Docks
     # Returns the parsed file group as an Array of Hashes.
 
     def self.parse_file(file)
-      parser = parser_for(file)
-      return [] if parser.nil?
-
-      puts "Parsing #{file} with #{parser}"
-      parse_results = parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
-
       @@current_file = file
+      setup_current_details
+
+      return [] if Docks.current_parser.nil?
+
+      puts "Parsing #{file} with #{Docks.current_parser}"
+      parse_results = Docks.current_parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
 
       parse_results.map! do |parse_result|
         parse_result = Docks::Tag.join_synonymous_tags(parse_result)
@@ -107,8 +104,30 @@ module Docks
       end
 
       result = Docks::Process.post_process(parse_results)
+
       @@current_file = nil
+      teardown_current_details
+
       result
     end
+
+    def self.setup_current_details
+      Docks.current_file = @@current_file
+      Docks.current_parser = parser_for(@@current_file)
+      Docks.current_language = Docks::Language.language_for(@@current_file)
+    end
+
+    def self.teardown_current_details
+      Docks.current_file = nil
+      Docks.current_parser = nil
+      Docks.current_language = nil
+    end
   end
+
+  def self.current_file; @@current_file end
+  def self.current_file=(file); @@current_file = file end
+  def self.current_language; @@current_language end
+  def self.current_language=(language); @@current_language = language end
+  def self.current_parser; @@current_parser end
+  def self.current_parser=(parser); @@current_parser = parser end
 end

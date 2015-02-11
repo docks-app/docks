@@ -46,6 +46,10 @@ module Docks
         name = first_code_line.match(/^@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
         return name, type
       end
+
+      def friendly_presentation(component)
+
+      end
     end
   end
 end

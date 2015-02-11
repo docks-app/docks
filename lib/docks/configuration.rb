@@ -73,7 +73,6 @@ module Docks
     Tag.register_bundled_tags
     Process.register_bundled_post_processors
     Language.register_bundled_languages
-    Parser.register_parsers_for_bundled_languages
 
     # if configuration.config_file.nil?
     #   config_file = rails ? File.join(configuration.root, "config", Docks::CONFIG_FILE) : File.join(configuration.root, Docks::CONFIG_FILE)

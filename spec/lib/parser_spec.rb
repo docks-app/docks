@@ -7,7 +7,6 @@ describe Docks::Parser do
     Docks::Tag.register_bundled_tags
     Docks::Process.register_bundled_post_processors
     Docks::Language.register_bundled_languages
-    Docks::Parser.register_parsers_for_bundled_languages
   end
 
   describe ".parse_group" do

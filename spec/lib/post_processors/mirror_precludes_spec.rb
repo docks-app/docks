@@ -30,7 +30,7 @@ describe Docks::PostProcessors::MirrorPrecludes do
 
   let(:component) do
     {
-      type: Docks::Types::Symbol::COMPONENT,
+      symbol_type: Docks::Types::Symbol::COMPONENT,
       name: 'tab',
       state: [state_one, state_two],
       variant: []

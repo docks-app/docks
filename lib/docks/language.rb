@@ -4,12 +4,11 @@ module Docks
   class Language
     def self.default_language; "html" end
 
+    @@languages = {}
     @@extensions = {}
     Docks::Types::Languages.constants.each do |const|
       @@extensions[Docks::Types::Languages.const_get(const)] = Set.new
     end
-
-    @@stub_loaders = {}
 
     def self.register_bundled_languages
       Docks::Languages.bundled_languages.each do |language|
@@ -20,7 +19,8 @@ module Docks
     def self.register(language)
       [language.extensions].flatten.each do |extension|
         @@extensions[language.type].add(extension)
-        @@stub_loaders[extension] = language.stub_loader unless language.stub_loader.nil?
+        Docks::Parser.register(language.parser, extensions: language.extensions)
+        @@languages[extension] = language
       end
     end
 
@@ -35,6 +35,11 @@ module Docks
 
     def self.is_supported_file_type?(file)
       extensions.include?(extension_for_file(file))
+    end
+
+    def self.language_for(file)
+      language = @@languages[extension_for_file(file)]
+      language.nil? ? nil : language.instance
     end
 
 
@@ -70,20 +75,11 @@ module Docks
     # Returns a String with the default language (for any item that requires
     # a language but where it is optional to actually provide one).
 
-
-
     def self.load_stub_for(file)
-      extension = extension_for_file(file)
-      stub = nil
+      language = language_for(file)
+      return nil if language.nil?
 
-      @@stub_loaders.each_key do |ext|
-        if ext == extension
-          stub = @@stub_loaders[ext].call(file)
-          break
-        end
-      end
-
-      stub
+      language.load_stub(file)
     end
 
 
