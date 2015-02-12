@@ -72,6 +72,11 @@ describe Docks::Languages::SCSS do
       expect(subject.friendly_presentation(mixin_with_params)).to eq "@mixin #{name}($bar, $baz: qux) { /* ... */ }"
     end
 
+    it "only prefixes variable names with dollar signs if they don't already exist" do
+      function_with_params[:param].first[:name] = "$bar"
+      expect(subject.friendly_presentation(function_with_params)).to eq "@function #{name}($bar, $baz: qux) { /* ... */ }"
+    end
+
     it "defaults the friendly presentation to the name of the symbol" do
       expect(subject.friendly_presentation(something_else)).to eq name
     end

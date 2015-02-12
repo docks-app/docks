@@ -17,9 +17,10 @@ module Docks
     end
 
     def self.register(language)
+      Docks::Parser.register(language.parser, extensions: language.extensions) unless language.parser.nil?
+
       [language.extensions].flatten.each do |extension|
         @@extensions[language.type].add(extension)
-        Docks::Parser.register(language.parser, extensions: language.extensions)
         @@languages[extension] = language
       end
     end

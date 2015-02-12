@@ -12,7 +12,15 @@ module Docks
           when Docks::Types::Symbol::VARIABLE then "$#{name}"
           when Docks::Types::Symbol::PLACEHOLDER then "%#{name}"
           when Docks::Types::Symbol::MIXIN, Docks::Types::Symbol::FUNCTION
-            "@#{symbol_type == Docks::Types::Symbol::FUNCTION ? "function" : "mixin"} #{name}(#{(symbol[:param] || []).map { |param| "$#{param[:name]}#{": #{param[:default]}" if param[:default]}" }.join(", ")}) { /* ... */ }"
+            directive = "@#{symbol_type == Docks::Types::Symbol::FUNCTION ? "function" : "mixin"} #{name}"
+            params = (symbol[:param] || []).map do |param|
+              name, default = param[:name], param[:default]
+              param_string = "#{"$" unless name.start_with?("$")}#{name}"
+              param_string << ": #{default}" if default
+              param_string
+            end
+
+            "#{directive}(#{params.join(", ")}) { /* ... */ }"
 
           else name
         end

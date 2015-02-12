@@ -98,9 +98,19 @@ module Docks
         to_s
       end
 
-      def parse_results_of_type(type)
-        @flattened_parse_results ||= @parse_results[:markup] + @parse_results[:style] + @parse_results[:script]
-        @flattened_parse_results.select { |parse_result| parse_result.symbol_type.to_s == type.to_s }
+      def parse_results_of_type(type, options = {})
+        parse_types = [:script, :markup, :style]
+        type = type.to_s
+        included = options[:include].nil? ? parse_types : [options[:include]].flatten
+        excluded = options[:exclude].nil? ? [] : [options[:exclude]].flatten
+
+        parse_types.inject([]) do |matches, parse_type|
+          if included.include?(parse_type) && !excluded.include?(parse_type)
+            matches.concat(@parse_results[parse_type].select { |parse_result| puts parse_result; parse_result.symbol_type.to_s == type })
+          else
+            matches
+          end
+        end
       end
 
       def has_markup?
