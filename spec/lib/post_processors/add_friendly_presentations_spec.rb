@@ -27,6 +27,8 @@ describe Docks::PostProcessors::AddFriendlyPresentations do
   end
 
   it "does not overwrite an existing friendly presentation" do
-    expect { subject.post_process([symbol_with_friendly]) }.to_not change { symbol_with_friendly }
+    before = symbol_with_friendly[:friendly_presenter]
+    subject.post_process([symbol_with_friendly])
+    expect(symbol_with_friendly[:friendly_presenter]).to eq before
   end
 end

@@ -6,8 +6,10 @@ require "ostruct"
 require "singleton"
 
 require "redcarpet"
+require "active_support/inflector"
 
 require File.join(File.dirname(__FILE__), "docks", "types.rb")
+require File.join(File.dirname(__FILE__), "docks", "configuration.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "parsers/base_parser.rb")
