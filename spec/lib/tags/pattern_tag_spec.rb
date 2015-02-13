@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe Docks::Tags::Page do
-  subject { Docks::Tags::Page.instance }
+describe Docks::Tags::Pattern do
+  subject { Docks::Tags::Pattern.instance }
 
   it "does not allow multiline content" do
     expect(subject.multiline?).to be false
