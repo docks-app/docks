@@ -3,7 +3,7 @@ require "spec_helper"
 now = Date.parse("1991-01-11")
 name = :button
 title = "UI Button"
-pattern_block = OpenStruct.new(page: title, symbol_type: Docks::Types::Symbol::PAGE)
+pattern_block = { page: title, symbol_type: Docks::Types::Symbol::PAGE }
 
 describe Docks::Containers::Pattern do
   subject { Docks::Containers::Pattern }
@@ -17,6 +17,7 @@ describe Docks::Containers::Pattern do
       files: [],
       name: name,
       modified: now.to_s,
+      pattern: Hash.new,
 
       script: [],
       markup: [],
@@ -29,10 +30,11 @@ describe Docks::Containers::Pattern do
       files: [],
       name: name,
       modified: now.to_s,
+      pattern: pattern_block,
 
-      script: [OpenStruct.new],
-      markup: [OpenStruct.new, pattern_block],
-      style: [OpenStruct.new]
+      script: [Hash.new],
+      markup: [Hash.new],
+      style: [Hash.new]
     }
   end
 
@@ -80,7 +82,7 @@ describe Docks::Containers::Pattern do
     it "delegates missing methods to the pattern block" do
       pattern = subject.new(complex_parse_results)
       expect(Docks::Tag).to receive(:default_tag_name).with(:foo).and_return(:foo)
-      expect(pattern_block).to receive(:foo)
+      expect(pattern_block).to receive(:[]).with(:foo)
       pattern.foo
     end
   end
@@ -124,7 +126,7 @@ describe Docks::Containers::Pattern do
   describe "container associations" do
     it "includes a method to access all symbols of a given type" do
       Docks::Containers::TOP_LEVEL_SYMBOLS.each do |symbol|
-        symbol_instance = OpenStruct.new(symbol_type: symbol)
+        symbol_instance = { symbol_type: symbol }
         simple_parse_results[:script] = [symbol_instance]
         pattern = subject.new(simple_parse_results)
 
@@ -136,7 +138,7 @@ describe Docks::Containers::Pattern do
 
     it "includes only the set of symbols of a given type matching the passed options" do
       Docks::Containers::TOP_LEVEL_SYMBOLS.each do |symbol|
-        symbol_instance = OpenStruct.new(symbol_type: symbol)
+        symbol_instance = { symbol_type: symbol }
         simple_parse_results[:script] = [symbol_instance]
         pattern = subject.new(simple_parse_results)
 
@@ -156,27 +158,27 @@ describe Docks::Containers::Pattern do
 
   describe "#demos" do
     it "creates a demo for each component that needs one" do
-      component_one = OpenStruct.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>")
-      component_two = OpenStruct.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "bar")
+      component_one = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>" }
+      component_two = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "bar" }
 
       simple_parse_results[:style] = [component_one, component_two]
       pattern = subject.new(simple_parse_results)
 
       expect(pattern.demos.length).to be 1
-      expect(pattern.demos.first.component.name).to eq component_one.name
+      expect(pattern.demos.first.component.name).to eq component_one[:name]
     end
   end
 
   describe "#demo_for" do
     it "sends back the demo with a name that matches the one passed" do
-      component = OpenStruct.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>")
+      component = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>" }
       simple_parse_results[:style] = [component]
       pattern = subject.new(simple_parse_results)
       expect(pattern.demo_for("foo")).not_to be nil
     end
 
     it "sends back nothing when there exists no demo matching the passed name" do
-      component = OpenStruct.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>")
+      component = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "foo", markup: "<p>Hi</p>" }
       simple_parse_results[:style] = [component]
       pattern = subject.new(simple_parse_results)
       expect(pattern.demo_for("bar")).to be nil

@@ -9,37 +9,37 @@ describe Docks::Containers::Component do
 
   describe "#has_demo?" do
     it "has a demo when it has non-empty markup" do
-      expect(subject.new(OpenStruct.new(markup: "<p>Hi!</p>")).has_demo?).to be true
+      expect(subject.new(markup: "<p>Hi!</p>").has_demo?).to be true
     end
 
     it "has a demo when it has non-empty helper" do
-      expect(subject.new(OpenStruct.new(helper: "<p><%= foo %></p>")).has_demo?).to be true
+      expect(subject.new(helper: "<p><%= foo %></p>").has_demo?).to be true
     end
 
     it "doesn't have a demo when there is no markup or helper" do
-      expect(subject.new(OpenStruct.new(foo: "bar")).has_demo?).to be false
+      expect(subject.new(foo: "bar").has_demo?).to be false
     end
 
     it "doesn't have a demo when the markup is empty" do
-      expect(subject.new(OpenStruct.new(markup: "")).has_demo?).to be false
+      expect(subject.new(markup: "").has_demo?).to be false
     end
 
     it "doesn't have a demo when the helper is empty" do
-      expect(subject.new(OpenStruct.new(helper: "")).has_demo?).to be false
+      expect(subject.new(helper: "").has_demo?).to be false
     end
   end
 
   describe "#variations" do
-    let(:states) { [OpenStruct.new(foo: "bar"), OpenStruct.new(baz: "qux")] }
-    let(:variants) { [OpenStruct.new(bar: "foo"), OpenStruct.new(qux: "baz")] }
+    let(:states) { [{ foo: "bar" }, { baz: "qux" }] }
+    let(:variants) { [{ bar: "foo" }, { qux: "baz" }] }
 
     it "has no variations when there are no states or variants" do
-      component = subject.new(OpenStruct.new())
+      component = subject.new({})
       expect(component.variations).to be_empty
     end
 
     it "has variations when there are only states" do
-      component = subject.new(OpenStruct.new(state: states))
+      component = subject.new(state: states)
       variations = component.variations
 
       expect(variations).not_to be_empty
@@ -49,7 +49,7 @@ describe Docks::Containers::Component do
     end
 
     it "has variations when there are only variants" do
-      component = subject.new(OpenStruct.new(variant: variants))
+      component = subject.new(variant: variants)
       variations = component.variations
 
       expect(variations).not_to be_empty
@@ -59,7 +59,7 @@ describe Docks::Containers::Component do
     end
 
     it "has variations when there are states and variants" do
-      component = subject.new(OpenStruct.new(state: states, variant: variants))
+      component = subject.new(state: states, variant: variants)
       variations = component.variations
 
       expect(variations).not_to be_empty

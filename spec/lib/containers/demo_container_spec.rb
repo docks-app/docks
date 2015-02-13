@@ -5,8 +5,8 @@ state_two = OpenStruct.new(name: "bar", demo_type: Docks::Types::Demo::SELECT)
 variant_one = OpenStruct.new(name: "baz", demo_type: Docks::Types::Demo::SELECT)
 variant_two = OpenStruct.new(name: "qux", demo_type: Docks::Types::Demo::JOINT)
 
-basic_component = Docks::Containers::Component.new(OpenStruct.new(name: "flarb", state: [state_one]))
-complex_component = Docks::Containers::Component.new(OpenStruct.new(name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two]))
+basic_component = Docks::Containers::Component.new(name: "flarb", state: [state_one])
+complex_component = Docks::Containers::Component.new(name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two])
 
 describe Docks::Containers::Demo do
   subject { Docks::Containers::Demo }

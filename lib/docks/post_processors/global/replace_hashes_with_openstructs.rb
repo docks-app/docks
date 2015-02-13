@@ -15,7 +15,9 @@ module Docks
 
       def self.post_process(parsed_file)
         parsed_file.map! do |parse_result|
-          recursive_openstructify(parse_result)
+          parse_result.each do |key, value|
+            parse_result[key] = recursive_openstructify(value)
+          end
         end
 
         parsed_file

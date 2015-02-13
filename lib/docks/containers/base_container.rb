@@ -18,7 +18,7 @@ module Docks
       end
 
       def method_missing(meth)
-        @item.send(Docks::Tag.default_tag_name(meth)) rescue nil
+        @item[Docks::Tag.default_tag_name(meth)] rescue nil
       end
     end
 
@@ -40,7 +40,7 @@ module Docks
         end
       end
 
-      @@container_associations[symbol.symbol_type.to_s] || Base
+      @@container_associations[symbol[:symbol_type].to_s] || Base
     end
   end
 end

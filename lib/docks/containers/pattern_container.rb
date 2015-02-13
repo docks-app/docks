@@ -11,12 +11,12 @@ module Docks
       def initialize(parse_results)
         @parse_results = parse_results
 
-        find_pattern_block
+        @pattern = parse_results[:pattern]
         super(@pattern)
 
         @modified = Date.parse(parse_results[:modified])
         @name = parse_results[:name].to_s
-        @title = @pattern.page || @name
+        @title = @pattern[:page] || @name
 
         build_containers
         build_demos
@@ -93,11 +93,6 @@ module Docks
         components.each do |component|
           @demos << Demo.new(component) if component.has_demo?
         end
-      end
-
-      def find_pattern_block
-        pattern_results = parse_results_of_type(Docks::Types::Symbol::PAGE, remove: true)
-        @pattern = pattern_results.first || OpenStruct.new
       end
     end
   end

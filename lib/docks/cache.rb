@@ -67,23 +67,12 @@ module Docks
 
     def group_details(parse_results)
       name = parse_results[:name]
-
-      PARSE_RESULT_TYPES.each do |parse_result_type|
-        parse_results[parse_result_type].each do |parse_result|
-          if parse_result.symbol_type == Docks::Types::Symbol::PAGE
-            return {
-              name: name,
-              title: parse_result.page || name.capitalize,
-              group: parse_result.group || Docks::Types::Symbol::COMPONENT.capitalize
-            }
-          end
-        end
-      end
+      pattern_block = parse_results[:pattern]
 
       {
         name: name,
-        title: name.capitalize,
-        group: Docks::Types::Symbol::COMPONENT.capitalize
+        title: pattern_block[:page] || name.capitalize,
+        group: pattern_block[:group] || Docks::Types::Symbol::COMPONENT.capitalize
       }
     end
   end

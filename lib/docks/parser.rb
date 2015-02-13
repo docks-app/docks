@@ -19,9 +19,10 @@ module Docks
         files: file_group,
         name: Docks::Group.group_identifier(file_group.first)
       }
-      parsed_file_group[Docks::Types::Languages::MARKUP] = []
-      parsed_file_group[Docks::Types::Languages::SCRIPT] = []
-      parsed_file_group[Docks::Types::Languages::STYLE] = []
+
+      Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
+        parsed_file_group[parse_result_type] = []
+      end
 
       file_group.each do |file|
         # Do not process a file that is either a) does not have a supported extension
@@ -32,6 +33,7 @@ module Docks
         parsed_file_group[Docks::Language.file_type(file)].concat(parse_file(file))
       end
 
+      fix_pattern_block(parsed_file_group)
       parsed_file_group
     end
 
@@ -67,6 +69,19 @@ module Docks
     end
 
     private
+
+    def self.fix_pattern_block(parsed_file)
+      pattern_result = Hash.new
+      Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
+        new_pattern_result, parsed_file[parse_result_type] = parsed_file[parse_result_type].partition do |parse_result|
+          parse_result[:symbol_type] == Docks::Types::Symbol::PAGE
+        end
+
+        pattern_result = new_pattern_result.first || pattern_result
+      end
+
+      parsed_file[:pattern] = pattern_result
+    end
 
     def self.parser_for(file)
       @@parsers.reverse_each do |parser_details|
