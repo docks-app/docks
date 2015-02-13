@@ -57,8 +57,8 @@ describe Docks::Tag do
       expect(subject.default_tag_name(example.synonyms.first)).to be example.name
     end
 
-    it "returns nothing if the name is not registered" do
-      expect(subject.default_tag_name(:foo)).to be nil
+    it "returns the passed tag if it is not registered" do
+      expect(subject.default_tag_name(:foo)).to be :foo
     end
   end
 

@@ -7,14 +7,14 @@ module Docks
 
     def pattern
       pattern = params[:pattern].gsub(/\-+/, "_")
-      @pattern = Docks::Containers::Pattern.for(pattern)
-      @pattern_groups = Docks::PatternGroup.new
+      @pattern = Docks::Cache.pattern_for(pattern)
+      @pattern_groups = Docks::Cache.pattern_groups
 
       render(Docks.template_for(pattern) || :pattern)
     end
 
     def demo
-      @demo = Docks::Containers::Pattern.for(params[:pattern].gsub(/\-+/, "_")).demo_for(params[:demo])
+      @demo = Docks::Cache.pattern_for(params[:pattern].gsub(/\-+/, "_")).demo_for(params[:demo])
     end
   end
 end

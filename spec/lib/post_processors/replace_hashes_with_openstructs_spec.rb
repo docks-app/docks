@@ -33,7 +33,7 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
   end
 
   it 'correctly handles simple arrays' do
-    expect(result.simple_array).to eq content[:simple_array]
+    expect(result[:simple_array]).to eq content[:simple_array]
   end
 
   it 'correctly handles complex arrays (containing hashes and other arrays)' do
@@ -43,14 +43,14 @@ describe Docks::PostProcessors::ReplaceHashesWithOpenStructs do
       simple_array,
       'bar'
     ]
-    expect(result.complex_array).to eq expected_result
+    expect(result[:complex_array]).to eq expected_result
   end
 
   it 'correctly handles simple hashes' do
-    expect(result.simple_hash).to eq expected_simple_hash_result
+    expect(result[:simple_hash]).to eq expected_simple_hash_result
   end
 
   it 'correctly handles complex hashes (containing arrays and other hashes)' do
-    expect(result.complex_hash).to eq expected_complex_hash_result
+    expect(result[:complex_hash]).to eq expected_complex_hash_result
   end
 end

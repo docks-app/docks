@@ -10,6 +10,7 @@ module Docks
       VARIABLE    = "variable"
       CLASS       = "class"
       PAGE        = "page"
+      DEMO        = "demo"
     end
 
     module Tag
@@ -20,14 +21,14 @@ module Docks
     end
 
     module Access
-      PUBLIC      = 'public'
-      PRIVATE     = 'private'
+      PUBLIC      = "public"
+      PRIVATE     = "private"
     end
 
     module Demo
-      SELECT      = 'select'
-      JOINT       = 'joint'
-      NONE        = 'none'
+      SELECT      = "select"
+      JOINT       = "joint"
+      NONE        = "none"
       DEFAULT     = NONE
     end
 

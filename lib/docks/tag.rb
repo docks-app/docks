@@ -29,7 +29,7 @@ module Docks
     # name.
 
     def self.default_tag_name(tag)
-      @@synonyms[tag.to_sym]
+      @@synonyms[tag.to_sym] || tag
     end
 
 
