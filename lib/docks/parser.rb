@@ -109,8 +109,6 @@ module Docks
       setup_current_details
 
       return [] if Docks.current_parser.nil?
-
-      puts "Parsing #{file} with #{Docks.current_parser}"
       parse_results = Docks.current_parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
 
       parse_results.map! do |parse_result|
