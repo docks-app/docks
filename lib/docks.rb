@@ -25,7 +25,10 @@ Dir[File.join(File.dirname(__FILE__), "docks", "languages/*.rb")].each { |file| 
 require File.join(File.dirname(__FILE__), "docks", "tags/base_tag.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "tags/*.rb")].each { |file| require file }
 
+Dir[File.join(File.dirname(__FILE__), "docks", "containers/*.rb")].each { |file| require file }
+
 require "docks/rails/engine.rb" if defined?(Rails)
+
 
 module Docks
   CACHE_DIR = "docks_cache"
