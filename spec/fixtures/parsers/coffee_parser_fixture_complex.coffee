@@ -1,5 +1,5 @@
 #*
-# @page Bigfoot
+# @pattern Bigfoot
 
 # The best footnote plugin around.
 

@@ -68,20 +68,20 @@ describe Docks::Parsers::Base do
     end
 
     it "keeps only the last instance of a one_per_file tag" do
-      page_one = "Buttons"
-      page_two = "No, wait, Forms!"
+      pattern_one = "Buttons"
+      pattern_two = "No, wait, Forms!"
 
-      result = subject.parse_comment_block("@page #{page_one}\n@page #{page_two}")
-      expect(result[:page]).not_to eq page_one
-      expect(result[:page]).to eq page_two
+      result = subject.parse_comment_block("@pattern #{pattern_one}\n@pattern #{pattern_two}")
+      expect(result[:pattern]).not_to eq pattern_one
+      expect(result[:pattern]).to eq pattern_two
     end
 
     it "does not include lines following non-multiline comments even if the following lines include no tag" do
-      page = "Button"
+      pattern = "Button"
       following_line = "Here is some more content"
 
-      result = subject.parse_comment_block("@page #{page}\n#{following_line}")
-      expect(result[:page]).to eq page
+      result = subject.parse_comment_block("@pattern #{pattern}\n#{following_line}")
+      expect(result[:pattern]).to eq pattern
       expect(result[:description]).to include(following_line)
     end
   end

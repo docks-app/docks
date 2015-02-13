@@ -35,7 +35,7 @@ module Docks
           replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
           parseable_block = index_of_other_comment.nil? ? page_comment_block : page_comment_block[0..index_of_other_comment - 1]
 
-          page_parse_result = { symbol_type: Docks::Types::Symbol::PAGE }
+          page_parse_result = { symbol_type: Docks::Types::Symbol::PATTERN }
           docs << parse_comment_block(parseable_block, page_parse_result)
 
           replacement

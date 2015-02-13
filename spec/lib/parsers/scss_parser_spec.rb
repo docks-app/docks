@@ -21,8 +21,13 @@ describe Docks::Parsers::SCSS do
       expect(complex_parse_results.length).to eq 6
     end
 
-    it "captures the page comment block when one exists" do
-      expect(basic_parse_results.first[:page]).to be nil
+    it 'captures the pattern comment block when one exists' do
+      expect(basic_parse_results.first[:pattern]).to be nil
+      expect(complex_parse_results.first[:pattern]).to_not be nil
+    end
+
+    it "captures the pattern comment block when it is written using the page synonym" do
+      complex_parse_results = subject.parse(complex_fixture.sub("@pattern", "@page"))
       expect(complex_parse_results.first[:page]).to_not be nil
     end
   end
