@@ -71,7 +71,7 @@ module Docks
 
       {
         name: name,
-        title: pattern_block[:page] || name.capitalize,
+        title: pattern_block[:title] || name.capitalize,
         group: pattern_block[:group] || Docks::Types::Symbol::COMPONENT.capitalize
       }
     end

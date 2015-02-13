@@ -80,6 +80,7 @@ module Docks
         pattern_result = new_pattern_result.first || pattern_result
       end
 
+      pattern_result[:title] = pattern_result.delete(:pattern) || pattern_result.delete(:page)
       parsed_file[:pattern] = pattern_result
     end
 

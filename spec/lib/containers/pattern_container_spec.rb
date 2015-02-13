@@ -3,7 +3,7 @@ require "spec_helper"
 now = Date.parse("1991-01-11")
 name = :button
 title = "UI Button"
-pattern_block = { page: title, symbol_type: Docks::Types::Symbol::PAGE }
+pattern_block = { title: title, symbol_type: Docks::Types::Symbol::PATTERN }
 
 describe Docks::Containers::Pattern do
   subject { Docks::Containers::Pattern }

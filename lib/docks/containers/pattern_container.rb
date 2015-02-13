@@ -33,7 +33,7 @@ module Docks
 
         @modified = Date.parse(parse_results[:modified])
         @name = parse_results[:name].to_s
-        @title = @pattern[:page] || @name
+        @title = @pattern[:title] || @name
 
         build_containers
         build_demos

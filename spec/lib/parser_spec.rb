@@ -10,16 +10,37 @@ describe Docks::Parser do
   end
 
   describe ".parse_group" do
+    let(:file) { file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_complex.scss") }
+
     it "includes the parse result of a file in the appropriate group" do
       file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_basic.scss")
       expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to include(subject.send(:parse_file, file).first)
     end
 
     it "moves the pattern block to the top level of the parse result" do
-      file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_complex.scss")
       pattern_block = subject.send(:parse_file, file).first
+      pattern_block[:title] = pattern_block.delete(:pattern)
       expect(subject.parse_group([file])[:pattern]).to eq pattern_block
       expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to_not include(pattern_block)
+    end
+
+    it "moves the pattern block to the top level of the parse result" do
+      expect(File).to receive(:read).at_least(:once).and_return(File.read(file).sub("@pattern", "@page"))
+      pattern_block = subject.send(:parse_file, file).first
+      pattern_block[:title] = pattern_block.delete(:pattern)
+      expect(subject.parse_group([file])[:pattern]).to eq pattern_block
+      expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to_not include(pattern_block)
+    end
+
+    it "switches the pattern attribute to be the title of the pattern block" do
+      pattern = subject.parse_group([file])[:pattern]
+      expect(pattern[:title]).not_to be nil
+      expect(pattern[:pattern]).to be nil
+
+      expect(File).to receive(:read).at_least(:once).and_return(File.read(file).sub("@pattern", "@page"))
+      pattern = subject.parse_group([file])[:pattern]
+      expect(pattern[:title]).not_to be nil
+      expect(pattern[:page]).to be nil
     end
 
     it "does not include any parse result if the file is not a supported file type" do
