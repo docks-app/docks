@@ -14,7 +14,7 @@ module Docks
       #
       # Returns the type String.
 
-      def self.type; Docks::Types::Symbol::PAGE end
+      def self.type; Docks::Types::Symbol::PATTERN end
 
       attr_reader :demos, :modified, :name, :title
       alias_method :demo, :demos

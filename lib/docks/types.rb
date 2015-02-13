@@ -9,7 +9,7 @@ module Docks
       FUNCTION    = "function"
       VARIABLE    = "variable"
       CLASS       = "class"
-      PAGE        = "page"
+      PATTERN     = "pattern"
       DEMO        = "demo"
     end
 

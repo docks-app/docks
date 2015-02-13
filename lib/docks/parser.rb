@@ -74,7 +74,7 @@ module Docks
       pattern_result = Hash.new
       Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
         new_pattern_result, parsed_file[parse_result_type] = parsed_file[parse_result_type].partition do |parse_result|
-          parse_result[:symbol_type] == Docks::Types::Symbol::PAGE
+          parse_result[:symbol_type] == Docks::Types::Symbol::PATTERN
         end
 
         pattern_result = new_pattern_result.first || pattern_result

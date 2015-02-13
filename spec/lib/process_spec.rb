@@ -9,10 +9,10 @@ describe Docks::Process do
 
   describe ".process" do
     it "parses each tag individually" do
-      subject.should_receive(:process_tag).with(:page, "Page")
+      subject.should_receive(:process_tag).with(:pattern, "Page")
       subject.should_receive(:process_tag).with(:subtitle, "Subtitle")
 
-      subject.process({ page: "Page", subtitle: "Subtitle" })
+      subject.process({ pattern: "Page", subtitle: "Subtitle" })
     end
   end
 
