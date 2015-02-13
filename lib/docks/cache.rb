@@ -13,7 +13,7 @@ module Docks
       cache_file = File.join(Docks.configuration.cache_dir, pattern)
 
       if File.exists?(cache_file)
-        Pattern.new(YAML::load_file(cache_file))
+        Docks::Containers::Pattern.new(YAML::load_file(cache_file))
       else
         raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
       end
@@ -24,7 +24,7 @@ module Docks
       patterns = {}
 
       if File.exists?(@@group_cache_file)
-        YAML::load_file(group_cache_file).each_value do |details|
+        YAML::load_file(@@group_cache_file).each_value do |details|
           group = details.delete(:group)
           patterns[group] ||= []
           patterns[group] << details
@@ -41,9 +41,9 @@ module Docks
     end
 
     def <<(parse_result)
-      return unless pattern_is_valid(parse_result)
+      return unless pattern_is_valid?(parse_result)
 
-      id = parse_result.name.to_s
+      id = parse_result[:name].to_s
       cache_file = File.join(Docks.configuration.cache_dir, id)
 
       File.open(cache_file, 'w') do |file|
