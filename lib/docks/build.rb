@@ -39,30 +39,23 @@ module Docks
     def self.build
       # return false unless is_valid?
 
-      configure
-
-      FileUtils.mkdir_p Docks.configuration.cache_dir
+      cache = Docks::Cache.new
 
       Group.group(Docks.configuration.src_files).each do |group_identifier, group|
-        next unless should_render_group?(group)
+        next unless should_build?(group)
 
         parse_result = Parser.parse_group(group)
-        next unless Containers::Pattern.is_valid?(parse_result)
-
         parse_result[:modified] = most_recent_modified_date(group).to_s
-
-        id = group_identifier.to_s
-        add_to_group_cache(parse_result, id)
-        cache(parse_result, id)
+        cache << parse_result
       end
 
-      cache_groups
-
+      cache.dump
       Messenger.succeed("\nDocs successfully generated. Enjoy!")
       true
     end
 
 
+    private
 
     # Public: Determines whether or not the files within the passed group should
     # be rendered anew. This will be determined by whether or not the most recent
@@ -72,43 +65,11 @@ module Docks
     #
     # Returns a Boolean indicating whether or not to render the group.
 
-    def self.should_render_group?(group)
+    def self.should_build?(group)
       cache_file = File.join(Docks.configuration.cache_dir, Group.group_identifier(group.first).to_s)
       return true unless File.exists?(cache_file)
 
       File.mtime(cache_file) < most_recent_modified_date(group)
-    end
-
-
-
-    private
-
-    def self.add_to_group_cache(parse_result, id)
-      @@group_cache[id] = Containers::Pattern.group_details(parse_result)
-    end
-
-    def self.cache_groups
-      File.open(@@group_cache_file, "w") do |file|
-        file.write(@@group_cache.to_yaml)
-      end
-    end
-
-    def self.cache(parse_result, id)
-      cache_file = File.join(Docks.configuration.cache_dir, id)
-
-      File.open(cache_file, 'w') do |file|
-        file.write(parse_result.to_yaml)
-      end
-    end
-
-    def self.configure
-      # Docks.pre_configuration
-      # if File.exists?(Docks.configuration.config_file)
-      #   Docks.configure_with(YAML::load_file(Docks.configuration.config_file))
-      # end
-
-      @@group_cache_file ||= File.join(Docks.configuration.cache_dir, Docks::GROUP_CACHE_FILE)
-      @@group_cache ||= File.exists?(@@group_cache_file) ? YAML::load_file(@@group_cache_file) : {}
     end
 
     # Private: Figures out the newest file modification date of the passed file
@@ -128,20 +89,6 @@ module Docks
     def validate_src
       if @src_files.empty?
         @errors << 'No source files were specified in your config file.'
-      end
-    end
-
-    def self.associate_markup_files_with_parse_results(parse_result, markup_files)
-      (parse_result[Docks::Types::Languages::MARKUP] + parse_result[Docks::Types::Languages::STYLE]).each do |item|
-        next if !(item.type == Types::Symbol::COMPONENT) || (item.respond_to?(:markup) && item.markup.length > 0)
-
-        id = Group.group_identifier(item.name)
-        markup_files.each do |file|
-          if id == Group.group_identifier(file) && File.exists?(file)
-            item.markup = File.read(file)
-            break
-          end
-        end
       end
     end
   end
