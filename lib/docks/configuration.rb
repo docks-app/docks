@@ -1,35 +1,36 @@
-require File.join(File.dirname(__FILE__), "utils", "singleton.rb")
+require "singleton"
 
 module Docks
-  class Configuration < SingletonClass
-    cattr_accessor :mount_at
-    @@mount_at = '/pattern-library'
+  class Configuration
+    include Singleton
+
+    attr_accessor :mount_at, :root
+    @@mount_at = "/pattern-library"
     @@root = nil
 
-    @@custom_parsers = []
+    attr_accessor :src_files, :files, :dest_dir, :partials_dir,
+                  :config_file, :cache_dir, :custom_parsers,
+                  :github_repo
 
-    cattr_accessor :src_files, :files, :dest_dir, :partials_dir,
-                   :config_file, :cache_dir, :root, :custom_parsers
-
-    def self.custom_parsers
+    def custom_parsers
       yield Docks::Parser
     end
 
-    def self.custom_languages
+    def custom_languages
       yield Docks::Language
     end
 
-    def self.custom_tags
+    def custom_tags
       yield Docks::Tag
     end
 
-    def self.custom_templates
+    def custom_templates
       yield Docks::Template
     end
   end
 
   @@configured = false
-  @@configuration = Configuration
+  @@configuration = Configuration.instance
 
   def self.configuration
     @@configuration
@@ -57,7 +58,6 @@ module Docks
     pre_configuration
     yield @@configuration if block_given?
     post_configuration
-    @@configured = true
   end
 
   def self.pre_configuration
@@ -81,6 +81,8 @@ module Docks
   end
 
   def self.post_configuration
+    @@configured = true
+
     return if !configuration.src_files.kind_of?(Array) || configuration.src_files.empty?
     configuration.src_files.map { |file| File.join(configuration.root, file) }
     configuration.files = Docks::Group.group_files_by_type(configuration.src_files)
