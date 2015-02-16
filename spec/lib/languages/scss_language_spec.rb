@@ -52,7 +52,17 @@ describe Docks::Languages::SCSS do
       expect(subject.friendly_presentation(variable)).to eq "$#{name}"
     end
 
+    it "only prefixes variable names with dollar signs if they don't already exist" do
+      variable[:name] = "$#{name}"
+      expect(subject.friendly_presentation(variable)).to eq "$#{name}"
+    end
+
     it "gives a friendly presentation for placeholders" do
+      expect(subject.friendly_presentation(placeholder)).to eq "%#{name}"
+    end
+
+    it "only prefixes placeholder names with % if it doesn't already exist" do
+      placeholder[:name] = "%#{name}"
       expect(subject.friendly_presentation(placeholder)).to eq "%#{name}"
     end
 

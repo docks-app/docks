@@ -1,6 +1,12 @@
 module Docks
   module PostProcessors
     class ReplaceHashesWithOpenStructs < Base
+
+      KEYS_WITHOUT_OSTRUCT = [
+        :stub,
+        :value
+      ].freeze
+
       # Public: Processes the passed content by openstructifying all hashes,
       # including those within arrays or other hashes.
       #
@@ -16,6 +22,7 @@ module Docks
       def self.post_process(parsed_file)
         parsed_file.map! do |parse_result|
           parse_result.each do |key, value|
+            next if KEYS_WITHOUT_OSTRUCT.include?(key)
             parse_result[key] = recursive_openstructify(value)
           end
         end
@@ -50,11 +57,11 @@ module Docks
       def self.recursive_openstructify(item)
         if item.kind_of?(Hash)
           item.keys.each do |key|
-            item[key] = self.recursive_openstructify(item[key]) unless [:stub, :value].include?(key)
+            item[key] = recursive_openstructify(item[key]) unless KEYS_WITHOUT_OSTRUCT.include?(key)
           end
           CleanJSONOpenStruct.new(item)
         elsif item.kind_of?(Array)
-          item.map! { |arr_item| self.recursive_openstructify(arr_item) }
+          item.map! { |arr_item| recursive_openstructify(arr_item) }
         else
           item
         end
