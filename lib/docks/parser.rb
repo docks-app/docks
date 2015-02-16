@@ -51,7 +51,7 @@ module Docks
       !parser_for(file).nil?
     end
 
-    def self.parse_comment_block(comment_block, language, post_process = false)
+    def self.parse_comment_block(comment_block, language, should_post_process = false)
       pseudo_file = "foo.#{language.to_s}"
       @@current_file = pseudo_file
       setup_current_details
@@ -60,7 +60,7 @@ module Docks
       result = Docks.current_parser.parse_comment_block(comment_block)
       result = Docks::Tag.join_synonymous_tags(result)
       result = Docks::Process.process(result)
-      result = Docks::Process.post_process([results]).first if post_process
+      result = Docks::Process.post_process([results]).first if should_post_process
 
       @@current_file = nil
       teardown_current_details

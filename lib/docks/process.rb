@@ -86,7 +86,7 @@ module Docks
     # Returns nothing.
 
     def self.clear_post_processors
-      @@post_processors = Set.new
+      @@post_processors = []
     end
 
 
