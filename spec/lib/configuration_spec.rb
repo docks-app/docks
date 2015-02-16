@@ -4,14 +4,14 @@ describe Docks do
   subject { Docks }
 
   it "has a configuration property" do
-    expect(subject.configuration).to be Docks::Configuration
+    expect(subject.configuration).to be Docks::Configuration.instance
   end
 
   describe ".configure" do
     it "yields the configuration object" do
       yielded = nil
       subject.configure { |config| yielded = config }
-      expect(yielded).to be Docks::Configuration
+      expect(yielded).to be Docks::Configuration.instance
     end
 
     it "sets configured to true" do
@@ -29,7 +29,7 @@ describe Docks do
 end
 
 describe Docks::Configuration do
-  subject { Docks::Configuration }
+  subject { Docks::Configuration.instance }
 
   it "has the default configuration" do
   end
