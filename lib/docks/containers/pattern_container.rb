@@ -16,7 +16,7 @@ module Docks
 
       def self.type; Docks::Types::Symbol::PATTERN end
 
-      attr_reader :demos, :modified, :name, :title
+      attr_reader :demos, :modified, :name, :title, :files
       alias_method :demo, :demos
 
       # Public: initializes a new pattern. This includes setting up the `name`,
@@ -31,6 +31,7 @@ module Docks
         @pattern = parse_results[:pattern]
         super(@pattern)
 
+        @files = parse_results[:files]
         @modified = Date.parse(parse_results[:modified])
         @name = parse_results[:name].to_s
         @title = @pattern[:title] || @name
