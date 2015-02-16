@@ -4,13 +4,10 @@ module Docks
   class Configuration
     include Singleton
 
-    attr_accessor :mount_at, :root
-    @@mount_at = "/pattern-library"
-    @@root = nil
-
+    @root = nil
     attr_accessor :src_files, :files, :dest_dir, :partials_dir,
                   :config_file, :cache_dir, :custom_parsers,
-                  :github_repo
+                  :github_repo, :root
 
     def custom_parsers
       yield Docks::Parser
@@ -26,6 +23,10 @@ module Docks
 
     def custom_templates
       yield Docks::Template
+    end
+
+    def mount_at
+      "/pattern-library"
     end
   end
 
