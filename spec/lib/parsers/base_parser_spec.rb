@@ -1,5 +1,3 @@
-# TODO: make sure only one space is removed from the part of line after tag/ after bare comment block
-
 require "spec_helper"
 
 describe Docks::Parsers::Base do
@@ -10,25 +8,25 @@ describe Docks::Parsers::Base do
   end
 
   describe "#parse_comment_block" do
-    it "correctly adds a description when it is leading without a tag name" do
+    it "adds a description when it is leading without a tag name" do
       description = "This is\na description"
       result = subject.parse_comment_block(description)
       expect(result[:description].join("\n")).to eq description
     end
 
-    it "correctly adds a normal tag to an array of results" do
+    it "adds a normal tag to an array of results" do
       title = "Next Tab"
       result = subject.parse_comment_block("    @title #{title}")
       expect(result[:title]).to eq title
     end
 
-    it "correctly adds a multiple-per-block tag to an array of arrays" do
+    it "adds a multiple-per-block tag to an array of arrays" do
       param = "{String} name"
       result = subject.parse_comment_block("   @param #{param}")
       expect(result[:param]).to eq [[param]]
     end
 
-    it "correctly appends a second line of a normal tag to the same result array" do
+    it "appends a second line of a normal tag to the same result array" do
       line_one = "html"
       line_two = " <p>Hello</p>"
       result = subject.parse_comment_block(" @example #{line_one}\n#{line_two}")
@@ -38,7 +36,7 @@ describe Docks::Parsers::Base do
       expect(example_result[1]).to eq line_two
     end
 
-    it "correctly adds details for multiple tags" do
+    it "adds details for multiple tags" do
       title = "Title"
       subtitle = "Subtitle"
       result = subject.parse_comment_block("  @title #{title}\n  @subtitle #{subtitle}")
@@ -46,15 +44,7 @@ describe Docks::Parsers::Base do
       expect(result[:subtitle]).to eq subtitle
     end
 
-    it "correctly adds details for multiple tags" do
-      title = "Title"
-      subtitle = "Subtitle"
-      result = subject.parse_comment_block("  @title #{title}\n  @subtitle #{subtitle}")
-      expect(result[:title]).to eq title
-      expect(result[:subtitle]).to eq subtitle
-    end
-
-    it "correctly adds a new array to multiple_allowed tags when other tags are between the first and second ones" do
+    it "adds a new array to multiple_allowed tags when other tags are between the first and second ones" do
       param_one = "{String} name - The\nname"
       param_two = "{Number} count - The\ncount"
       title = "Title"
@@ -83,6 +73,12 @@ describe Docks::Parsers::Base do
       result = subject.parse_comment_block("@pattern #{pattern}\n#{following_line}")
       expect(result[:pattern]).to eq pattern
       expect(result[:description]).to include(following_line)
+    end
+
+    it "only removes one space after the tag name" do
+      pattern = "Button"
+      result = subject.parse_comment_block("@pattern   #{pattern}")
+      expect(result[:pattern]).to eq "  #{pattern}"
     end
   end
 end

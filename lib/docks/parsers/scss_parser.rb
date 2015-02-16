@@ -1,3 +1,5 @@
+require File.expand_path("../base_parser.rb", __FILE__)
+
 module Docks
   module Parsers
     class SCSS < Base
@@ -8,7 +10,6 @@ module Docks
         @comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)+)\s*((?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m
         @comment_pattern = /^ *\/\/ ?/m
       end
-
 
 
       # Public: Identifies the name and type of the parse result that is being parsed.
@@ -28,7 +29,7 @@ module Docks
       #   Docks::Parsers::SCSS.instance.parse_result_details("%full-width { width: 100% }")
       #   # => "full-width", "placeholder"
       #
-      # Returns a touple of the name and type, both as Strings.
+      # Returns a tuple of the name and type, both as Strings.
 
       def parse_result_details(first_code_line)
         first_code_line.strip!
@@ -45,10 +46,6 @@ module Docks
 
         name = first_code_line.match(/^@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
         return name, type
-      end
-
-      def friendly_presentation(component)
-
       end
     end
   end

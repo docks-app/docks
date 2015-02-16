@@ -1,4 +1,3 @@
 module Docks
-  class NoPatternError < StandardError
-  end
+  class NoPatternError < StandardError; end
 end

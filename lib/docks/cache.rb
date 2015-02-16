@@ -12,11 +12,11 @@ module Docks
       Docks::Builder.build
       cache_file = File.join(Docks.configuration.cache_dir, pattern)
 
-      if File.exists?(cache_file)
-        Docks::Containers::Pattern.new(YAML::load_file(cache_file))
-      else
+      unless File.exists?(cache_file)
         raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
       end
+
+      Docks::Containers::Pattern.new(YAML::load_file(cache_file))
     end
 
     def self.pattern_groups
@@ -37,7 +37,7 @@ module Docks
     def initialize
       FileUtils.mkdir_p(Docks.configuration.cache_dir)
       @@group_cache_file ||= File.join(Docks.configuration.cache_dir, Docks::GROUP_CACHE_FILE)
-      @group_cache = File.exists?(@@group_cache_file) ? YAML::load_file(@@group_cache_file) : {}
+      @group_cache = File.exists?(@@group_cache_file) ? (YAML::load_file(@@group_cache_file) || Hash.new) : Hash.new
     end
 
     def <<(parse_result)

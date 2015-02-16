@@ -5,49 +5,57 @@ name = "foo"
 describe Docks::Languages::SCSS do
   subject { Docks::Languages::SCSS.instance }
 
-  let(:variable) do
-    { symbol_type: Docks::Types::Symbol::VARIABLE, name: name }
-  end
+  describe ".extensions" do
+    let(:extensions) { [subject.class.extensions].flatten }
 
-  let(:placeholder) do
-    { symbol_type: Docks::Types::Symbol::PLACEHOLDER, name: name }
-  end
-
-  let(:function_no_params) do
-    { symbol_type: Docks::Types::Symbol::FUNCTION, name: name }
-  end
-
-  let(:function_with_params) do
-    {
-      symbol_type: Docks::Types::Symbol::FUNCTION,
-      name: name,
-      param: [
-        { name: "bar" },
-        { name: "baz", default: "qux" }
-      ]
-    }
-  end
-
-  let(:mixin_no_params) do
-    { symbol_type: Docks::Types::Symbol::MIXIN, name: name }
-  end
-
-  let(:mixin_with_params) do
-    {
-      symbol_type: Docks::Types::Symbol::MIXIN,
-      name: name,
-      param: [
-        { name: "bar" },
-        { name: "baz", default: "qux" }
-      ]
-    }
-  end
-
-  let(:something_else) do
-    { symbol_type: Docks::Types::Symbol::COMPONENT, name: name }
+    it "includes .scss as an extension" do
+      expect(extensions).to include "scss"
+    end
   end
 
   describe "#friendly_presentation" do
+    let(:variable) do
+      { symbol_type: Docks::Types::Symbol::VARIABLE, name: name }
+    end
+
+    let(:placeholder) do
+      { symbol_type: Docks::Types::Symbol::PLACEHOLDER, name: name }
+    end
+
+    let(:function_no_params) do
+      { symbol_type: Docks::Types::Symbol::FUNCTION, name: name }
+    end
+
+    let(:function_with_params) do
+      {
+        symbol_type: Docks::Types::Symbol::FUNCTION,
+        name: name,
+        param: [
+          { name: "bar" },
+          { name: "baz", default: "qux" }
+        ]
+      }
+    end
+
+    let(:mixin_no_params) do
+      { symbol_type: Docks::Types::Symbol::MIXIN, name: name }
+    end
+
+    let(:mixin_with_params) do
+      {
+        symbol_type: Docks::Types::Symbol::MIXIN,
+        name: name,
+        param: [
+          { name: "bar" },
+          { name: "baz", default: "qux" }
+        ]
+      }
+    end
+
+    let(:something_else) do
+      { symbol_type: Docks::Types::Symbol::COMPONENT, name: name }
+    end
+
     it "gives a friendly presentation for variables" do
       expect(subject.friendly_presentation(variable)).to eq "$#{name}"
     end

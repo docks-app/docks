@@ -1,5 +1,3 @@
-# TODO: check whether empty lines in paragraphs are preserved
-
 require "spec_helper"
 
 describe Docks::Parsers::SCSS do
@@ -44,15 +42,15 @@ describe Docks::Parsers::SCSS do
     let(:basic_comment) { "This is a comment" }
     let(:complex_comment) { "// This comment has some extra comment-like symbols/characters //" }
 
-    it "correctly strips line comments" do
+    it "strips line comments" do
       expect("// #{basic_comment}".gsub(subject.comment_pattern, "")).to eq basic_comment
     end
 
-    it "correctly strips line comments with leading whitespace" do
+    it "strips line comments with leading whitespace" do
       expect("    // #{basic_comment}".gsub(subject.comment_pattern, "")).to eq basic_comment
     end
 
-    it "correctly strips line complex comments" do
+    it "strips line complex comments" do
       expect("// #{complex_comment}".gsub(subject.comment_pattern, "")).to eq complex_comment
     end
 
@@ -63,28 +61,28 @@ describe Docks::Parsers::SCSS do
   end
 
   describe "#parse_result_details" do
-    it "correctly identifies a placeholder" do
+    it "identifies a placeholder" do
       target_name = "clearfix"
       name, type = subject.parse_result_details("%#{target_name} {")
       expect(type).to eq Docks::Types::Symbol::PLACEHOLDER
       expect(name).to eq target_name
     end
 
-    it "correctly identifies a mixin" do
+    it "identifies a mixin" do
       target_name = "full-size"
       name, type = subject.parse_result_details("@mixin #{target_name}($height, $width) {")
       expect(type).to eq Docks::Types::Symbol::MIXIN
       expect(name).to eq target_name
     end
 
-    it "correctly identifies a function" do
+    it "identifies a function" do
       target_name = "strip-units"
       name, type = subject.parse_result_details("@function #{target_name}($num) {")
       expect(type).to eq Docks::Types::Symbol::FUNCTION
       expect(name).to eq target_name
     end
 
-    it "correctly identifies a variable" do
+    it "identifies a variable" do
       target_name = "message-width"
       name, type = subject.parse_result_details("$#{target_name}: 40rem;")
       expect(type).to eq Docks::Types::Symbol::VARIABLE
@@ -92,56 +90,56 @@ describe Docks::Parsers::SCSS do
     end
 
     describe "states" do
-      it "correctly identifies a state as a class starting with `is-`" do
+      it "identifies a state as a class starting with `is-`" do
         target_name = "is-active"
         name, type = subject.parse_result_details("#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class starting with `&.is-`" do
+      it "identifies a state as a class starting with `&.is-`" do
         target_name = "is-active"
         name, type = subject.parse_result_details("&.#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class containing `--is-`" do
+      it "identifies a state as a class containing `--is-`" do
         target_name = "tab-list__tab--is-active"
         name, type = subject.parse_result_details(".#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class starting with `&--is-`" do
+      it "identifies a state as a class starting with `&--is-`" do
         target_name = "--is-active"
         name, type = subject.parse_result_details("&#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class starting with `js-`" do
+      it "identifies a state as a class starting with `js-`" do
         target_name = "js-active"
         name, type = subject.parse_result_details(".#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class starting with `&.js-`" do
+      it "identifies a state as a class starting with `&.js-`" do
         target_name = "js-active"
         name, type = subject.parse_result_details("&.#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class containing `--js-`" do
+      it "identifies a state as a class containing `--js-`" do
         target_name = "tab-list__tab--js-active"
         name, type = subject.parse_result_details(".#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a state as a class starting with `&--js-`" do
+      it "identifies a state as a class starting with `&--js-`" do
         target_name = "--js-active"
         name, type = subject.parse_result_details("&#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::STATE
@@ -150,14 +148,14 @@ describe Docks::Parsers::SCSS do
     end
 
     describe "variants" do
-      it "correctly identifies a variant as a class containing `--`" do
+      it "identifies a variant as a class containing `--`" do
         target_name = "tab-list__tab--large"
         name, type = subject.parse_result_details(".#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::VARIANT
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a variant as a class starting with `&--`" do
+      it "identifies a variant as a class starting with `&--`" do
         target_name = "--large"
         name, type = subject.parse_result_details("&#{target_name} {")
         expect(type).to eq Docks::Types::Symbol::VARIANT
@@ -166,14 +164,14 @@ describe Docks::Parsers::SCSS do
     end
 
     describe "component" do
-      it "correctly identifies a component as any class not matching state/ variant" do
+      it "identifies a component as any class not matching state/ variant" do
         target_name = "tab-list__tab"
         name, type = subject.parse_result_details(".#{target_name} { flex: 1 1 0; }")
         expect(type).to eq Docks::Types::Symbol::COMPONENT
         expect(name).to eq target_name
       end
 
-      it "correctly identifies a component as a class starting with `&__`" do
+      it "identifies a component as a class starting with `&__`" do
         target_name = "__tab"
         name, type = subject.parse_result_details("&#{target_name} { flex: 1 1 0; }")
         expect(type).to eq Docks::Types::Symbol::COMPONENT

@@ -1,4 +1,4 @@
-require_relative "scss_parser.rb"
+require File.expand_path("../scss_parser.rb", __FILE__)
 
 module Docks
   module Parsers
@@ -7,7 +7,6 @@ module Docks
       def initialize
         super
       end
-
 
 
       # Public: Identifies the name and type of the parse result that is being parsed.
@@ -24,13 +23,13 @@ module Docks
       #   Docks::Parsers::Less.instance.parse_result_details("&--is-active {")
       #   # => "--is-active", "state"
       #
-      # Returns a touple of the name and type, both as Strings.
+      # Returns a tuple of the name and type, both as Strings.
 
       def parse_result_details(first_code_line)
         first_code_line.strip!
 
         type = case first_code_line
-          when /^.[^:]*\(/ then Docks::Types::Symbol::MIXIN
+          when /^.[^\(]*\(/ then Docks::Types::Symbol::MIXIN
           when /^@/ then Docks::Types::Symbol::VARIABLE
           when /(\.|\-\-)?(?:is|js)\-/ then Docks::Types::Symbol::STATE
           when /\-\-(?:[a-zA-Z][\-_]?)*/ then Docks::Types::Symbol::VARIANT

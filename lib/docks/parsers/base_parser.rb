@@ -16,7 +16,6 @@ module Docks
       end
 
 
-
       # Public: Parses out all blocks from the passed file contents.
       #
       # file_contents - A String of the text to be parsed.
@@ -50,7 +49,6 @@ module Docks
 
         docs
       end
-
 
 
       # Public: Parses the tags and associated content out of a comment block.

@@ -1,17 +1,17 @@
+require File.expand_path("../base_parser.rb", __FILE__)
+
 module Docks
   module Parsers
     class ERB < Base
 
       def initialize
         @comment_symbol = "<%#"
-        @page_comment_extractor = /(?:^\s*<%#\*\n)((?:^\s*?<%#[^\n]*\n)*(?:^\s*?<%#[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?<%#[^\n]*\n)*)/m
-        @comment_extractor = /(?:^\s*<%#\*\n)((?:^\s*?<%#[^\n]*\n)+)\s*([^\n]*)$/m
-        @comment_pattern = /^\s*<%#\s?\n?/m
+        @page_comment_extractor = /\s*<%#\*(.*@(?:page|pattern).*?)%>/m
+        @comment_extractor = /(?:\s*<%#\*\n)(.*?)%>\s*([^\n]*)/m
+        @comment_pattern = /^\s?/m
       end
 
 
-
-      # TODO
       # Public: Identifies the name and type of the parse result that is being parsed.
       #
       # first_code_line - The first line of actual code following a documentation
@@ -20,16 +20,16 @@ module Docks
       #
       # Examples
       #
-      #   Docks::Parsers::Haml.instance.parse_result_details('  %div.tab-list__tab')
+      #   Docks::Parsers::ERB.instance.parse_result_details('  <div class="tab-list__tab">')
       #   # => 'component', 'tab-list__tab'
       #
-      # Returns a touple of the name and type, both as Strings.
+      # Returns a tuple of the name and type, both as Strings.
 
       def parse_result_details(first_code_line)
         first_code_line.strip!
 
         type = Docks::Types::Symbol::COMPONENT
-        name = first_code_line.match(/^\s*(?:[^\.]*\.)([\-_a-zA-Z]*)/).captures.first
+        name = first_code_line.match(/class\s*=\s*['"]([^\s'"]*)/).captures.first
         return name, type
       end
     end

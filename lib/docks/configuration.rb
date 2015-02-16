@@ -64,28 +64,22 @@ module Docks
   def self.pre_configuration
     return if @@configured
 
-    rails = defined?(::Rails)
-    configuration.root = rails ? ::Rails.root.to_s : Dir.pwd if configuration.root.nil?
-
-    if configuration.cache_dir.nil?
-      configuration.cache_dir = rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}")
-    end
-
     Tag.register_bundled_tags
     Process.register_bundled_post_processors
     Language.register_bundled_languages
-
-    # if configuration.config_file.nil?
-    #   config_file = rails ? File.join(configuration.root, "config", Docks::CONFIG_FILE) : File.join(configuration.root, Docks::CONFIG_FILE)
-    #   configuration.config_file = config_file if File.exists?(config_file)
-    # end
   end
 
   def self.post_configuration
     @@configured = true
 
-    return if !configuration.src_files.kind_of?(Array) || configuration.src_files.empty?
-    configuration.src_files.map { |file| File.join(configuration.root, file) }
-    configuration.files = Docks::Group.group_files_by_type(configuration.src_files)
+    rails = defined?(::Rails)
+
+    configuration.root ||= (rails ? ::Rails.root.to_s : Dir.pwd)
+    configuration.cache_dir ||= (rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}"))
+
+    if configuration.src_files.kind_of?(Array) && !configuration.src_files.empty?
+      configuration.src_files.map { |file| File.join(configuration.root, file) }
+      configuration.files = Docks::Group.group_files_by_type(configuration.src_files)
+    end
   end
 end
