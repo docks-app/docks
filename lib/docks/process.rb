@@ -67,7 +67,7 @@ module Docks
                           Docks::PostProcessors::CleanUpHelperAndMarkup,
                           Docks::PostProcessors::MarkdownDescriptions,
                           Docks::PostProcessors::JoinSubcomponentsToBaseComponent,
-                          Docks::PostProcessors::AddFriendlyPresentations,
+                          Docks::PostProcessors::AddExtraMetadata,
                           Docks::PostProcessors::ReplaceHashesWithOpenStructs
     end
 

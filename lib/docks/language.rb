@@ -91,7 +91,7 @@ module Docks
     # Returns a string of the file's extension.
 
     def self.extension_for_file(file)
-      File.extname(file)[1..-1]
+      file.split(".").last
     end
 
 

@@ -8,8 +8,7 @@ module Docks
 
           if helper_present && !markup_present
             unless parse_result[:stub].nil?
-              parse_result[:helper] = functionize(parse_result[:helper], parse_result[:stub])
-              parse_result[:stub] = nil
+              parse_result[:helper] = functionize(parse_result[:helper], parse_result[:stub], parse_result[:language])
             end
           elsif markup_present && helper_present
             unless parse_result[:markup].index(parse_result[:helper]).nil?
@@ -17,6 +16,8 @@ module Docks
               parse_result[:markup] = nil
             end
           end
+
+          parse_result[:stub] = nil
         end
 
         parsed_file
@@ -24,43 +25,9 @@ module Docks
 
       private
 
-      def self.functionize(helper, stub)
-        return helper if stub.keys.empty?
-        arguments = stub[:arguments] || stub["arguments"]
-        arguments = [stub] if arguments.nil?
-        first = true
-
-        function_sting = arguments.inject("<%= #{helper} ") do |func, arg|
-          if first
-            first = false
-          else
-            func << ", "
-          end
-
-          func << stringify_val(arg) if arg.kind_of?(String)
-          if arg.kind_of?(Hash)
-            spaces = " " * func.length
-            func << arg.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n#{spaces}")
-          end
-
-          func
-        end
-
-        "#{function_sting} %>"
-      end
-
-      def self.stringify_val(val)
-        if val.kind_of?(String)
-          "\"#{val}\""
-        elsif val.kind_of?(Hash)
-          "{ #{val.map { |k, v| "#{k}: #{stringify_val(v)}" }.join(",\n")} }"
-        elsif !!val == val
-          val
-        elsif val.nil?
-          "nil"
-        else
-          ":#{val}"
-        end
+      def self.functionize(helper, stub, language)
+        language = Docks::Language.language_for(language)
+        (language.nil? || !language.respond_to?(:helper_markup_for)) ? nil : language.helper_markup_for(helper, stub)
       end
     end
   end

@@ -1,13 +1,13 @@
-require "yaml"
+require "json"
 
 module Docks
   module Languages
-    class YAML < Base
+    class JSON < Base
       def self.type; Docks::Types::Languages::STUB end
-      def self.extensions; "yml" end
+      def self.extensions; "json" end
 
       def load_stub(file)
-        ::YAML::load_file(file)
+        ::JSON::load(File.read(file))
       end
     end
   end
