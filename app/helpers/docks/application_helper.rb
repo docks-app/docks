@@ -75,7 +75,7 @@ module Docks
     end
 
     def docks_icons
-      File.read(Rails.root.join("app/assets/images/icons.svg")).html_safe
+      File.read(image_path("docks/icons.svg")).html_safe
     end
 
     def docks_icon(name, options = {})

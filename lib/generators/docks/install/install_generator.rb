@@ -24,6 +24,10 @@ module Docks
       copy_file "views/demo.html.erb", "app/views/docks/home/demo.html.erb"
     end
 
+    def copy_images
+      copy_file "images/icons.svg", "app/assets/images/docks/icons.svg"
+    end
+
     def copy_config
       copy_file "docks.rb", "config/docks.rb"
     end
