@@ -87,47 +87,6 @@
 
 
 
-// SELECTORS
-
-@mixin nth-of-m($n, $m) {
-  &:nth-child(#{$n}):nth-last-child(#{$m - $n + 1}) {
-    @content;
-  }
-}
-
-@mixin first-of($n) {
-  @include nth-of-m(1, $n) { @content; }
-}
-
-@mixin last-of($n) {
-  @include nth-of-m($n, $n) { @content; }
-}
-
-@mixin one-of($n) {
-  $selector: &;
-
-  @include first-of($n) {
-    &, & ~ #{$selector} {
-      @content;
-    }
-  }
-}
-
-@mixin when-inside($selector) {
-  #{$selector} & {
-    @content;
-  }
-}
-
-@mixin when-child-of($selector) {
-  #{$selector} > & {
-    @content;
-  }
-}
-
-
-
-
 
 @mixin dark-theme {
   .x-ray & {
