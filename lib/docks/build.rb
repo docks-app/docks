@@ -1,20 +1,13 @@
 module Docks
   class Builder
     def self.build
-      puts "BUILDING"
       cache = Docks::Cache.new
 
-      puts "GROUPS:"
-      puts Group.group(Docks.configuration.src_files)
-
       Group.group(Docks.configuration.src_files).each do |group_identifier, group|
-        puts "RENDERING: #{group_identifier} WITH: [#{group.join(", ")}] (SHOULD_BUILD: #{should_build?(group)})"
         next unless should_build?(group)
 
         parse_result = Parser.parse_group(group)
         parse_result[:modified] = most_recent_modified_date(group).to_s
-        puts "PARSE RESULT"
-        puts parse_result
         cache << parse_result
       end
 
