@@ -29,7 +29,7 @@ module Docks
     end
 
     def copy_config
-      copy_file "docks.rb", "config/docks.rb"
+      copy_file "docks.rb", "config/initializers/docks.rb"
     end
 
     def copy_styles

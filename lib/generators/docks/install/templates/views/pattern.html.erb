@@ -4,15 +4,15 @@
   <%= docks_tab_panel active?: true, id: "page__content--markup", tab_id: "page__content__tab--markup" do %>
     <main class="section__container">
       <% @pattern.demos.each do |demo| %>
-        <%= render "demo", demo: demo %>
+        <%= render "docks/partials/demo", demo: demo %>
       <% end %>
 
       <% @pattern.mixins(exclude: :script).each do |mixin| %>
-        <%= render "mixin", mixin: mixin %>
+        <%= render "docks/partials/mixin", mixin: mixin %>
       <% end %>
 
       <% @pattern.functions(exclude: :script).each_with_index do |func, index| %>
-        <%= render "function", function: func %>
+        <%= render "docks/partials/function", function: func %>
       <% end %>
     </main>
   <% end %>
@@ -20,11 +20,11 @@
   <%= docks_tab_panel id: "page__content--behavior", tab_id: "page__content__tab--behavior" do %>
     <main class="section__container">
       <% @pattern.parse_results_of_type(Docks::Types::Symbol::MIXIN, include: :script).each do |mixin| %>
-        <%= render "mixin", mixin: mixin %>
+        <%= render "docks/partials/mixin", mixin: mixin %>
       <% end %>
 
       <% @pattern.parse_results_of_type(Docks::Types::Symbol::FUNCTION, include: :script).each_with_index do |func, index| %>
-        <%= render "function", function: func %>
+        <%= render "docks/partials/function", function: func %>
       <% end %>
     </main>
   <% end %>

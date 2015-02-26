@@ -35,7 +35,7 @@
                       <button class="docks-button docks-button--light-on-dark">Details</button>
 
                       <%= docks_popover align: :edge do %>
-                        <%= render "symbol_meta", symbol: @pattern, details: pattern_details %>
+                        <%= render "docks/partials/symbol_meta", symbol: @pattern, details: pattern_details %>
                       <% end %>
                     </div>
                   </div>
@@ -120,7 +120,7 @@
               </div>
 
               <div class="media__helpers--show-after-medium">
-                <%= render "symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
+                <%= render "docks/partials/symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
               </div>
             </div>
           </div>
