@@ -21,7 +21,7 @@
     <%= docks_tab_panel active?: true, id: "sidebar__section__panel--library", tab_id: "sidebar__section__tab--library" do %>
       <div class="list" id="list--patterns">
         <% @pattern_groups.each do |group, patterns| %>
-          <div class="list__sublist list__sublist--toggleable<%= " list__sublist--is-toggled-on" if patterns.map { |pattern| pattern[:name].to_s.gsub(/_\-/, "") }.include?(@name.gsub(/_\-/, "")) %>">
+          <div class="list__sublist list__sublist--toggleable<%= " list__sublist--is-toggled-on" if patterns.map { |pattern| pattern[:name].to_s.gsub(/[_\-]/, "").strip }.include?(@name.gsub(/[_\-]/, "").strip) %>">
             <header class="list__heading">
               <h3 class="type type--heading type--heading-3"><%= group.pluralize %></h3>
             </header>
@@ -29,7 +29,7 @@
             <div class="list__item__container">
               <% patterns.sort { |one, two| one[:name] <=> two[:name]  }.each do |pattern| %>
                 <%
-                  active_pattern = pattern[:name].to_s.gsub(/_\-/, "") == @name.gsub(/_\-/, "")
+                  active_pattern = pattern[:name].to_s.gsub(/[_\-]/, "").strip == @name.gsub(/[_\-]/, "").strip
                   tag_name = active_pattern ? "div" : "a"
                 %>
                 <<%= tag_name %> class="list__item<%= " list__item--is-active" if active_pattern %>"<% unless active_pattern %> href="<%= docks.pattern_path(pattern[:name]) %>"<% end %>>

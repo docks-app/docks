@@ -63,7 +63,7 @@ module Docks
     private
 
     def pattern_is_valid?(parse_results)
-      parse_results[:pattern].present? || PARSE_RESULT_TYPES.any? { |parse_result_type| parse_results[parse_result_type].present? }
+      PARSE_RESULT_TYPES.any? { |parse_result_type| parse_results[parse_result_type].present? }
     end
 
     def group_details(parse_results)
