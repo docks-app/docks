@@ -1,6 +1,7 @@
 module Docks
   class Builder
     def self.build
+      puts "BUILDING"
       cache = Docks::Cache.new
 
       puts "GROUPS:"
