@@ -3,6 +3,12 @@ module Docks
     def self.build
       cache = Docks::Cache.new
 
+      puts "SOURCE:"
+      puts Docks.configuration.src_files
+
+      puts "GROUPS:"
+      puts Group.group(Docks.configuration.src_files)
+
       Group.group(Docks.configuration.src_files).each do |group_identifier, group|
         next unless should_build?(group)
 
