@@ -13,9 +13,7 @@ Gem::Specification.new do |s|
   s.license             = 'MIT'
   s.homepage            = ''
   s.summary             = 'A documentation and styleguide generator for front-end projects.'
-  s.description         = <<-DESC
-
-  DESC
+  s.description         = s.summary
 
   s.files               = `git ls-files`.split("\n")
   s.test_files          = `git ls-files -- spec/*`.split("\n")
