@@ -23,11 +23,11 @@ Gem::Specification.new do |s|
   s.require_paths       = ['lib']
 
   s.add_dependency 'redcarpet',       '~> 3.1'
-  s.add_dependency 'activesupport'
+  s.add_dependency 'activesupport',   '~> 4.2'
   s.add_dependency 'sass',            '~> 3.3'
 
   s.add_development_dependency 'bundler', '~> 1.3'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 2.14'
-  s.add_development_dependency 'awesome_print'
+  s.add_development_dependency 'awesome_print', '~> 1.6'
 end
