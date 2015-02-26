@@ -1,3 +1,6 @@
+require File.expand_path("../base_language.rb", __FILE__)
+require File.expand_path("../markup_language.rb", __FILE__)
+
 module Docks
   module Languages
     class Haml < Base
