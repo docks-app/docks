@@ -84,10 +84,10 @@ list_mini_constructors =
 
     node: node
     hidden: false
-    sublists: [].map.call $item_container.children(".#{CLASSES.SUBLIST}"), (item) ->
-      list_mini_constructors.sublist(item)
-    items: [].map.call $item_container.children(".#{CLASSES.ITEM}"), (item) ->
-      list_mini_constructors.item(item)
+    # sublists: Array::map.call $item_container.children(".#{CLASSES.SUBLIST}"), (item) ->
+    #   list_mini_constructors.sublist(item)
+    # items: Array::map.call $item_container.children(".#{CLASSES.ITEM}"), (item) ->
+    #   list_mini_constructors.item(item)
 
 
 List = (node) ->
