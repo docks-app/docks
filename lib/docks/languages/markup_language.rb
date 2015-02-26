@@ -20,7 +20,7 @@ module Docks
           end
 
           stringified = if index == arguments_length && argument.kind_of?(Hash)
-            stringify_val(argument, join_with: ",\n#{" " * func.length}").sub("{ ", "").sub(" }", "")
+            stringify_val(argument, join_with: ",\n#{" " * func.length}").sub(/\A[^\{]*\{ /, "").sub(/ \}[^\}]*\z/m, "")
           else
             stringify_val(argument)
           end

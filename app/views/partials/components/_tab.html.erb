@@ -1,0 +1,15 @@
+<%
+  component.config do |config|
+    config.defaults text: "Tab",
+                    active?: false,
+                    id: "tab",
+                    panel_id: "tab_panel"
+
+    config.classes  base: "tab-list__tab"
+    config.conditional_classes if: :active?, base: "tab-list__tab--is-active"
+  end
+%>
+
+<a class="<%= component.classes_for(:base) %>" role="tab" tabindex="<%= component.active? ? 0 : -1 %>" controls="<%= component.panel_id %>" href="<%= component.panel_id %>" id="<%= component.id %>">
+  <%= component.text %>
+</a>

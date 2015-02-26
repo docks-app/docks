@@ -1,0 +1,30 @@
+//*
+// @pattern Notice
+// @tagline I warn the user.
+
+
+//*
+// A regular notice.
+//
+// @helper docks_notice
+// @variant --condensed (select, set by: :condensed?)
+
+.notice {
+  background-color: color(yellow);
+  width: fit-content;
+  color: color(yellow-dark);
+  padding: 1rem;
+  border-radius: default(border-radius);
+  @include font-size(paragraph-small);
+  position: relative;
+
+  .type, p, code {
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .type--heading {
+    color: color(yellow-dark);
+    font-weight: 400;
+  }
+}

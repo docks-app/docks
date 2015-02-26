@@ -24,6 +24,12 @@ describe Docks::Languages::MarkupLanguage do
     it "converts a hash without an array key into a function with the hash as the only param" do
       expect(subject.send(:functionize_helper, "foo", argumentless_hash)).to eq "foo #{argumentless_hash_output}"
     end
+
+    it "does not strip symbols from contained hashes when a hash is the last argument" do
+      argumentless_hash["baz"] = argumentless_hash[:qux] = argumentless_hash.clone
+      expected_output = "\"baz\" => { #{argumentless_hash_output} },\n    qux: { #{argumentless_hash_output} }"
+      expect(subject.send(:functionize_helper, "foo", argumentless_hash)).to eq "foo #{expected_output}"
+    end
   end
 
   describe "#normalize_arguments" do

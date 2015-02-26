@@ -1,5 +1,4 @@
-require 'rails/generators/base'
-require 'fileutils'
+require "rails/generators/base"
 
 module Docks
   class InstallGenerator < Rails::Generators::Base
@@ -16,20 +15,17 @@ module Docks
                  default: 'erb',
                  desc: 'Specify an extension for the default partials (available: erb, haml, or slim)'
 
-    def copy_partials
-      copy_file 'views/application.html.erb', 'app/views/layouts/docks/application.html.erb'
-      copy_file 'views/index.html.erb', 'app/views/docks/home/index.html.erb'
-      copy_file 'views/pattern.html.erb', 'app/views/docks/home/pattern.html.erb'
-      copy_file 'views/demo.html.erb', 'app/views/docks/home/demo.html.erb'
+    def copy_views
+      copy_file "views/layouts/application.html.erb", "app/views/layouts/docks/application.html.erb"
+      copy_file "views/layouts/demo.html.erb", "app/views/layouts/docks/demo.html.erb"
 
-      FileUtils.mkdir_p 'app/views/docks/shared'
-      Dir[File.expand_path('../templates/views/components/*', __FILE__)].each do |file|
-        copy_file file, "app/views/docks/components/#{file.split("/").last}"
-      end
+      copy_file "views/index.html.erb", "app/views/docks/home/index.html.erb"
+      copy_file "views/pattern.html.erb", "app/views/docks/home/pattern.html.erb"
+      copy_file "views/demo.html.erb", "app/views/docks/home/demo.html.erb"
     end
 
     def copy_config
-      copy_file Docks::CONFIG_FILE, "config/#{CONFIG_FILE}"
+      copy_file "docks.rb", "config/docks.rb"
     end
 
     def copy_styles

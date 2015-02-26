@@ -1,0 +1,61 @@
+//*
+// @page Demo
+
+//*
+// A container for a demo.
+//
+// @title Regular Demo
+// @variant --larger (select)
+// @variant --smaller (select) - A smaller version of the demo.
+//
+// @markup
+// <p>Hi!</p>
+
+
+.demo {
+  background-color: color(white);
+  border-radius: default(border-radius) 0 0 default(border-radius);
+}
+
+
+//*
+// A single demo within the resizable iframe. Styles are only applied to siblings
+// of another demo section so that the separation only applies to the second through
+// last element of a joint demo.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.demo__section {
+  position: relative;
+  padding: 0 default(spacing) default(spacing);
+
+  ~ .demo__section {
+    border-top: 1px solid color(gray-light);
+  }
+}
+
+
+
+//*
+// A descriptor for the current section's demo. This is provided in order to
+// distinguish variants within a joint demo.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.demo__header {
+  padding: (default(spacing) / 2) 0 default(spacing);
+  text-align: right;
+  margin-right: (default(spacing) / -2);
+
+  > .badge {
+    margin: 0;
+    top: 0;
+    vertical-align: middle;
+  }
+
+  > .docks-button {
+    vertical-align: middle;
+  }
+}

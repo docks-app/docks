@@ -1,0 +1,142 @@
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.list__item {
+  border-top: 1px solid color(gray-light);
+  padding: 0.5rem default(spacing) 0.35rem calc(#{default(spacing)} - 3px);
+  display: block;
+  text-decoration: none;
+  color: color(gray-darker);
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+
+  &:hover,
+  &:focus {
+    outline: none;
+    background: color(blue);
+    color: color(white);
+  }
+}
+
+.list__item--is-active {
+  border-left-color: color(blue);
+  color: color(blue);
+  font-weight: 600;
+}
+
+.list__item--is-hidden {
+  display: none;
+}
+
+.list__item:first-child,
+.list__item--is-first-visible-item {
+  border-top: none;
+}
+
+
+
+
+.list__item__container {
+  .list__sublist--toggleable > & {
+    display: none;
+  }
+}
+
+
+
+
+.list__toggle-indicator {
+  height: 1em;
+  width: 1em;
+  margin: 0;
+  position: relative;
+  transform: rotate(-90deg);
+  transition: transform 0.3s cubic-bezier(.27,1.41,.53,.97);
+
+  &:after,
+  &:before {
+    content: "";
+    display: block;
+    width: 0.75rem;
+    border-bottom: 2px solid color(slate);
+    position: absolute;
+    left: 0;
+    top: 50%;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+
+  &:after {
+    margin-left: 0.52rem;
+    transform: rotate(-45deg);
+  }
+}
+
+
+
+
+.list__heading {
+  font-size: 1.2rem;
+  padding: (1.5 * default(spacing)) default(spacing) 0;
+  margin: 0 0 half(default(spacing));
+  display: flex;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+
+  > .type {
+    line-height: 1;
+    flex: 1 1 auto;
+    font-size: 1em;
+  }
+
+  > .list__toggle-indicator {
+    flex: 0 0 auto;
+  }
+}
+
+.list__subheading {
+  font-size: 0.8rem;
+  padding: 0.25rem default(spacing);
+  background: color(gray-light);
+  line-height: 1;
+  color: color(gray-dark);
+  margin: default(spacing) 0 0;
+
+  + * {
+    margin-top: 0;
+  }
+}
+
+
+
+
+.list__sublist--is-toggled-on {
+  .list__heading {
+    opacity: 1;
+  }
+
+  .list__toggle-indicator {
+    transform: rotate(0);
+  }
+
+  > .list__item__container {
+    display: block;
+  }
+}
+
+.list__sublist--is-hidden {
+  display: none;
+}
+
+
+
+.filter__highlight {
+  background-color: color(yellow);
+}

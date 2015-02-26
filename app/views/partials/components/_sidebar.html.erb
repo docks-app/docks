@@ -1,0 +1,86 @@
+<nav class="sidebar">
+  <div class="sidebar__header">
+    <h1 class="type type--heading type--heading-1">Docks</h1>
+  </div>
+
+  <label class="label helper--visually-hidden" for="search">Search</label>
+
+  <div class="field field--text">
+    <div class="field__icon">
+      <%= docks_icon :search, size: :medium %>
+    </div>
+    <input id="search" type="text" class="field__input" data-filters="#list--patterns, #list--this-pattern">
+  </div>
+
+  <%= docks_tablist style: :stretch, dark?: true do %>
+    <%= docks_tab text: "Library", active?: true, id: "sidebar__section__tab--library", panel_id: "sidebar__section__panel--library" %>
+    <%= docks_tab text: "This Pattern", id: "sidebar__section__tab--pattern", panel_id: "sidebar__section__panel--pattern" %>
+  <% end %>
+
+  <div class="tab-list__panels">
+    <%= docks_tab_panel active?: true, id: "sidebar__section__panel--library", tab_id: "sidebar__section__tab--library" do %>
+      <div class="list" id="list--patterns">
+        <% @pattern_groups.each do |group, patterns| %>
+          <div class="list__sublist list__sublist--toggleable<%= " list__sublist--is-toggled-on" if patterns.map { |pattern| pattern[:name].to_s.gsub(/_\-/, "") }.include?(@name.gsub(/_\-/, "")) %>">
+            <header class="list__heading">
+              <h3 class="type type--heading type--heading-3"><%= group.pluralize %></h3>
+            </header>
+
+            <div class="list__item__container">
+              <% patterns.sort { |one, two| one[:name] <=> two[:name]  }.each do |pattern| %>
+                <%
+                  active_pattern = pattern[:name].to_s.gsub(/_\-/, "") == @name.gsub(/_\-/, "")
+                  tag_name = active_pattern ? "div" : "a"
+                %>
+                <<%= tag_name %> class="list__item<%= " list__item--is-active" if active_pattern %>"<% unless active_pattern %> href="<%= docks.pattern_path(pattern[:name]) %>"<% end %>>
+                  <%= pattern[:title] %>
+                </<%= tag_name %>>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= docks_tab_panel id: "sidebar__section__panel--pattern", tab_id: "page__content__tab--pattern" do %>
+      <div class="list" id="list--this-pattern">
+        <%
+          symbol_contents = { "markup" => @pattern.has_markup?, "behavior" => @pattern.has_behavior? }
+          has_both = symbol_contents["markup"] && symbol_contents["behavior"]
+        %>
+        <% %w(markup behavior).each do |group| %>
+          <% if symbol_contents[group] %>
+            <div class="list__sublist list__sublist--toggleable list__sublist--is-toggled-on">
+              <% if has_both %>
+                <header class="list__heading">
+                  <h3 class="type type--heading type--heading-3"><%= group.capitalize %></h3>
+                </header>
+              <% end %>
+
+              <div class="list__item__container">
+                <% %w(component variable function mixin).each do |type| %>
+                  <%
+                    symbol_options = {}
+                    symbol_options[group == "behavior" ? :include : :exclude] = Docks::Types::Languages::SCRIPT
+                    symbols = @pattern.send(type.pluralize.to_sym, symbol_options)
+                    unless symbols.empty?
+                  %>
+                    <div class="list__sublist">
+                      <h4 class="list__subheading"><%= type.pluralize.capitalize %></h4>
+                      <div class="list__item__container">
+                        <% symbols.each do |symbol| %>
+                          <a href="#symbol--<%= type %>--<%= symbol.name %>" class="list__item type--code"><%= symbol.name %></a>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+</nav>

@@ -1,0 +1,22 @@
+<%
+  component.config do |config|
+    config.defaults options: [],
+                    name: "select",
+                    id: "select",
+                    disabled?: false,
+                    size: :standard
+
+    config.classes  base: "select",
+                    input: "select__input"
+
+    config.conditional_classes if: :disabled?, base: "select--is-disabled"
+  end
+%>
+
+<div class="<%= component.classes_for(:base) %>">
+  <select class="<%= component.classes_for(:input) %>" id="<%= component.id %>" name="<%= component.name %>">
+    <% component.options.each do |option| %>
+      <option><%= option %></option>
+    <% end %>
+  </select>
+</div>

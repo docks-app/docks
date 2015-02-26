@@ -1,0 +1,42 @@
+<div class="section mixin" id="mixin--<%= mixin.name %>">
+  <div class="type-container type-container--large">
+    <header class="mixin__header">
+      <h3 class="mixin__title">
+        <span><%= mixin.name %></span>
+        <div class="badge">mixin</div>
+      </h3>
+    </header>
+
+    <div class="mixin__description"><%== mixin.description %></div>
+    <div class="mixin__signature">
+
+      <%= docks_code_block markup: mixin.friendly_presenter, language: mixin.language, id: "function--#{mixin.name}" %>
+    </div>
+
+    <h3 class="mixin__small-heading">Parameters</h3>
+    <table class="mixin__parameters">
+      <thead>
+        <td>Name</td>
+        <td>Description</td>
+        <td>Types</td>
+        <td>Default</td>
+      </thead>
+
+      <% mixin.param.each do |param| %>
+        <tr>
+          <td><code><%= param.name %></code></td>
+          <td><%== param.description %></td>
+          <td><code><%= param.types.first %></code></td>
+          <td class="default-value"><% if param.default %><code><%= param.default %></code><% else %>&mdash;<% end %></td>
+        </tr>
+      <% end %>
+    </table>
+
+    <% unless mixin.example.nil? %>
+      <h3 class="mixin__small-heading">Examples</h3>
+      <% mixin.example.each do |example| %>
+        <%= docks_code_block markup: example.code, language: example.language, condensed?: true %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

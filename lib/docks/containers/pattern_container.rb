@@ -96,6 +96,12 @@ module Docks
         end
       end
 
+      Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
+        define_method("#{parse_result_type}_symbols".to_sym) do
+          @parse_results[parse_result_type]
+        end
+      end
+
       # Public: Retrieves the demo associated with the component of the passed
       # name, or nil if none exists.
       #

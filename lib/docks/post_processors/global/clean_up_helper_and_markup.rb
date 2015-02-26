@@ -8,7 +8,9 @@ module Docks
 
           if helper_present && !markup_present
             unless parse_result[:stub].nil?
-              parse_result[:helper] = functionize(parse_result[:helper], parse_result[:stub], parse_result[:language])
+              # TODO: THERE MUST BE A BETTER WAY
+              puts functionize(parse_result[:helper], parse_result[:stub], "erb")
+              parse_result[:helper] = functionize(parse_result[:helper], parse_result[:stub], "erb")
             end
           elsif markup_present && helper_present
             unless parse_result[:markup].index(parse_result[:helper]).nil?

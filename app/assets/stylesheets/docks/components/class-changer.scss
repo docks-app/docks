@@ -1,0 +1,203 @@
+//        ___          ___          ___          ___          ___          ___          ___         ___
+//       /  /\        /__/\        /  /\        /__/\        /  /\        /  /\        /  /\       /  /\
+//      /  /:/        \  \:\      /  /::\       \  \:\      /  /:/_      /  /:/_      /  /::\     /  /:/_
+//     /  /:/          \__\:\    /  /:/\:\       \  \:\    /  /:/ /\    /  /:/ /\    /  /:/\:\   /  /:/ /\
+//    /  /:/  ___  ___ /  /::\  /  /:/~/::\  _____\__\:\  /  /:/_/::\  /  /:/ /:/_  /  /:/~/:/  /  /:/ /::\
+//   /__/:/  /  /\/__/\  /:/\:\/__/:/ /:/\:\/__/::::::::\/__/:/__\/\:\/__/:/ /:/ /\/__/:/ /:/__/__/:/ /:/\:\
+//   \  \:\ /  /:/\  \:\/:/__\/\  \:\/:/__\/\  \:\~~\~~\/\  \:\ /~~/:/\  \:\/:/ /:/\  \:\/:::::|  \:\/:/~/:/
+//    \  \:\  /:/  \  \::/      \  \::/      \  \:\  ~~~  \  \:\  /:/  \  \::/ /:/  \  \::/~~~~ \  \::/ /:/
+//     \  \:\/:/    \  \:\       \  \:\       \  \:\       \  \:\/:/    \  \:\/:/    \  \:\      \__\/ /:/
+//      \  \::/      \  \:\       \  \:\       \  \:\       \  \::/      \  \::/      \  \:\       /__/:/
+//       \__\/        \__\/        \__\/        \__\/        \__\/        \__\/        \__\/       \__\/
+
+//*
+// @page Class Changers
+
+
+
+//*
+// A set of buttons/tags that toggle a particular variant or state in the attached
+// demo. These buttons are separated by the base class on which they apply (that
+// base class is indicated by the title above the section).
+
+// @state --is-active (joint) - The class indicated on the button is currently
+// applied to the associated demo.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.class-changer {
+  // sizing
+  display: inline-flex;
+  // padding: 1rem;
+  margin: 0 0.75rem 0 0;
+
+  // backdrop
+  cursor: pointer;
+  background: transparent;
+  border-radius: default(border-radius);
+  color: color(gray-dark);
+  overflow: hidden;
+  border: 1px solid color(gray);
+
+  // type
+  font-size: 1.1rem;
+  line-height: 1;
+  font-family: monospace;
+
+  // transitions and animations
+  transition: all 0.3s ease;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: color(gray-light);
+    outline: none;
+  }
+
+  &.class-changer--is-active {
+    background: color(blue);
+    color: color(white);
+    border-color: color(blue-dark);
+  }
+
+  &.class-changer--is-partially-active {
+    background: color(blue-light);
+    color: color(white);
+  }
+
+  &--is-active,
+  &--is-partially-active {
+    .class-changer__info {
+      color: rgba(color(white), 0.3);
+
+      &:hover,
+      &.class-changer__info--is-active {
+        color: rgba(color(white), 0.5);
+      }
+    }
+  }
+}
+
+.class-changer--is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+
+.class-changer__main,
+.class-changer__info {
+  padding: 1rem;
+}
+
+.class-changer__main {
+  padding-right: 0;
+}
+
+.class-changer__info {
+  position: relative;
+  background-color: transparent;
+  transition: 0.3s ease all;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: 200;
+  font-size: 1rem;
+  display: flex;
+  color: rgba(color(gray-darker), 0.25);
+  align-items: center;
+
+  &:hover,
+  &.class-changer__info--is-active {
+    color: rgba(color(gray-darker), 0.5);
+  }
+}
+
+.class-changer__explain {
+  height: 0;
+  overflow: visible;
+  transform: translate(calc(-100% - 2rem), 0);
+  transition: transform 0.3s ease, height 0.3s 0.2s ease;
+
+  .class-changer__explain__precludes,
+  .class-changer__explain__activate-with,
+  .class-changer__explain__set-by {
+    font-size: 0.85rem;
+    opacity: 0.85;
+
+    + p { margin-top: 0.5em; }
+  }
+}
+
+.class-changer__explain--is-active {
+  transform: translate(0, 0);
+  transition: transform 0.3s 0.2s ease, height 0.3s ease;
+}
+
+
+
+//*
+// The label within the class changer button that indicates whether the class
+// for that button is a state or variant of the module.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.class-changer__type {
+  // sizing
+  display: block;
+  margin: 0 0 0.25rem;
+
+  // backdrop
+  opacity: 0.5;
+
+  // type
+  font-family: Helvetica, sans-serif;
+  text-transform: uppercase;
+  font-size: 0.5rem;
+}
+
+
+
+//*
+// The container for a set of class changer buttons (i.e., buttons applying to
+// a single class, not all classes).
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.class-changer__container {
+  // Remove extra bottom margin from last row of buttons
+  max-width: 100%;
+  flex: 1 0 auto;
+}
+
+.class-changer__sub-container { margin-bottom: 2rem; }
+
+
+
+//*
+// Indicator of which class the changer buttons applies to.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.class-changer__heading {
+  // sizing
+  padding: default(spacing) default(spacing) 0;
+
+  // type
+  font-weight: normal;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: color(gray-dark);
+  background: none;
+}
+
+
+
+.class-changer__base-class-group {
+  margin: 0;
+  padding: default(spacing);
+  white-space: nowrap;
+  overflow: auto;
+  -webkit-overflow-scroll: touch;
+}

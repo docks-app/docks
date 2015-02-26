@@ -1,3 +1,5 @@
+require "forwardable"
+
 require File.expand_path("../../types.rb", __FILE__)
 require File.expand_path("../../tag.rb", __FILE__)
 
@@ -10,6 +12,8 @@ module Docks
     # container and the result will be returned as expected.
 
     class Base
+      # extend Forwardable
+      # def_delegators :@item, :each, :[]=, :[]
 
       # Public: initializes a new container.
 
@@ -40,6 +44,18 @@ module Docks
 
       def inspect
         to_s
+      end
+
+      def [](symbol)
+        @item[symbol]
+      end
+
+      def []=(symbol, new_value)
+        @item[symbol] = new_value
+      end
+
+      def each(&block)
+        @item.each(&block)
       end
 
       # Public: forwards any missing methods to the encapsulated details.

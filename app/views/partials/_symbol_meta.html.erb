@@ -1,0 +1,28 @@
+<% subdue_dates = true if subdue_dates.nil? %>
+
+<% if details[:tags].include?(:contributors) %>
+  <div class="type-container">
+    <h4 class="type type--heading type--heading-4">Contributors</h4>
+    <div class="avatar__container">
+      <% symbol.contributors.each do |contributor| %>
+        <%= docks_avatar author: contributor %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div<% if subdue_dates && details[:has_dates?] && !details[:has_only_dates?] %> class="subdued-section"<% end %>>
+  <% if details[:tags].include?(:introduced_in) %>
+    <div class="type-container">
+      <h4 class="type type--heading type--heading-4">Introduced In</h4>
+      <p class="type type--display"><%= symbol.introduced_in.version %></p>
+    </div>
+  <% end %>
+
+  <% if details[:tags].include?(:modified) %>
+    <div class="type-container">
+      <h4 class="type type--heading type--heading-4">Last Modified</h4>
+      <p class="type type--display"><%= symbol.modified.strftime("%B %-d, %Y") %></p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,278 @@
+//*
+// @page Code Block
+//
+// @author Chris Sauve (twitter: _lemonmade)
+// @author Chris Sauve (twitter: _lemonmade)
+// @author Jonathan Snook (twitter: snookca)
+// @author Ian Mortier (twitter: Heal)
+// @author Annie-Claude Cote (twitter: annieclaudecote)
+//
+// Buttons are used to access actions that should not take the user to a
+// separate page. Actions that take the user to another page should use a link
+// tag and should not usually use the styles of this component.
+//
+// Where possible, use an actual button element with these classes. When this
+// is not possible or leads to poor rendering behavior, a `div` or `span` is
+// an appropriate alternative if its `role` attribute is set to `"button"`.
+//
+// @deprecated 2.0 - `code-block` has been replaced with
+// `ui-code-block`. Please use the new component for new designs, and update
+// existing implementations of `code-block` as soon as possible.
+//
+// @introduced_in 1.0
+
+
+//*
+// @helper docks_code_block
+// @variant --full-width (select, set by: full_width?)
+// This variant is quite **cool**.
+//
+// @deprecated 1.6
+//
+// @state --is-hidden (select, set by: :hidden?, javascript action: Docks.CodeBlock.for(this).toggle())
+// @title Code Block
+//
+// @since 1.0
+// @author Chris Sauve (github: lemonmade)
+
+.code-block {
+  margin: 1.5rem auto;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  transition: max-height 0.3s ease,
+              border-color 0.3s ease,
+              visibility 0s 0.27s linear,
+              transform 0.3s ease;
+
+  pre {
+    margin: 0;
+  }
+
+  .tab-list__panel-container {
+    position: relative;
+    // z-index: z(tab-panel, $code-block);
+  }
+
+  // ::-webkit-scrollbar {
+  //   background: color(gray-light);
+  // }
+}
+
+
+//*
+// A code block with less internal padding and a smaller font size. Use this
+// variant for situations in which the code is secondary or would clash with
+// a more important code block.
+//
+// @set_by :condensed?
+// @demo_type select
+
+.code-block--condensed {
+  .code-block__code {
+    padding: 0 (default(spacing) / 2) (default(spacing) / 2);
+    font-size: 1rem;
+  }
+}
+
+.code-block--full-width {
+  margin: 0;
+  border-radius: 0;
+}
+
+.code-block__header .tab-list__tab {
+  transform: translateY(0);
+  transition: transform 0.2s ease;
+}
+
+.code-block--is-hidden {
+  > .code-block__header {
+    .tab-list__tab {
+      transform: translateY(-200%);
+    }
+
+    .code-block__demo-selector {
+      transform: translateY(-150%);
+    }
+  }
+}
+
+.code-block__hide-button {
+  text-align: center;
+  min-width: 3rem;
+}
+
+.code-block__demo-selector {
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+
+
+.code-block__actions {
+  display: flex;
+  align-items: center;
+}
+
+.code-block__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: (default(spacing) / 2) default(spacing);
+  position: relative;
+  z-index: 10;
+  background: color(gray-light);
+  border-radius: 0.25rem 0.25rem 0 0;
+  overflow: hidden;
+
+  @include dark-theme {
+    background-color: rgba(color(white), 0.1);
+  }
+
+  .tab-list__tab {
+    color: color(gray);
+  }
+
+  .tab-list__tab--is-active {
+    background-color: color(gray-dark);
+    color: color(gray-light);
+  }
+}
+
+
+.code-block__code-container {
+  overflow: auto;
+  transition: max-height 0.3s ease;
+  background: color(gray-light);
+  border-radius: default(border-radius);
+  max-height: 12rem;
+  z-index: 5;
+  position: relative;
+
+  @include dark-theme {
+    background-color: rgba(color(white), 0.1);
+  }
+
+  // &:before,
+  // &:after {
+  //   content: "";
+  //   display: block;
+  //   position: absolute;
+  //   width: 100%;
+  //   height: default(spacing);
+  //   left: 0;
+  // }
+
+  // &:before {
+  //   top: (default(spacing) / -2);
+  //   background: linear-gradient(to bottom, color(gray-light) 50%, rgba(color(gray-light), 0));
+  // }
+
+  // &:after {
+  //   bottom: 0;
+  //   background: linear-gradient(to top, color(gray-light) 50%, rgba(color(gray-light), 0));
+  // }
+
+  .code-block--with-header > *:not(.code-block__demo)  &,
+  .code-block--with-demo > *:not(.code-block__demo) & {
+    border: 1px solid color(gray-light);
+
+    @include dark-theme {
+      border-color: rgba(color(white), 0.1);
+    }
+  }
+
+  .code-block--with-header > *:not(.code-block__demo) & {
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .code-block--with-demo > *:not(.code-block__demo) & {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .code-block--full-width > *:not(.code-block__demo) & {
+    border: none;
+  }
+}
+
+.code-block__demo {
+  background-color: transparent;
+  border: 1px solid color(gray-light);
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+  position: relative;
+
+  @include dark-theme {
+    border-color: color(slate-light) !important;
+  }
+}
+
+.code-block__demo__content {
+  padding: default(spacing);
+}
+
+//*
+// The actual code for the associated demo. This is where all of the styles
+// for the syntax highlighting should go.
+
+// @since 0.0.1
+// @author Chris Sauve (chrismsauve@gmail.com)
+
+.code-block__code {
+  display: inline-block;
+  padding: (default(spacing) / 2) default(spacing) default(spacing);
+  font-size: 1.1em;
+  line-height: 1.3;
+
+  &:focus {
+    outline: none;
+  }
+
+  .code-block:not(.code-block--with-header) & {
+    padding-top: default(spacing);
+  }
+
+  .code-block--condensed:not(.code-block--with-header) & {
+    padding-top: (default(spacing) / 2);
+  }
+
+  code {
+    padding: 0;
+    background-color: transparent;
+    font-size: 0.8rem;
+
+    @include dark-theme {
+      color: color(gray);
+    }
+  }
+}
+
+.hljs-value,
+.hljs-string,
+.hljs-preprocessor {
+  color: color(blue)
+}
+
+.hljs-symbol {
+  color: color(blue-darker);
+}
+
+.hljs-at_rule,
+.hljs-attribute,
+.hljs-keyword {
+  color: color(gray-darker);
+  @include dark-theme { color: color(gray-light); }
+}
+
+.hljs-comment {
+  color: rgba(color(gray-dark), 0.5);
+  @include dark-theme { color: rgba(color(gray), 0.5); }
+  font-style: italic
+}
+
+.hljs-tag,
+.hljs-variable {
+  color: color(gray-dark);
+  @include dark-theme { color: color(gray); }
+}

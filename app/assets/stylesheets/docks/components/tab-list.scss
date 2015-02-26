@@ -1,0 +1,100 @@
+//*
+// @page Tab List
+// Tabs!
+
+//*
+// Base component.
+//
+// @variant --large (select, set by: :size (:large))
+// @variant --stretch (select)
+// @variant --dark (select)
+//
+// @helper docks_tablist
+
+.tab-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+
+  > .tab-list__tab + .tab-list__tab {
+    margin: 0 0 0 0.5rem;
+  }
+}
+
+.tab-list--large {
+  > .tab-list__tab {
+    padding: 0.25rem 1.4rem;
+    font-size: 1.1rem;
+  }
+}
+
+.tab-list--stretch {
+  > .tab-list__tab {
+    display: block;
+    flex: 1 1 0;
+    text-align: center;
+    border-radius: 0;
+  }
+}
+
+.tab-list--dark {
+  > .tab-list__tab {
+    color: rgba(color(gray-darker), 0.33);
+    background-color: color(gray-light);
+    border-bottom: 1px solid color(gray);
+
+    + .tab-list__tab {
+      margin: 0;
+      border-left: 1px solid color(gray);
+    }
+
+    &:focus,
+    &:hover {
+      color: rgba(color(gray-darker), 0.66);
+    }
+  }
+
+  > .tab-list__tab--is-active {
+    &, &:hover, &:focus {
+      background-color: color(white);
+      color: color(gray-darker);
+      border-bottom: none;
+    }
+  }
+}
+
+.tab-list__tab {
+  display: inline-block;
+  line-height: default(control-size);
+  border-radius: default(border-radius);
+  color: rgba(color(gray-light), 0.33);
+  text-decoration: none;
+  position: relative;
+  padding: 0 0.75rem;
+
+  &:focus,
+  &:hover {
+    outline: none;
+    color: rgba(color(gray-light), 0.66);
+  }
+}
+
+.tab-list__tab--is-active {
+  &, &:hover, &:focus {
+    background-color: color(slate-light);
+    color: color(gray-light);
+  }
+  // &:after {
+  //   transform: translateY(0);
+  // }
+}
+
+.tab-list__panel {
+  display: none;
+}
+
+.tab-list__panel--is-active {
+  display: block;
+}
+

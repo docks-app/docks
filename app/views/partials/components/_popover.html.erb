@@ -1,0 +1,24 @@
+<%
+  component.config do |config|
+    # config.defaults author: OpenStruct.new(name: "", github: "", twitter: "", email: "")
+    config.defaults align: :center
+    config.classes  base: "popover"
+
+    config.conditional_classes with: :align do |alignment|
+      { base: "popover--align-to-#{alignment}" }
+    end
+  end
+%>
+
+<div class="<%= component.classes_for(:base) %>">
+  <div class="popover__tooltip"></div>
+  <div class="popover__content-wrapper">
+    <div class="popover__content">
+      <div class="popover__pane">
+        <% if component.block %>
+          <%= capture(&component.block) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

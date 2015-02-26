@@ -1,0 +1,16 @@
+<%
+  component.config do |config|
+    config.defaults version: nil
+  end
+%>
+
+<% if component.version %>
+  <div class="notice">
+    <h3 class="type type--heading type--heading-3">Deprecated as of <strong><%= component.version %></strong></h3>
+    <% if component.block %>
+      <div class="notice__description">
+        <%= capture(&component.block) %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

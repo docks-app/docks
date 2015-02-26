@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Library</title>
+    <%= javascript_include_tag "jquery" %>
+    <%= stylesheet_link_tag "http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic" %>
+    <%= stylesheet_link_tag "docks" %>
+  </head>
+
+
+  <body>
+    <%= docks_icons %>
+
+    <div class="wrapper">
+      <div class="page">
+
+      <% pattern_details = details_for(@pattern) %>
+        <section class="page__content">
+          <%= render "docks/components/sidebar" %>
+
+          <header class="page__header">
+            <div class="grid grid--outside-spacing grid--space-between">
+              <div class="grid__item">
+                <div class="sidebar__toggler">
+                  <div class="sidebar__toggler__slice"></div>
+                </div>
+              </div>
+
+              <% if pattern_details[:has_tags?] %>
+                <div class="grid__item">
+                  <div class="media__helpers--hide-after-medium">
+                    <div class="popover__container">
+                      <button class="docks-button docks-button--light-on-dark">Details</button>
+
+                      <%= docks_popover align: :edge do %>
+                        <%= render "symbol_meta", symbol: @pattern, details: pattern_details %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="type-container type-container--no-vertical-spacing">
+              <h1 class="type type--heading type--heading-1"><%= @pattern.title %></h1>
+
+              <% unless @pattern.subtitle.nil? %>
+                <h2 class="type type--heading type--heading-2"><%= @pattern.subtitle %></h2>
+              <% end %>
+            </div>
+
+            <% if @pattern.has_markup? && @pattern.has_behavior? %>
+              <%= docks_tablist size: :large, manage_url: true do %>
+                <%= docks_tab text: "Markup", active?: true, id: "page__content__tab--markup", panel_id: "page__content--markup" %>
+                <%= docks_tab text: "Behavior", id: "page__content__tab--behavior", panel_id: "page__content--behavior" %>
+              <% end %>
+            <% end %>
+          </header>
+
+          <div class="pattern-meta">
+            <div class="pattern-meta__section">
+              <div class="type-container">
+                <% if @pattern.deprecated %>
+                  <% deprecation = @pattern.deprecated %>
+                  <%= docks_notice(version: deprecation.version) do %>
+                    <%== deprecation.description %>
+                  <% end %>
+                <% end %>
+
+                <% if @pattern.description %>
+                  <div class="page-description"><%== @pattern.description %></div>
+                <% end %>
+              </div>
+            </div>
+
+            <div class="pattern-meta__section pattern-meta__section--aside">
+              <div class="type-container">
+                <div class="grid grid--outside-spacing">
+                  <div class="grid__item">
+                    <%
+                      github_url = Docks.configuration.github_repo.sub(/(.)\/?$/, '\1')
+
+                      file_checklist = @pattern.files.map { |file| "- [#{@pattern.files.length == 1 ? "x" : " "}] #{file}" }.join("\n")
+                      message = "\n\n\n---\n\nThis issue is related to the following files:\n\n#{file_checklist}"
+                    %>
+                    <a href="<%= "#{github_url}/issues/new?body=#{url_encode(message)}" %>" target="_blank" class="docks-button docks-button--dark docks-button--full-width">
+                      <%= docks_icon :github, size: :medium %>
+                      <span>File an issue</span>
+                    </a>
+                  </div>
+
+                  <div class="grid__item">
+                    <% if @pattern.files.length == 1 %>
+                      <a href="<%= "#{github_url}/blob/master/#{url_encode(@pattern.files.first).gsub("%2F", "/")}" %>" class="docks-button docks-button--dark docks-button--full-width">
+                        <%= docks_icon :github, size: :medium %>
+                        <span>View source</span>
+                      </a>
+                    <% else %>
+                      <div class="popover__container popover__container--full-width">
+                        <button class="docks-button docks-button--full-width docks-button--dark">
+                          <%= docks_icon :github, size: :medium %>
+                          <span>View source</span>
+                        </button>
+
+                        <%= docks_popover align: :edge do %>
+                          <ul class="list">
+                            <% @pattern.files.each do |file| %>
+                              <li>
+                                <a href="<%= "#{github_url}/blob/master/#{url_encode(file).gsub("%2F", "/")}" %>" class="list__item"><%= File.basename(file) %></a>
+                              </li>
+                            <% end %>
+                          </ul>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="media__helpers--show-after-medium">
+                <%= render "symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
+              </div>
+            </div>
+          </div>
+
+          <%= yield %>
+
+          <%= docks_details_sheet %>
+          <%= docks_xray %>
+        </section>
+      </div>
+    </div>
+
+    <%= javascript_tag do %>
+      window.pattern = <%= CGI.unescapeHTML(@pattern.to_json).html_safe %>;
+    <% end %>
+
+    <%= javascript_include_tag "docks" %>
+  </body>
+</html>

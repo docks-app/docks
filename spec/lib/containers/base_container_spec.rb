@@ -18,6 +18,26 @@ describe Docks::Containers::Base do
       expect(subject.to_json).to eq symbol.to_json
     end
   end
+
+  describe "#[]" do
+    it "accesses the item in the contained hash" do
+      expect(subject[:foo]).to eq symbol[:foo]
+    end
+  end
+
+  describe "#[]=" do
+    it "sets the item in the contained hash" do
+      expect(subject[:foo] = "baz").to eq "baz"
+    end
+  end
+
+  describe "#each" do
+    it "yields each key-value pair of the hash" do
+      symbol[:bar] = "baz"
+      subject_with_multiple = Docks::Containers::Base.new(symbol)
+      expect { |b| subject_with_multiple.each(&b) }.to yield_successive_args *symbol.each.to_a
+    end
+  end
 end
 
 describe Docks::Containers do

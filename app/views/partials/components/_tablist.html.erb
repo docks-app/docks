@@ -1,0 +1,15 @@
+<%
+  component.config do |config|
+    config.defaults manage_url: false
+    config.classes  base: "tab-list"
+
+    config.conditional_classes from: :size, large: { base: "tab-list--large" }
+    config.conditional_classes from: :style, stretch: { base: "tab-list--stretch" }
+    config.conditional_classes if: :manage_url, base: "tab-list--manages-url"
+    config.conditional_classes if: :dark?, base: "tab-list--dark"
+  end
+%>
+
+<div class="<%= component.classes_for(:base) %>" role="tablist">
+  <%= capture(&component.block) %>
+</div>

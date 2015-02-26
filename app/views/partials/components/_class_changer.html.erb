@@ -1,0 +1,20 @@
+<%
+  component.config do |config|
+    config.classes  base: "class-changer"
+
+    config.conditional_classes if: :active?, base: "class-changer--is-active"
+    config.conditional_classes if: :partially_active?, base: "class-changer--is-partially-active"
+    config.conditional_classes if: :disabled, base: "class-changer--is-disabled"
+  end
+
+  variation = component.variation
+  set_by = (variation.set_by.map { |set_by| "#{set_by.setter} (#{set_by.constant || ""})" }).join(", ")
+%>
+
+<div class="<%= component.classes_for(:base) %>" data-activate-with="<%= variation.activate_with.join(", ") %>" data-base-class="<%= variation.base_class %>" data-default-on="<%= variation.active %>" data-description="<%= variation.description.to_str if variation.description.present? %>" data-javascript-action="<%= variation.javascript_action %>" data-name="<%= variation.name %>" data-precludes="<%= variation.precludes.join(", ") %>" data-set-by="<%= set_by %>" data-type="<%= variation.symbol_type %>" id="class-changer--<%= variation.name %>" role="button" tabindex="0" type="checkbox">
+  <div class="class-changer__main">
+    <span class="class-changer__type"><%= variation.symbol_type %></span>
+    <span class="class-changer__name"><%= variation.name.gsub(variation.base_class, "<span class='helper--visually-hidden'>#{variation.base_class}</span>").html_safe %></span>
+  </div>
+  <span class="class-changer__info">?</span>
+</div>

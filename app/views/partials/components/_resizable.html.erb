@@ -1,0 +1,37 @@
+<%
+  component.config do |config|
+    config.defaults hide_source?: false
+  end
+
+  demo = component.demo
+  id = demo.name
+%>
+
+<div class="resizable__container">
+  <div class="resizable" data-iframe-id="<%= id %>">
+    <div class="card">
+
+      <iframe class="iframe" data-iframe-id="<%= id %>" frameborder="0" src="<%= docks.pattern_demo_path(demo: id) %>"></iframe>
+
+      <div class="resizable__handle" tabindex="0">
+        <span class="helper--visually-hidden">Use the arrow keys to resize the component demo window.</span>
+      </div>
+    </div>
+
+    <div class="resizable__width-indicator">
+      <span class="resizable__width-indicator__px"></span>px / <span class="resizable__width-indicator__em"></span>em
+    </div>
+
+    <div class="resizable__size-buttons">
+      <% %w[small medium large full].each_with_index do |size, index| %>
+        <div class="resizable__size-button resizable__size-button--<%= size %>" role="button" tabindex="<%= index == 0 ? '0' : '-1' %>" data-size-button-width="<%= size %>">
+          <span class="helper--visually-hidden">Set the component demo window to size <%= size %>.</span>
+          <%= docks_icon(size) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% options = [demo.component.name].concat demo.joint_variations.map { |variant| variant.name } %>
+<%= docks_code_block markup: demo.component.markup, helper_markup: demo.component.helper, stub: (demo.component.stub || {}), hideable?: true, full_width?: true, options: options, hidden?: component.hide_source?, id: id, attached_to_iframe?: true %>

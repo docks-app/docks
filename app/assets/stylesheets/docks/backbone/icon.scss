@@ -1,0 +1,10 @@
+.icon {
+  display: inline-block;
+}
+
+$icon--size-medium: rem(24);
+
+.icon--medium {
+  height: $icon--size-medium;
+  width: $icon--size-medium;
+}

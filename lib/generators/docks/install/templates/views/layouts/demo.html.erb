@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Library</title>
+    <%= javascript_include_tag "jquery" %>
+    <%= stylesheet_link_tag "docks" %>
+    <%= stylesheet_link_tag "http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic" %>
+
+    <style>
+      ::-webkit-scrollbar {
+        height: 0;
+        width: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <%= yield %>
+    </div>
+
+    <%= javascript_include_tag "docks" %>
+  </body>
+</html>

@@ -9,6 +9,7 @@ module Docks
     @@group_cache_file = nil
 
     def self.pattern_for(pattern)
+      puts "PATTERN FOR #{pattern}"
       Docks::Builder.build
       cache_file = File.join(Docks.configuration.cache_dir, pattern)
 

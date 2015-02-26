@@ -1,4 +1,4 @@
-require 'docks'
+require "docks"
 
 module Docks
   class Engine < Rails::Engine
@@ -21,10 +21,10 @@ module Docks
 
     def self.prepend_routes(app)
       mount_at = Docks.configuration.mount_at
-      return if app.routes.recognize_path(mount_at)[:action] != 'routing_error' rescue nil
+      return if app.routes.recognize_path(mount_at)[:action] != "routing_error" rescue nil
 
       app.routes.prepend do
-        mount Docks::Engine => mount_at, as: 'docks'
+        mount Docks::Engine => mount_at, as: "docks"
       end
     end
   end

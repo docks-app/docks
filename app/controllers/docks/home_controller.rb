@@ -6,7 +6,9 @@ module Docks
     end
 
     def pattern
-      pattern = params[:pattern].gsub(/\-+/, "_")
+      @name = params[:pattern]
+
+      pattern = @name.gsub(/\-+/, "_")
       @pattern = Docks::Cache.pattern_for(pattern)
       @pattern_groups = Docks::Cache.pattern_groups
 

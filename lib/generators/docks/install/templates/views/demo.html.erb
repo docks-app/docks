@@ -1,38 +1,44 @@
-<div class="demo" data-iframe-id="<%= @component.unique_identifier %>">
-  <% class_name    = @component.name %>
-  <% base_class    = @component.base_class %>
-  <% type          = @component.type %>
-  <% activate_with = '' %>
-  <% precludes     = '' %>
-  <% set_by        = '' %>
-  <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= class_name %>">
-    <section class="demo__content">
-      <%= @component.markup %>
-    </section>
-  </section>
+<div class="iframe" data-iframe-id="<%= @demo.name %>">
+  <% joint = @demo.joint_variations %>
+  <div class="demo" data-iframe-id="<%= @demo.name %>">
+    <% component     = @demo.component %>
+    <% markup        = (render inline: (component.markup.nil? ? component.helper : component.markup), layout: false, locals: (component.stub ? component.stub.symbolize_keys : {})).html_safe %>
+    <% class_name    = component.name %>
+    <% base_class    = component.base_class || component.name %>
+    <% type          = component.type %>
+    <% activate_with = '' %>
+    <% precludes     = '' %>
+    <% set_by        = '' %>
 
-  <% joint_demos = @component.respond_to?(:states_and_variants_with_joint_demo) ? @component.states_and_variants_with_joint_demo : [] %>
+    <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= class_name %>">
+      <header class="demo__header">
+        <% unless joint.empty? %><h2 class="badge badge--small"><%= component.name %></h2><% end %>
+      </header>
 
-  <% joint_demos.each do |joint_demo| %>
-    <% class_name    = joint_demo.name %>
-    <% base_class    = joint_demo.base_class %>
-    <% description   = joint_demo.description || '' %>
-    <% type          = joint_demo.type %>
-    <% activate_with = joint_demo.activate_with.join ', ' %>
-    <% precludes     = joint_demo.precludes.join ', ' %>
-    <% set_by        = (joint_demo.set_by.map { |set_by| "#{set_by[:setter]} (#{set_by[:constant] || ''})" }).join ', ' %>
-    <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-description="<%= description %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= joint_demo.name %>">
-      <demo>__header
-        <h2 class="demo__heading">
-          <span>
-            <%= joint_demo.name %>
-          </span>
-          <button class="docks-button docks-button--unstyled demo__details">?</button>
-        </h2>
-      </demo>
       <section class="demo__content">
-        <%= @component.markup.gsub(/class\s?=[ '"].*?#{joint_demo.base_class}[ '"]/) { |before| "#{before[0..-2]} #{joint_demo.name}#{before[-1]}" } %>
+        <%= markup %>
       </section>
     </section>
-  <% end %>
+
+    <!-- TODO: use the set_by to generate the component -->
+
+    <% joint.each do |variant| %>
+      <% class_name    = variant.name %>
+      <% base_class    = variant.base_class %>
+      <% description   = variant.description %>
+      <% type          = variant.type %>
+      <% activate_with = variant.activate_with.join ', ' %>
+      <% precludes     = variant.precludes.join ', ' %>
+      <% set_by        = (variant.set_by.map { |set_by| "#{set_by.setter} (#{set_by.constant || ''})" }).join ', ' %>
+
+      <section class="demo__section" data-activate-with="<%= activate_with %>" data-base-class="<%= base_class %>" data-description="<%= description %>" data-name="<%= class_name %>" data-precludes="<%= precludes %>" data-set-by="<%= set_by %>" data-type="<%= type %>" id="demo__section--<%= variant.name %>">
+        <header class="demo__header">
+          <h2 class="badge badge--small"><%= variant.name %></h2>
+        </header>
+        <section class="demo__content">
+          <%= markup.gsub(/class\s?=[ '"].*?#{variant.base_class}[ '"]/) { |before| "#{before[0..-2]} #{variant.name}#{before[-1]}" }.html_safe %>
+        </section>
+      </section>
+    <% end %>
+  </div>
 </div>
