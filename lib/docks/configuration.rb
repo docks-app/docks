@@ -78,7 +78,7 @@ module Docks
     configuration.cache_dir ||= (rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}"))
 
     if configuration.src_files.kind_of?(Array) && !configuration.src_files.empty?
-      configuration.src_files.map { |file| File.join(configuration.root, file) }
+      configuration.src_files.map! { |file| File.join(configuration.root, file) }
       puts "SOURCE FILES:"
       puts configuration.src_files
       puts Group.group(Docks.configuration.src_files)
