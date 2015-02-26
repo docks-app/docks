@@ -1,4 +1,4 @@
-module ApplicationHelper
+module HomeHelper
   def ui_code_block
     content_tag(:button, "I'm a button!")
   end
