@@ -1,5 +1,5 @@
 module Docks
-  module HomeHelper
+  module ApplicationHelper
     def ui_code_block
       content_tag(:button, "I'm a button!")
     end

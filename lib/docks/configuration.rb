@@ -75,6 +75,8 @@ module Docks
     rails = defined?(::Rails)
 
     configuration.root ||= (rails ? ::Rails.root.to_s : Dir.pwd)
+    puts "PRE_CONFIG"
+    puts "ROOT: #{configuration.root}"
     configuration.cache_dir ||= (rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}"))
 
     if configuration.src_files.kind_of?(Array) && !configuration.src_files.empty?
