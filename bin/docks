@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-require 'docks'
-require 'docks/cli'
-
-cli = Docks::CLI.new ARGV
-cli.run
