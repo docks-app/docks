@@ -5,7 +5,7 @@ module Docks
     isolate_namespace Docks
     engine_name :docks
 
-    config.assets.precompile += %w(docks.css docks.js)
+    config.assets.precompile += %w(pattern.css pattern.js demo.css demo.js)
 
     initializer :assets, group: :all do |app|
       Docks::Engine.default_root_path(app.root)

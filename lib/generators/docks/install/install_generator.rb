@@ -28,13 +28,12 @@ module Docks
       copy_file "images/icons.svg", "app/assets/images/docks/icons.svg"
     end
 
-    def copy_config
-      copy_file "docks.rb", "config/initializers/docks.rb"
+    def copy_stylesheets
+      copy_file "stylesheets/pattern-library.scss", "app/assets/stylesheets/docks/pattern-library.scss"
     end
 
-    def copy_styles
-      # FileUtils.mkdir_p 'app/assets/stylesheets/docks'
-      # FileUtils.cp_r File.expand_path('../templates/styles', __FILE__), 'app/assets/stylesheets/docks'
+    def copy_config
+      copy_file "docks.rb", "config/initializers/docks.rb"
     end
 
     def display_readme

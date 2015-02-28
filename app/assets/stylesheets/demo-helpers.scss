@@ -1,0 +1,11 @@
+@mixin demo-height($component, $height) {
+  #demo__section--#{$component} > .demo__content {
+    height: #{$height} !important;
+  }
+}
+
+@mixin demo-styles($component) {
+  #demo__section--#{$component} {
+    @content;
+  }
+}

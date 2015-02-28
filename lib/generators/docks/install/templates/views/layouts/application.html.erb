@@ -78,11 +78,15 @@
             <div class="pattern-meta__section pattern-meta__section--aside">
               <div class="type-container">
                 <div class="grid grid--outside-spacing">
+                  <%
+                    root = Docks.configuration.root
+                    files = @pattern.files.map { |file| file.sub(root, "") }
+                  %>
                   <div class="grid__item">
                     <%
                       github_url = Docks.configuration.github_repo.sub(/(.)\/?$/, '\1')
 
-                      file_checklist = @pattern.files.map { |file| "- [#{@pattern.files.length == 1 ? "x" : " "}] #{file}" }.join("\n")
+                      file_checklist = files.map { |file| "- [#{@pattern.files.length == 1 ? "x" : " "}] #{file}" }.join("\n")
                       message = "\n\n\n---\n\nThis issue is related to the following files:\n\n#{file_checklist}"
                     %>
                     <a href="<%= "#{github_url}/issues/new?body=#{url_encode(message)}" %>" target="_blank" class="docks-button docks-button--dark docks-button--full-width">
@@ -93,7 +97,7 @@
 
                   <div class="grid__item">
                     <% if @pattern.files.length == 1 %>
-                      <a href="<%= "#{github_url}/blob/master/#{url_encode(@pattern.files.first).gsub("%2F", "/")}" %>" class="docks-button docks-button--dark docks-button--full-width">
+                      <a href="<%= "#{github_url}/blob/master/#{url_encode(files.first).gsub("%2F", "/").sub(/^\//, "")}" %>" class="docks-button docks-button--dark docks-button--full-width">
                         <%= docks_icon :github, size: :medium %>
                         <span>View source</span>
                       </a>
@@ -106,9 +110,9 @@
 
                         <%= docks_popover align: :edge do %>
                           <ul class="list">
-                            <% @pattern.files.each do |file| %>
+                            <% files.each do |file| %>
                               <li>
-                                <a href="<%= "#{github_url}/blob/master/#{url_encode(file).gsub("%2F", "/")}" %>" class="list__item"><%= File.basename(file) %></a>
+                                <a href="<%= "#{github_url}/blob/master/#{url_encode(file).gsub("%2F", "/").sub(/^\//, "")}" %>" class="list__item"><%= File.basename(file) %></a>
                               </li>
                             <% end %>
                           </ul>
@@ -120,7 +124,7 @@
               </div>
 
               <div class="media__helpers--show-after-medium">
-                <%= render "docks/partials/symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
+                <%= render "symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
               </div>
             </div>
           </div>
