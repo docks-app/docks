@@ -28,7 +28,9 @@ module Docks
     module Demo
       SELECT      = "select"
       JOINT       = "joint"
+      OWN         = "own"
       NONE        = "none"
+      HIDDEN      = NONE
       DEFAULT     = NONE
     end
 

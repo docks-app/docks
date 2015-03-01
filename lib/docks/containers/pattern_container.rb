@@ -162,6 +162,10 @@ module Docks
         @demos = []
         components.each do |component|
           @demos << Demo.new(component) if component.has_demo?
+
+          component.variations.each do |variation|
+            @demos << Demo.new(variation) if variation.demo_type == Docks::Types::Demo::OWN
+          end
         end
       end
     end

@@ -69,16 +69,31 @@ module Docks
         group_by_component = options[:group_by_component]
         matches = group_by_component ? {} : []
 
+        return matches unless @component.symbol_type == Docks::Types::Symbol::COMPONENT
+
         ([@component] + @component.subcomponents + @component.included_symbols).each do |a_component|
+          if demo_type = a_component.demo_type
+            next unless demo_type == type
+
+            if group_by_component
+              matches[a_component.base_class] ||= []
+              matches[a_component.base_class] << a_component
+            else
+              matches << a_component
+            end
+
+            next
+          end
+
           component_name = a_component.name
           a_component.variations.each do |v|
-            if v.demo_type == type
-              if group_by_component
-                matches[component_name] ||= []
-                matches[component_name].push(v)
-              else
-                matches.push(v)
-              end
+            next unless v.demo_type == type
+
+            if group_by_component
+              matches[component_name] ||= []
+              matches[component_name] << v
+            else
+              matches.push << v
             end
           end
         end

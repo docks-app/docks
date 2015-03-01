@@ -1,7 +1,7 @@
 require "spec_helper"
 
 state_one = OpenStruct.new(name: "foo", demo_type: Docks::Types::Demo::NONE)
-state_two = OpenStruct.new(name: "bar", demo_type: Docks::Types::Demo::SELECT)
+state_two = OpenStruct.new(name: "bar", base_class: "b", demo_type: Docks::Types::Demo::SELECT)
 variant_one = OpenStruct.new(name: "baz", demo_type: Docks::Types::Demo::SELECT)
 variant_two = OpenStruct.new(name: "qux", demo_type: Docks::Types::Demo::JOINT)
 
@@ -83,6 +83,17 @@ describe Docks::Containers::Demo do
       expect(variations.length).to be 2
 
       subcomponent_variations = variations[basic_component.name]
+      expect(subcomponent_variations.length).to be 1
+      expect(subcomponent_variations).to include state_two
+    end
+
+    it "includes select variations that are directly included" do
+      complex_component[:included_symbols] = [state_one, state_two]
+      variations = complex_demo.select_variations(group_by_component: true)
+
+      expect(variations.length).to be 2
+
+      subcomponent_variations = variations[state_two.base_class]
       expect(subcomponent_variations.length).to be 1
       expect(subcomponent_variations).to include state_two
     end

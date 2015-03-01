@@ -175,6 +175,16 @@ describe Docks::Containers::Pattern do
       expect(pattern.demos.length).to be 1
       expect(pattern.demos.first.component.name).to eq component_one[:name]
     end
+
+    it "creates a demo for variations that need one" do
+      variant = OpenStruct.new(demo_type: Docks::Types::Demo::OWN, name: "bar--baz")
+      component = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "bar", variant: [variant], markup: "<p>Hi</p>" }
+      simple_parse_results[:style] = [component]
+      pattern = subject.new(simple_parse_results)
+
+      expect(pattern.demos.length).to be 2
+      expect(pattern.demos.last.component.name).to eq variant.name
+    end
   end
 
   describe "#demo_for" do
