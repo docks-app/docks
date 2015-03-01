@@ -1,9 +1,5 @@
 module Docks
   module ApplicationHelper
-    def ui_code_block
-      content_tag(:button, "I'm a button!")
-    end
-
     def details_for(symbol)
       details = {
         tags: [],
@@ -45,7 +41,7 @@ module Docks
     def render_everything(symbol)
       if symbol.kind_of?(Docks::Containers::Base)
         symbol.each do |k, v|
-          if k == :description
+          if k == :description && v.present?
             symbol[k] = special_description_render(v)
           else
             symbol[k] = render_everything(v)
@@ -53,7 +49,7 @@ module Docks
         end
       elsif symbol.kind_of?(Array)
         symbol.map! { |each_symbol| render_everything(each_symbol) }
-      elsif symbol.kind_of?(OpenStruct) && !symbol.description.nil?
+      elsif symbol.kind_of?(OpenStruct) && symbol.description.present?
         symbol.description = special_description_render(symbol.description)
       end
 

@@ -137,6 +137,20 @@ module Docks
             Docks::Containers.container_for(parse_result).new(parse_result)
           end
         end
+
+        components.each do |component|
+          component.subcomponents.map! do |subcomponent|
+            Docks::Containers::Component.new(subcomponent)
+          end
+
+          component.included_symbols.map! do |included_symbol|
+            if included_symbol.kind_of?(OpenStruct)
+              included_symbol
+            else
+              Docks::Containers::Component.new(included_symbol)
+            end
+          end
+        end
       end
 
       # Private: wraps a demo container around sets of components that indicate

@@ -67,8 +67,9 @@ module Docks
                           Docks::PostProcessors::AddExtraMetadata,
                           Docks::PostProcessors::CleanUpHelperAndMarkup,
                           Docks::PostProcessors::MarkdownDescriptions,
-                          Docks::PostProcessors::JoinSubcomponentsToBaseComponent,
-                          Docks::PostProcessors::ReplaceHashesWithOpenStructs
+                          Docks::PostProcessors::ReplaceHashesWithOpenStructs,
+                          Docks::PostProcessors::JoinIncludeWithSymbols,
+                          Docks::PostProcessors::JoinSubcomponentsToBaseComponent
     end
 
 

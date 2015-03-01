@@ -29,6 +29,24 @@ describe Docks::Containers::Component do
     end
   end
 
+  describe "#subcomponents" do
+    let(:subcomponent) do
+      { foo: "bar" }
+    end
+
+    it "has subcomponents when they are included on the component" do
+      component = subject.new(subcomponents: [subcomponent])
+      expect(component.subcomponents.length).to be 1
+      expect(component.subcomponents).to include subcomponent
+    end
+
+    it "has an empty array of subcomponents when not included" do
+      component = subject.new(foo: :bar)
+      expect(component.subcomponents).to be_an Array
+      expect(component.subcomponents).to be_empty
+    end
+  end
+
   describe "#variations" do
     let(:states) { [{ foo: "bar" }, { baz: "qux" }] }
     let(:variants) { [{ bar: "foo" }, { qux: "baz" }] }

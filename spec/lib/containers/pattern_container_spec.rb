@@ -154,6 +154,14 @@ describe Docks::Containers::Pattern do
         expect(results_of_symbol.first.class.type).to eq symbol
       end
     end
+
+    it "wraps subcomponents in a container" do
+      subcomponent = { foo: "bar" }
+      component = { subcomponents: [subcomponent], symbol_type: Docks::Types::Symbol::COMPONENT }
+      simple_parse_results[:script] = [component]
+      pattern = Docks::Containers::Pattern.new(simple_parse_results)
+      expect(pattern.components.first.subcomponents.first).to be_a Docks::Containers::Component
+    end
   end
 
   describe "#demos" do

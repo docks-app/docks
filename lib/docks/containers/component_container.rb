@@ -32,6 +32,16 @@ module Docks
       def variations
         (states || []) + (variants || [])
       end
+
+      # Public: returns an array of subcomponents for this component.
+
+      def subcomponents
+        (@item[:subcomponents] || [])
+      end
+
+      def included_symbols
+        (@item[:included_symbols] || [])
+      end
     end
   end
 end

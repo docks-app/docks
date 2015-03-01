@@ -5,14 +5,20 @@ state_two = OpenStruct.new(name: "bar", demo_type: Docks::Types::Demo::SELECT)
 variant_one = OpenStruct.new(name: "baz", demo_type: Docks::Types::Demo::SELECT)
 variant_two = OpenStruct.new(name: "qux", demo_type: Docks::Types::Demo::JOINT)
 
-basic_component = Docks::Containers::Component.new(name: "flarb", state: [state_one])
-complex_component = Docks::Containers::Component.new(name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two])
 
 describe Docks::Containers::Demo do
   subject { Docks::Containers::Demo }
 
   before :each do
     Docks::Tag.register_bundled_tags
+  end
+
+  let(:basic_component) do
+    Docks::Containers::Component.new(name: "flarb", state: [state_one])
+  end
+
+  let(:complex_component) do
+    Docks::Containers::Component.new(name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two])
   end
 
   let(:basic_demo) { subject.new(basic_component) }
@@ -55,6 +61,30 @@ describe Docks::Containers::Demo do
       expect(component_variations.length).to be 2
       expect(component_variations).to include state_two
       expect(component_variations).to include variant_one
+    end
+
+    it "includes select variations from subcomponents" do
+      basic_component[:state] = [state_two]
+      complex_component[:subcomponents] = [basic_component]
+      variations = complex_demo.select_variations(group_by_component: true)
+
+      expect(variations.length).to be 2
+
+      subcomponent_variations = variations[basic_component.name]
+      expect(subcomponent_variations.length).to be 1
+      expect(subcomponent_variations).to include state_two
+    end
+
+    it "includes select variations from included components" do
+      basic_component[:state] = [state_two]
+      complex_component[:included_symbols] = [basic_component]
+      variations = complex_demo.select_variations(group_by_component: true)
+
+      expect(variations.length).to be 2
+
+      subcomponent_variations = variations[basic_component.name]
+      expect(subcomponent_variations.length).to be 1
+      expect(subcomponent_variations).to include state_two
     end
   end
 
