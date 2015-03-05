@@ -14,6 +14,12 @@ module Docks
       # Returns the type String.
 
       def self.type; Docks::Types::Symbol::FUNCTION end
+
+      # Public: Returns a boolean indicating whether the function is private.
+      def private; access == Docks::Types::Access::PRIVATE end
+
+      # Public: Returns a boolean indicating whether the function is public.
+      def public; !private end
     end
   end
 end

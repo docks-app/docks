@@ -33,7 +33,7 @@ module Docks
             precludes: [],
             set_by: [],
             include_with: [],
-            demo_type: Docks::Types::Demo::NONE,
+            demo_type: Docks::Types::Demo::DEFAULT,
             javascript_action: nil,
             active: false
           }

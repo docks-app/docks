@@ -4,8 +4,8 @@ describe Docks::Parser do
   subject { Docks::Parser }
 
   before :all do
-    Docks::Tag.register_bundled_tags
     Docks::Process.clear_post_processors
+    Docks::Tag.register_bundled_tags
     Docks::Process.register_bundled_post_processors
     Docks::Language.register_bundled_languages
   end

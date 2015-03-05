@@ -17,6 +17,10 @@ module Docks
 
     def demo
       @demo = Docks::Cache.pattern_for(params[:pattern].gsub(/\-+/, "_")).demo_for(params[:demo])
+
+      if @demo.nil?
+        render nothing: true
+      end
     end
   end
 end

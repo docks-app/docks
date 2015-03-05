@@ -31,7 +31,7 @@ module Docks
       OWN         = "own"
       NONE        = "none"
       HIDDEN      = NONE
-      DEFAULT     = NONE
+      DEFAULT     = SELECT
     end
 
     module Languages
