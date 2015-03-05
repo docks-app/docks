@@ -45,7 +45,7 @@ module Docks
       def process(content)
         Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
           first_line.strip!
-          return nil if first_line.length == 0 || first_line == "nothing"
+          return nil if first_line.length == 0 || first_line.downcase == "nothing"
 
           match = first_line.match(/\s*\{?(?<type>[^\}]*)\}?(?:\s*\-?\s*(?<description>.*))?/)
           return nil if match.nil?
