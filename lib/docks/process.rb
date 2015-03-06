@@ -66,6 +66,7 @@ module Docks
                           Docks::PostProcessors::AssociateExternalDescriptionFiles,
                           Docks::PostProcessors::AddExtraMetadata,
                           Docks::PostProcessors::CleanUpHelperAndMarkup,
+                          Docks::PostProcessors::CleanUpComponents,
                           Docks::PostProcessors::PrepareVariationMarkup,
                           Docks::PostProcessors::MarkdownDescriptions,
                           Docks::PostProcessors::ReplaceHashesWithOpenStructs,
