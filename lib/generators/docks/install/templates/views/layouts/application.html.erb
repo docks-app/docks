@@ -79,12 +79,12 @@
               <div class="type-container">
                 <div class="grid grid--outside-spacing">
                   <%
-                    root = Docks.configuration.root
+                    root = Docks.config.root
                     files = @pattern.files.map { |file| file.sub(root, "") }
                   %>
                   <div class="grid__item">
                     <%
-                      github_url = Docks.configuration.github_repo.sub(/(.)\/?$/, '\1')
+                      github_url = Docks.config.github_repo.sub(/(.)\/?$/, '\1')
 
                       file_checklist = files.map { |file| "- [#{@pattern.files.length == 1 ? "x" : " "}] #{file}" }.join("\n")
                       message = "\n\n\n---\n\nThis issue is related to the following files:\n\n#{file_checklist}"

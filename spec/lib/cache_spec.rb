@@ -8,8 +8,8 @@ describe Docks::Cache do
   end
 
   let(:cache) { Docks::Cache.new }
-  let(:cache_file) { File.expand_path(example_file, Docks.configuration.cache_dir) }
-  let(:group_cache_file) { File.expand_path(Docks::GROUP_CACHE_FILE, Docks.configuration.cache_dir) }
+  let(:cache_file) { File.expand_path(example_file, Docks.config.cache_dir) }
+  let(:group_cache_file) { File.expand_path(Docks::GROUP_CACHE_FILE, Docks.config.cache_dir) }
 
   before :all do
     Docks.configure do |config|

@@ -10,7 +10,7 @@ module Docks
     def self.parse
       cache = Cache.new
 
-      Group.group(Docks.configuration.src_files).each do |group_identifier, group|
+      Group.group(Docks.config.src_files).each do |group_identifier, group|
         # this needs tests
         next unless should_parse?(group)
 
@@ -32,18 +32,18 @@ module Docks
     # Returns nothing.
 
     def self.build
-      destination = File.join(Docks.configuration.root, Docks.configuration.destination)
+      destination = File.join(Docks.config.root, Docks.config.destination)
       FileUtils.mkdir_p(destination)
-      FileUtils.cp_r Dir[File.join(Docks.configuration.root, "pattern_library_assets/*")], destination
+      FileUtils.cp_r Dir[File.join(Docks.config.root, "pattern_library_assets/*")], destination
 
       pattern_groups = Cache.pattern_groups
-      Group.group(Docks.configuration.src_files).each do |id, group|
+      Group.group(Docks.config.src_files).each do |id, group|
         begin
           pattern = Cache.pattern_for(id)
           template = Renderers.search_for_template(Template.template_for(id))
           renderer = Language.language_for(template).renderer
 
-          File.open(File.join(Docks.configuration.root, Docks.configuration.destination, "#{id.to_s}.html"), "w") do |file|
+          File.open(File.join(Docks.config.root, Docks.config.destination, "#{id.to_s}.html"), "w") do |file|
             file.write renderer.render(template, pattern: pattern, pattern_groups: pattern_groups)
           end
         rescue Docks::NoPatternError => e
@@ -138,7 +138,7 @@ module Docks
     # Returns a Boolean indicating whether or not to render the group.
 
     def self.should_parse?(group)
-      cache_file = File.join(Docks.configuration.cache_dir, Group.group_identifier(group.first).to_s)
+      cache_file = File.join(Docks.config.cache_dir, Group.group_identifier(group.first).to_s)
       return true unless File.exists?(cache_file)
 
       File.mtime(cache_file) < most_recent_modified_date(group)

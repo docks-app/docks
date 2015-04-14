@@ -15,7 +15,7 @@ describe Docks::PostProcessors::AssociateExternalStubFiles do
       files[Docks::Types::Languages::DESCRIPTION] = []
       files[Docks::Types::Languages::STUB] = ["foo/bar/baz.yml", stub_file_name]
 
-      expect(Docks.configuration).to receive(:files).at_least(:once).and_return files
+      expect(Docks.config).to receive(:files).at_least(:once).and_return files
     end
 
     let(:component) do

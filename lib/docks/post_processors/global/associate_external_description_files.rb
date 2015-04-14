@@ -2,8 +2,8 @@ module Docks
   module PostProcessors
     class AssociateExternalDescriptionFiles < Base
       def self.post_process(parsed_file)
-        return parsed_file if Docks.configuration.files.nil?
-        description_files = Docks.configuration.files[Docks::Types::Languages::DESCRIPTION]
+        return parsed_file if Docks.config.files.nil?
+        description_files = Docks.config.files[Docks::Types::Languages::DESCRIPTION]
         return parsed_file if description_files.empty?
 
         parsed_file.each do |parse_result|

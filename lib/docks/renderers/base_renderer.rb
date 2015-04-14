@@ -43,11 +43,11 @@ module Docks
       return loose_template unless loose_template.nil?
 
       unless options[:must_be_partial]
-        in_root = loose_search_for(File.join(Docks.configuration.root, template))
+        in_root = loose_search_for(File.join(Docks.config.root, template))
         return in_root unless in_root.nil?
       end
 
-      in_partials = loose_search_for(File.join(Docks.configuration.partials_dir, template))
+      in_partials = loose_search_for(File.join(Docks.config.partials_dir, template))
       return in_partials unless in_partials.nil?
 
       Messenger.error("No template by the name of '#{template}' could be found.")
