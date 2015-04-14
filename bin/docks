@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require "docks"
+require "docks/command_line"
+
+Docks::CommandLine.new(ARGV).run

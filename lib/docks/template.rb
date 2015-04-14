@@ -1,6 +1,11 @@
 module Docks
   class Template
     @@templates = []
+    @@fallback  = nil
+
+    def self.fallback=(template)
+      @@fallback = template
+    end
 
     def self.register(template, options = {})
       if template.kind_of?(Hash)
@@ -13,16 +18,14 @@ module Docks
       end
     end
 
-    def self.template_for(file)
-      id = Docks::Group.group_identifier(file)
-
+    def self.template_for(id)
       @@templates.reverse_each do |template_details|
         return template_details[:template] if template_details[:matcher] =~ id
       end
 
-      nil
+      @@fallback
     end
   end
 
-  def self.template_for(file); Template.template_for(file) end
+  def self.template_for(id); Template.template_for(id) end
 end

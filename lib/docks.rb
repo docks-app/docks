@@ -21,6 +21,8 @@ Dir[File.join(File.dirname(__FILE__), "docks", "processors/*.rb")].each { |file|
 require File.join(File.dirname(__FILE__), "docks", "post_processors/base_post_processor.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "post_processors/**/*.rb")].each { |file| require file }
 
+Dir[File.join(File.dirname(__FILE__), "docks", "renderers/*.rb")].each { |file| require file }
+
 require File.join(File.dirname(__FILE__), "docks", "languages/base_language.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "languages/*.rb")].each { |file| require file }
 

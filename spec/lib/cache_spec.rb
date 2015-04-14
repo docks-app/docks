@@ -27,7 +27,6 @@ describe Docks::Cache do
     it "sends the cached parse results back when it exists" do
       expect(cache).to receive(:pattern_is_valid?).and_return true
       expect(cache).to receive(:group_details).and_return Hash.new
-      expect(Docks::Builder).to receive(:build).and_return nil
 
       cache << result
 

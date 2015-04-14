@@ -9,8 +9,7 @@ module Docks
     @@group_cache_file = nil
 
     def self.pattern_for(pattern)
-      puts "PATTERN FOR #{pattern}"
-      Docks::Builder.build
+      pattern = pattern.to_s
       cache_file = File.join(Docks.configuration.cache_dir, pattern)
 
       unless File.exists?(cache_file)
@@ -63,7 +62,7 @@ module Docks
     private
 
     def pattern_is_valid?(parse_results)
-      PARSE_RESULT_TYPES.any? { |parse_result_type| parse_results[parse_result_type].present? }
+      !parse_results[:pattern].nil? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
     end
 
     def group_details(parse_results)

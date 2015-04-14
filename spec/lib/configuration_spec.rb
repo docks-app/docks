@@ -15,7 +15,7 @@ describe Docks do
     end
 
     it "sets configured to true" do
-      subject.configured = false
+      subject.instance_variable_set(:@configured, false)
       subject.configure { }
       expect(subject.configured).to be true
     end
