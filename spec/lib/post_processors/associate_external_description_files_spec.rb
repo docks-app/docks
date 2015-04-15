@@ -15,7 +15,7 @@ describe Docks::PostProcessors::AssociateExternalDescriptionFiles do
       files[Docks::Types::Languages::DESCRIPTION] = ["foo/bar/baz.md", description_file_name]
       files[Docks::Types::Languages::STUB] = []
 
-      expect(Docks.config).to receive(:files).at_least(:once).and_return files
+      expect(Docks::Group).to receive(:source_files_of_type).at_least(:once).with(Docks::Types::Languages::DESCRIPTION).and_return ["foo/bar/baz.md", description_file_name]
     end
 
     let(:component) do

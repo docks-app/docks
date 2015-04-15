@@ -5,9 +5,10 @@ describe Docks::Renderers::Haml do
 
   subject { Docks::Renderers::Haml.instance }
 
-  before :all do
+  before :each do
     Docks.configure do |config|
       config.root = fixture_dir
+      config.library_assets = ""
     end
   end
 

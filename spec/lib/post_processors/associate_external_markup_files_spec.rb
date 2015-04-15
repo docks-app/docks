@@ -8,14 +8,7 @@ describe Docks::PostProcessors::AssociateExternalMarkupFiles do
 
   describe ".post_process" do
     before :each do
-      files = {}
-      files[Docks::Types::Languages::MARKUP] = ["foo/bar/baz.html", markup_file_name]
-      files[Docks::Types::Languages::SCRIPT] = []
-      files[Docks::Types::Languages::STYLE] = []
-      files[Docks::Types::Languages::DESCRIPTION] = []
-      files[Docks::Types::Languages::STUB] = []
-
-      expect(Docks.config).to receive(:files).at_least(:once).and_return files
+      expect(Docks::Group).to receive(:source_files_of_type).at_least(:once).with(Docks::Types::Languages::MARKUP).and_return ["foo/bar/baz.html", markup_file_name]
     end
 
     let(:component) do

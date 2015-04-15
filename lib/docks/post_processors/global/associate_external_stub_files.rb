@@ -2,8 +2,7 @@ module Docks
   module PostProcessors
     class AssociateExternalStubFiles < Base
       def self.post_process(parsed_file)
-        return parsed_file if Docks.config.files.nil?
-        stub_files = Docks.config.files[Docks::Types::Languages::STUB]
+        stub_files = Group.source_files_of_type(Docks::Types::Languages::STUB)
         return parsed_file if stub_files.empty?
 
         parsed_file.each do |parse_result|

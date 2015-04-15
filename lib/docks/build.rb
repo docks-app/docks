@@ -1,7 +1,7 @@
 module Docks
   class Builder
 
-    # Public: runs the parser on every group of files in the `src_files` of the
+    # Public: runs the parser on every group of files in the `sources` of the
     # configuration. The results of the parse are augmented with a few small
     # details and are then cached.
     #
@@ -10,7 +10,7 @@ module Docks
     def self.parse
       cache = Cache.new
 
-      Group.group(Docks.config.src_files).each do |group_identifier, group|
+      Group.group(Docks.config.sources).each do |group_identifier, group|
         # this needs tests
         next unless should_parse?(group)
 
@@ -32,18 +32,28 @@ module Docks
     # Returns nothing.
 
     def self.build
-      destination = File.join(Docks.config.root, Docks.config.destination)
-      FileUtils.mkdir_p(destination)
-      FileUtils.cp_r Dir[File.join(Docks.config.root, "pattern_library_assets/*")], destination
+      destination = Docks.config.destination
+      mount_at = Docks.config.mount_at
+
+      FileUtils.mkdir_p(destination + mount_at)
+
+      library_assets_dir = Docks.config.library_assets
+      Dir[library_assets_dir + "**/*.{css,html,js,svg,png,jpg}"].each do |file|
+        matching_destination = Docks.config.destination + File.dirname(file).gsub(library_assets_dir.to_s, "").sub(/^\//, "")
+        FileUtils.mkdir_p(matching_destination)
+        FileUtils.cp(file, matching_destination)
+      end
 
       pattern_groups = Cache.pattern_groups
-      Group.group(Docks.config.src_files).each do |id, group|
+      Group.group(Docks.config.sources).each do |id, group|
         begin
           pattern = Cache.pattern_for(id)
           template = Renderers.search_for_template(Template.template_for(id))
           renderer = Language.language_for(template).renderer
 
-          File.open(File.join(Docks.config.root, Docks.config.destination, "#{id.to_s}.html"), "w") do |file|
+          dir = destination + "#{mount_at}/#{id}"
+          FileUtils.mkdir_p(dir)
+          File.open(dir + "index.html", "w") do |file|
             file.write renderer.render(template, pattern: pattern, pattern_groups: pattern_groups)
           end
         rescue Docks::NoPatternError => e
@@ -60,7 +70,7 @@ module Docks
 
     def self.setup(options)
       @@template_dir = File.expand_path("../../template", __FILE__)
-      @@assets_dir = File.join(Dir.pwd, "pattern_library_assets")
+      @@assets_dir = File.join(Dir.pwd, Docks::ASSETS_DIR)
       FileUtils.mkdir_p(@@assets_dir)
 
       setup_images
@@ -100,7 +110,8 @@ module Docks
     def self.setup_styles(style_preprocessor)
       styles_dir = File.join(@@assets_dir, "styles")
       FileUtils.mkdir_p(styles_dir)
-      FileUtils.cp_r(Dir[File.join(@@template_dir, "assets", "styles", style_preprocessor, "*")], styles_dir)
+      FileUtils.cp_r(Dir[File.join(@@template_dir, "assets", "styles", style_preprocessor, "*.#{style_preprocessor}")], styles_dir)
+      FileUtils.cp_r(Dir[File.join(@@template_dir, "assets", "styles", "*.css")], styles_dir)
     end
 
     # Public: copies the required scripts to the new directory.
@@ -114,6 +125,7 @@ module Docks
       script_dir = File.join(@@assets_dir, "scripts")
       FileUtils.mkdir_p(script_dir)
       FileUtils.cp_r(Dir[File.join(@@template_dir, "assets", "scripts", script_language, "*")], script_dir)
+      FileUtils.cp_r(Dir[File.join(@@template_dir, "assets", "scripts", "*.js")], script_dir)
     end
 
     # Public: copies the required templates to the new directory.

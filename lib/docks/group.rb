@@ -23,6 +23,8 @@ module Docks
       File.basename(filename).split('.').first.split(/(\-\-|__)/).first.sub(/^_+/, '').gsub(/(\s|\-|_)+/, '_').to_sym
     end
 
+    @@source_files_by_type = nil
+
 
     # Public: Groups together the files identified by the pattern (or patterns).
     # passed in. The pattern can be globs or standard filenames.
@@ -78,7 +80,9 @@ module Docks
 
 
 
-    def self.group_files_by_type(globs)
+    def self.source_files_of_type(type)
+      return @@source_files_by_type[type] unless @@source_files_by_type.nil?
+
       files = {}
       files[Docks::Types::Languages::MARKUP] = []
       files[Docks::Types::Languages::STYLE] = []
@@ -86,16 +90,19 @@ module Docks
       files[Docks::Types::Languages::STUB] = []
       files[Docks::Types::Languages::DESCRIPTION] = []
 
-      file_list_from_globs(globs).each do |filename|
+      file_list_from_globs(Docks.config.sources).each do |filename|
         files[Docks::Language.file_type(filename)] << filename
       end
 
-      files
+      @@source_files_by_type = files
+      @@source_files_by_type[type]
     end
 
 
 
     private
+
+
 
     # Private: Applies the exclusion criteria to a given filename. By default,
     # this will return true for files whose extension is part of the extensions

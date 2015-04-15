@@ -17,7 +17,11 @@ module Docks
 
     def demo
       @demo = Cache.pattern_for(Group.group_identifier(params[:pattern])).demo_for(params[:demo])
-      render(nothing: true) if @demo.nil?
+      if @demo.nil?
+        render(nothing: true)
+      else
+        render Docks.template_for(:demo)
+      end
     end
   end
 end

@@ -2,29 +2,30 @@ require "spec_helper"
 
 describe Docks::Renderers::Base do
   fixture_dir = File.expand_path("../../../fixtures/renderers", __FILE__)
-  partials_dir = File.join(fixture_dir, "partials")
+  template_dir = File.join(fixture_dir, "templates")
+  partials_dir = File.join(template_dir, "partials")
 
   subject { Docks::Renderers::Base.instance }
 
-  before :all do
+  around do |example|
     Docks.configure do |config|
-      config.partials_dir = partials_dir
       config.root = fixture_dir
+      config.library_assets = ""
     end
-  end
 
-  after :each do
+    example.run
+
     subject.send(:clean)
   end
 
   describe "#normalize_content_and_locals" do
     it "looks for a template if the full path is given" do
-      file = File.join(fixture_dir, "template.html.erb")
+      file = File.join(template_dir, "template.html.erb")
       expect(subject.send(:normalize_content_and_locals, file).first).to eq File.read(file)
     end
 
     it "looks for a template in the root directory first" do
-      expect(subject.send(:normalize_content_and_locals, "template").first).to eq File.read(File.join(fixture_dir, "template.html.erb"))
+      expect(subject.send(:normalize_content_and_locals, "template").first).to eq File.read(File.join(template_dir, "template.html.erb"))
     end
 
     it "looks for a template in a subdirectory of root" do
@@ -53,10 +54,6 @@ describe Docks::Renderers::Base do
       expect(subject.send(:normalize_content_and_locals, inline: inline_content).first).to eq inline_content
     end
 
-    it "returns nil when no matching templates are found" do
-      expect(subject.send(:normalize_content_and_locals, "subdirectory")).to eq nil
-    end
-
     it "caches the content of template files" do
       template = "template"
       expect(File).to receive(:read).once.and_call_original
@@ -77,6 +74,10 @@ describe Docks::Renderers::Base do
     it "provides the locals key of the first argument as locals" do
       locals = { foo: "bar" }
       expect(subject.send(:normalize_content_and_locals, partial: "template", locals: locals).last).to eq locals
+    end
+
+    it "throws an error when no matching template is found" do
+      expect { subject.send(:normalize_content_and_locals, "foo") }.to raise_error(Docks::NoTemplateError)
     end
   end
 end

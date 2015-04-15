@@ -8,19 +8,23 @@ describe Docks::Cache do
   end
 
   let(:cache) { Docks::Cache.new }
-  let(:cache_file) { File.expand_path(example_file, Docks.config.cache_dir) }
-  let(:group_cache_file) { File.expand_path(Docks::GROUP_CACHE_FILE, Docks.config.cache_dir) }
+  let(:cache_file) { File.expand_path(example_file, Docks.config.cache_location) }
+  let(:group_cache_file) { File.expand_path(Docks::GROUP_CACHE_FILE, Docks.config.cache_location) }
 
   before :all do
     Docks.configure do |config|
       config.root = File.expand_path("../../fixtures/cache", __FILE__)
-      config.cache_dir = File.expand_path("cache", config.root)
+      config.cache_location = "cache"
     end
   end
 
   after :each do
     File.open(group_cache_file, "w") { |file| file.write("") }
     File.open(cache_file, "w") { |file| file.write("") }
+  end
+
+  after :all do
+    FileUtils.rm_rf(Docks.config.cache_location)
   end
 
   describe ".pattern_for" do

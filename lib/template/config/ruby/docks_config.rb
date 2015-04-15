@@ -1,13 +1,23 @@
 Docks.configure do |config|
-  config.src_files = [
+  config.sources = [
     "styles/**/*.scss",
     "scripts/**/*.coffee"
   ]
 
-  config.destination = "pattern_library"
+  config.destination = "public"
 
-  config.custom_templates do |template|
-    template.fallback = "pattern_library_assets/templates/pattern.html.erb"
+  config.custom_templates do |templates|
+    templates.default = "pattern.erb"
+    templates.demo = "demo.erb"
+  end
+
+  config.custom_tags do |tags|
+  end
+
+  config.custom_parsers do |parsers|
+  end
+
+  config.custom_languages do |languages|
   end
 
   config.include_assets = [

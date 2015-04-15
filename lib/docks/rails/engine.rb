@@ -20,7 +20,7 @@ module Docks
     end
 
     def self.prepend_routes(app)
-      mount_at = Docks.config.mount_at
+      mount_at = "/#{Docks.config.mount_at.split("/", 2).last}"
       return if app.routes.recognize_path(mount_at)[:action] != "routing_error" rescue nil
 
       app.routes.prepend do
