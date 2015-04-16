@@ -84,18 +84,18 @@ describe Docks::Configuration do
     end
 
     it "registers a template with the :fallback or :default key as the fallback template" do
-      templates = { foo: "bar", default: "pattern" }
-      expect(Docks::Template).to receive(:fallback=).with(templates[:default])
+      templates = { "foo" => "bar", "default" => "pattern" }
+      expect(Docks::Template).to receive(:fallback=).with(templates["default"])
       subject.templates = templates
 
-      templates = { foo: "bar", fallback: "pattern" }
-      expect(Docks::Template).to receive(:fallback=).with(templates[:fallback])
+      templates = { "foo" => "bar", "fallback" => "pattern" }
+      expect(Docks::Template).to receive(:fallback=).with(templates["fallback"])
       subject.templates = templates
     end
 
     it "registers a template with the :demo key as the demo template" do
-      templates = { foo: "bar", demo: "my-custom-demo" }
-      expect(Docks::Template).to receive(:demo=).with(templates[:demo])
+      templates = { "foo" => "bar", "demo" => "my-custom-demo" }
+      expect(Docks::Template).to receive(:demo=).with(templates["demo"])
       subject.templates = templates
     end
   end

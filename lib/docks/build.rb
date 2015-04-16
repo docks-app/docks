@@ -38,24 +38,40 @@ module Docks
       FileUtils.mkdir_p(destination + mount_at)
 
       library_assets_dir = Docks.config.library_assets
+      Messenger.file_header("Assets:")
+
       Dir[library_assets_dir + "**/*.{css,html,js,svg,png,jpg}"].each do |file|
         matching_destination = Docks.config.destination + File.dirname(file).gsub(library_assets_dir.to_s, "").sub(/^\//, "")
         FileUtils.mkdir_p(matching_destination)
+
+        copied_file = matching_destination + File.basename(file)
+        update = File.exists?(copied_file)
         FileUtils.cp(file, matching_destination)
+
+        Messenger.file(copied_file.to_s.gsub(Docks.config.destination.dirname.to_s, "").sub(/^\//, ""), update ? :updated : :created)
       end
 
       pattern_groups = Cache.pattern_groups
+      Messenger.file_header("Pages:")
       Group.group(Docks.config.sources).each do |id, group|
         begin
           pattern = Cache.pattern_for(id)
           template = Renderers.search_for_template(Template.template_for(id))
+          Docks.current_template = Pathname.new(template)
+
           renderer = Language.language_for(template).renderer
+          renderer.helper_files = [File.expand_path("../../template/helpers.rb", __FILE__)]
 
           dir = destination + "#{mount_at}/#{id}"
+          html_file = dir + "index.html"
+          update = File.exists?(html_file)
           FileUtils.mkdir_p(dir)
-          File.open(dir + "index.html", "w") do |file|
+
+          File.open(html_file, "w") do |file|
             file.write renderer.render(template, pattern: pattern, pattern_groups: pattern_groups)
           end
+
+          Messenger.file(html_file, update ? :updated : :created)
         rescue Docks::NoPatternError => e
         end
       end
@@ -150,7 +166,7 @@ module Docks
     # Returns a Boolean indicating whether or not to render the group.
 
     def self.should_parse?(group)
-      cache_file = File.join(Docks.config.cache_dir, Group.group_identifier(group.first).to_s)
+      cache_file = File.join(Docks.config.cache_location, Group.group_identifier(group.first).to_s)
       return true unless File.exists?(cache_file)
 
       File.mtime(cache_file) < most_recent_modified_date(group)

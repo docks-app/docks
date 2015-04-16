@@ -48,4 +48,6 @@ module Docks
   end
 
   def self.template_for(id); Template.template_for(id) end
+  def self.current_template; @@current_template end
+  def self.current_template=(template); @@current_template = template end
 end

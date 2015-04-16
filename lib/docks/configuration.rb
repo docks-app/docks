@@ -19,21 +19,37 @@ module Docks
     # Stateful stuff
     attr_reader :configured
 
-
     def initialize
       reset
     end
+
+    # Updates the root directory against which `ROOT_DEPENDENT_PATHS` are
+    # evaluated.
+    #
+    # new_root - A Pathname or string representing the root path.
+    #
+    # Returns nothing.
 
     def root=(new_root)
       @root = new_root.kind_of?(Pathname) ? new_root : Pathname.new(new_root)
     end
 
+    # Adds custom templates. The keys of the passed Hash will be treated as a
+    # pattern to match in order to use the template represented by the
+    # associated value. If the passed Hash has `default` or `fallback` keys,
+    # that template will be used as the fallback template. If a `demo` key
+    # exists, that template will be used as the template for component demos.
+    #
+    # special_templates - A Hash representing the custom templates to use.
+    #
+    # Returns nothing.
+
     def templates=(special_templates)
-      if fallback = special_templates.delete(:default) || special_templates.delete(:fallback)
+      if fallback = special_templates.delete("default") || special_templates.delete("fallback")
         Template.fallback = fallback
       end
 
-      if demo = special_templates.delete(:demo)
+      if demo = special_templates.delete("demo")
         Template.demo = demo
       end
 
@@ -42,24 +58,36 @@ module Docks
       end
     end
 
-   def finalize
-    @configured = true
-   end
+    # Finalizes the configuration. Run this after a block that configured this
+    # singleton. Returns nothing.
 
+    def finalize
+      @configured = true
+    end
 
-
+    # Yields Docks::Parser for registering custom parsers.
+    # Returns nothing.
 
     def custom_parsers
       yield Parser
     end
 
+    # Yields Docks::Language for registering custom languages.
+    # Returns nothing.
+
     def custom_languages
       yield Language
     end
 
+    # Yields Docks::Tag for registering custom tags.
+    # Returns nothing.
+
     def custom_tags
       yield Tag
     end
+
+    # Yields Docks::Template for registering custom templates.
+    # Returns nothing.
 
     def custom_templates
       yield Template
@@ -139,6 +167,7 @@ module Docks
     if File.extname(configurer) =~ /rb/
       self.class_eval(File.read(configurer))
     else
+      Language.register_bundled_languages
       language = Language.language_for(configurer)
       configure_with(language.load_stub(configurer)) unless language.nil?
     end
