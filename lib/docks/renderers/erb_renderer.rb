@@ -11,33 +11,36 @@ module Docks
 
         super
         @locals = []
+        @output = ""
       end
 
       def render(template, locals = {})
+        first_pass = @output.length < 1
+        final_output, @output = @output, ""
+
         content, locals = normalize_content_and_locals(template, locals)
         return if content.nil?
 
-        cache_locals(locals) { ::ERB.new(content).result(binding) }
+        cache_locals(locals) { content = ::ERB.new(content, nil, nil, "@output").result(binding) }
+
+        @output = first_pass ? "" : final_output
+        content
       end
 
-      def method_missing(meth, *arguments)
-        if local = @locals.last[meth.to_sym]
-          local
-        elsif helper_module = module_with_helper(meth)
-          # Allow access to instance methods
-          helper_module.extend helper_module
-          begin
-            helper_module.send(meth, *arguments)
-          rescue NoMethodError => error
-            if error.name == :render
-              render(*error.args)
-            else
-              method_missing(error.name.to_sym, *error.args)
-            end
-          end
-        else
-          nil
-        end
+      def capture(&block)
+        old_output, @output = @output, ""
+        yield
+        content = @output
+        @output = old_output
+        content
+      end
+
+      def concat(content)
+        @output << content
+      end
+
+      def method_missing(meth, *arguments, &block)
+        @locals.last[meth.to_sym] unless @locals.empty?
       end
 
       private

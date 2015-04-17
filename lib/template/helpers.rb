@@ -10,4 +10,8 @@ module DocksHelpers
   def javascript_include_tag(script)
     "<script src='#{relative_asset_path File.join("scripts", "#{script.split(".").first}.js")}'></script>"
   end
+
+  def spit_it_out(&block)
+    concat capture(&block)
+  end
 end

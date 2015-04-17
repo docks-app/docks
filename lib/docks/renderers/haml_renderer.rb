@@ -20,23 +20,16 @@ module Docks
         ::Haml::Engine.new(content).render(binding, locals)
       end
 
-      def method_missing(meth, *arguments)
-        if helper_module = module_with_helper(meth)
-          # Allow access to instance methods
-          helper_module.extend helper_module
-          begin
-            helper_module.send(meth, *arguments)
-          rescue NoMethodError => error
-            if error.name == :render
-              render(*error.args)
-            else
-              method_missing(error.name.to_sym, *error.args)
-            end
-          end
+      def capture(&block)
+        capture_haml(&block)
+      end
 
-        else
-          nil
-        end
+      def concat(content)
+        content
+      end
+
+      def method_missing(meth, *arguments)
+        nil
       end
 
       private
