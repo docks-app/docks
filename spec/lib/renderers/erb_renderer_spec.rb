@@ -64,7 +64,7 @@ describe Docks::Renderers::ERB do
 
       subject.render(inline: erb_template, locals: { foo: "bar" })
       expect(subject.render(inline: erb_template, locals: { foo: "baz" }).strip).to eq "baz"
-      expect(subject.render(inline: erb_template).strip).to eq ""
+      expect(subject.render(inline: erb_template, locals: { foo: "" }).strip).to eq ""
     end
 
     context "when there's a layout" do

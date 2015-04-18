@@ -1,4 +1,4 @@
-require File.expand_path("../scss_parser.rb", __FILE__)
+require_relative "scss_parser.rb"
 
 module Docks
   module Parsers

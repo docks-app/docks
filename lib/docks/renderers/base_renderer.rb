@@ -2,10 +2,11 @@ module Docks
   module Renderers
     class Base
       include Singleton
-      attr_writer :helper_files
 
-      def initialize
-        @cache = {}
+      def initialize; @cache = {} end
+
+      def render(template, locals = {})
+        raise NotImplementedError.new("You must provide a `render` method.")
       end
 
       private
@@ -19,8 +20,13 @@ module Docks
           locals = template[:locals] || {}
           content = template[:inline]
           layout = template[:layout]
-          template = template[:partial]
-          must_be_partial = true
+
+          if template[:partial].nil?
+            template = template[:template]
+          else
+            template = template[:partial]
+            must_be_partial = true
+          end
         else
           layout = locals.delete(:layout)
         end
@@ -45,9 +51,7 @@ module Docks
         return content, layout, locals
       end
 
-      def clean
-        @cache = {}
-      end
+      def clean; @cache = {} end
     end
 
     def self.search_for_template(template, options = {})
@@ -61,7 +65,7 @@ module Docks
         return in_root unless in_root.nil?
       end
 
-      in_specific = loose_search_for(File.join(Docks.config.library_assets, "templates", options[:must_be].to_s, template))
+      in_specific = loose_search_for(File.join(Docks.config.library_assets, "templates", "#{(options[:must_be] || :partial).to_s.sub(/s$/, '')}{s,}", template))
       return in_specific unless in_specific.nil?
     end
 

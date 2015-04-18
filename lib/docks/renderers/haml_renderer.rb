@@ -1,21 +1,16 @@
-require File.expand_path("../base_renderer.rb", __FILE__)
-require File.expand_path("../store_helpers.rb", __FILE__)
+require_relative "base_renderer.rb"
+require_relative "store_helpers.rb"
+require_relative "capturable.rb"
 
 module Docks
   module Renderers
     class Haml < Base
       include StoreHelpers
+      include Capturable
 
       def initialize
         require "haml"
-
-        self.class.send(:include, ::Haml::Helpers)
-        init_haml_helpers
-
         super
-        @locals = []
-        @in_render = false
-        @content_blocks = Hash.new
       end
 
       def render(template, locals = {})
@@ -25,53 +20,17 @@ module Docks
         return if content.nil?
 
         content = ::Haml::Engine.new(content).render(binding, locals)
+        return content if layout.nil?
 
-        if layout
-          content = ::Haml::Engine.new(layout).render(binding, locals) do |name|
-            name.nil? ? content : @content_blocks[name]
-          end
+        ::Haml::Engine.new(layout).render(binding, locals) do |name|
+          name.nil? ? content : @content_blocks[name]
         end
-
+      ensure
         @haml_buffer = old_buffer
-        content
-      end
-
-      def content_for(name, &block)
-        if block_given?
-          @content_blocks[name] = capture(&block)
-        else
-          @content_blocks[name]
-        end
-      end
-
-      def content_for?(name, &block)
-        !@content_blocks[name].nil?
       end
 
       def capture(&block)
         capture_haml(&block)
-      end
-
-      def concat(content)
-        content
-      end
-
-      def method_missing(meth, *arguments)
-        nil
-      end
-
-      private
-
-      def cache_locals(locals)
-        @locals << locals
-        result = yield
-        @locals.pop
-        result
-      end
-
-      def clean
-        super
-        @locals = []
       end
     end
   end

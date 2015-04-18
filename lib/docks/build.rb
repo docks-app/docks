@@ -68,7 +68,7 @@ module Docks
           FileUtils.mkdir_p(dir)
 
           File.open(html_file, "w") do |file|
-            file.write renderer.render(template, pattern: pattern, pattern_groups: pattern_groups)
+            file.write renderer.render(template: template, layout: Template.default_layout, locals: { pattern: pattern, pattern_groups: pattern_groups })
           end
 
           Messenger.file(html_file, update ? :updated : :created)

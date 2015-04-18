@@ -50,7 +50,7 @@ describe Docks::Renderers::Haml do
 
       subject.render(inline: haml_template, locals: { foo: "bar" })
       expect(subject.render(inline: haml_template, locals: { foo: "baz" }).strip).to eq "baz"
-      expect(subject.render(inline: haml_template).strip).to eq ""
+      expect(subject.render(inline: haml_template, locals: { foo: "" }).strip).to eq ""
     end
 
     context "when there's a layout" do

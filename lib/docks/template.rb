@@ -2,18 +2,27 @@ module Docks
   class Template
     @@templates = []
     @@fallback  = nil
+    @@layout    = "application"
 
     def self.fallback=(template)
-      @@fallback = template
-    end
-
-    def self.default=(template)
       @@fallback = template
     end
 
     def self.fallback
       @@fallback ||= "pattern"
       @@fallback
+    end
+
+    def self.default_layout
+      @@layout
+    end
+
+    def self.default_layout=(layout)
+      @@layout = layout
+    end
+
+    def self.default=(template)
+      @@fallback = template
     end
 
     def self.demo=(template)
@@ -26,14 +35,10 @@ module Docks
     end
 
     def self.register(template, options = {})
-      if template.kind_of?(Hash)
-        @@templates.concat template.map do |a_template, matcher|
-          { template: a_template, matcher: matcher }
-        end
-
-      else
-        @@templates << { template: template, matcher: options[:matches] || options[:for] }
-      end
+      @@templates << {
+        template: template,
+        matcher: options[:matches] || options[:for]
+      }
     end
 
     def self.template_for(id)

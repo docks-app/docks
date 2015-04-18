@@ -4,6 +4,7 @@ describe Docks::Renderers::Base do
   fixture_dir = File.expand_path("../../../fixtures/renderers", __FILE__)
   template_dir = File.join(fixture_dir, "templates")
   partials_dir = File.join(template_dir, "partials")
+  layouts_dir = File.join(template_dir, "layouts")
 
   subject { Docks::Renderers::Base.instance }
 
@@ -32,6 +33,10 @@ describe Docks::Renderers::Base do
       expect(subject.send(:normalize_content_and_locals, "partials/template").first).to eq File.read(File.join(partials_dir, "template.html.erb"))
     end
 
+    it "looks for a template in the root directory if the template key is used" do
+      expect(subject.send(:normalize_content_and_locals, template: "template").first).to eq File.read(File.join(template_dir, "template.html.erb"))
+    end
+
     it "looks for a template in the partials directory if none exists in the root directory" do
       expect(subject.send(:normalize_content_and_locals, "partial").first).to eq File.read(File.join(partials_dir, "partial.html.erb"))
     end
@@ -47,6 +52,14 @@ describe Docks::Renderers::Base do
     it "renders a template in a subdirectory of partial" do
       expect(subject.send(:normalize_content_and_locals, partial: "more/subdirectory").first).to eq File.read(File.join(partials_dir, "more/_subdirectory.html.erb"))
       expect(subject.send(:normalize_content_and_locals, "more/subdirectory").first).to eq File.read(File.join(partials_dir, "more/_subdirectory.html.erb"))
+    end
+
+    it "finds a layout file in a layout directory" do
+      expect(subject.send(:normalize_content_and_locals, template: "template", layout: "application")[1]).to eq File.read(File.join(layouts_dir, "application.html.erb"))
+    end
+
+    it "finds a layout file in a subdirectory of the layout directory" do
+      expect(subject.send(:normalize_content_and_locals, template: "template", layout: "more/subdirectory")[1]).to eq File.read(File.join(layouts_dir, "more/subdirectory.html.erb"))
     end
 
     it "returns inline content" do
@@ -78,6 +91,10 @@ describe Docks::Renderers::Base do
 
     it "throws an error when no matching template is found" do
       expect { subject.send(:normalize_content_and_locals, "foo") }.to raise_error(Docks::NoTemplateError)
+    end
+
+    it "throws an error when no matching layout is found" do
+      expect { subject.send(:normalize_content_and_locals, template: "template", layout: "foo") }.to raise_error(Docks::NoTemplateError)
     end
   end
 end
