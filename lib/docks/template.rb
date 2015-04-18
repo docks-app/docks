@@ -50,4 +50,5 @@ module Docks
   def self.template_for(id); Template.template_for(id) end
   def self.current_template; @@current_template end
   def self.current_template=(template); @@current_template = template end
+  def self.component_template_path; Pathname.new File.expand_path("../../template/assets/templates/components", __FILE__) end
 end

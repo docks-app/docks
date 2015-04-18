@@ -9,15 +9,43 @@ module Docks
       def initialize
         require "haml"
 
+        self.class.send(:include, ::Haml::Helpers)
+        init_haml_helpers
+
         super
         @locals = []
+        @in_render = false
+        @content_blocks = Hash.new
       end
 
       def render(template, locals = {})
-        content, locals = normalize_content_and_locals(template, locals)
+        old_buffer, @haml_buffer = @haml_buffer, nil
+
+        content, layout, locals = normalize_content_and_locals(template, locals)
         return if content.nil?
 
-        ::Haml::Engine.new(content).render(binding, locals)
+        content = ::Haml::Engine.new(content).render(binding, locals)
+
+        if layout
+          content = ::Haml::Engine.new(layout).render(binding, locals) do |name|
+            name.nil? ? content : @content_blocks[name]
+          end
+        end
+
+        @haml_buffer = old_buffer
+        content
+      end
+
+      def content_for(name, &block)
+        if block_given?
+          @content_blocks[name] = capture(&block)
+        else
+          @content_blocks[name]
+        end
+      end
+
+      def content_for?(name, &block)
+        !@content_blocks[name].nil?
       end
 
       def capture(&block)

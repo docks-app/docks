@@ -11,6 +11,40 @@ module DocksHelpers
     "<script src='#{relative_asset_path File.join("scripts", "#{script.split(".").first}.js")}'></script>"
   end
 
+  def pattern_path(pattern)
+    relative_asset_path(File.join("pattern-library", pattern.to_s, "index.html"))
+  end
+
+
+
+  def details_for(symbol)
+    details = {
+      tags: [],
+      has_tags?: false,
+      has_dates?: false,
+      has_only_dates?: true
+    }
+
+    contributors = symbol.contributors
+    if !contributors.nil? && contributors.length > 0
+      details[:tags] << :contributors
+      details[:has_only_dates?] = false
+    end
+
+    unless symbol.introduced_in.nil?
+      details[:tags] << :introduced_in
+      details[:has_dates?] = true
+    end
+
+    unless symbol.modified.nil?
+      details[:tags] << :modified
+      details[:has_dates?] = true
+    end
+
+    details[:has_tags?] = !details[:tags].empty?
+    details
+  end
+
 
 
   def docks_icon(name, options = {})
@@ -26,7 +60,7 @@ module DocksHelpers
   end
 
   def docks_component(name, opts = {}, &block)
-    render(File.expand_path("../templates/components/#{name}"), component: Component.new(opts, &block))
+    render(File.expand_path(Docks.component_template_path + name.to_s), component: Component.new(opts, &block))
   end
 
   [
@@ -109,7 +143,7 @@ module DocksHelpers
       end
 
       def defaults(opts = {})
-        @component._attributes.reverse_merge!(opts)
+        @component._attributes.merge!(opts) { |key, user, defaults| user || defaults }
       end
 
       def classes(default_classes = {})
@@ -121,9 +155,9 @@ module DocksHelpers
 
       def conditional_classes(opts)
         if (attribute = opts.delete(:if))
-          classes(opts) if @component.send(attribute).present?
+          classes(opts) unless @component.send(attribute).nil?
         elsif (attribute = opts.delete(:unless))
-          classes(opts) if @component.send(attribute).blank?
+          classes(opts) if @component.send(attribute).nil?
         elsif (attribute = opts.delete(:with))
           return unless block_given?
           classes(yield @component.send(attribute))
