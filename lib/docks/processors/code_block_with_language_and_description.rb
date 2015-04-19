@@ -23,7 +23,7 @@ module Docks
         result = {}
         possible_line_details = content.first.strip.split(/\s*\-\s*/, 2)
 
-        if Docks::Language.extensions.include?(possible_line_details.first)
+        if Docks::Languages.extensions.include?(possible_line_details.first)
           result[:language] = possible_line_details.first
           result[:description] = possible_line_details[1]
           content.shift

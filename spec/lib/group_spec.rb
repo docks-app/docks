@@ -4,7 +4,7 @@ describe Docks::Group do
   subject { Docks::Group }
 
   before :all do
-    Docks::Language.register_bundled_languages
+    Docks::Languages.register_bundled_languages
   end
 
   it 'returns an empty Hash when no paths are provided' do
@@ -127,7 +127,7 @@ describe Docks::Group do
 
     it 'correctly rejects files not recognized by Docks' do
       pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/form/*')
-      files = Dir.glob(pattern).select! { |filename| Docks::Language.extensions.include?(File.extname(filename)[1..-1]) }
+      files = Dir.glob(pattern).select! { |filename| Docks::Languages.extensions.include?(File.extname(filename)[1..-1]) }
 
       group_result = subject.group(pattern)
       component_result = group_result[subject.group_identifier(files.first)]

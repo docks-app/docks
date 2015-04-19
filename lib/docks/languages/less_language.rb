@@ -1,8 +1,10 @@
+require_relative "base_language.rb"
+require_relative "../parsers/less_parser.rb"
+
 module Docks
   module Languages
     class Less < Base
       def self.type; Docks::Types::Languages::STYLE end
-      def self.parser; Docks::Parsers::Less end
       def self.extensions; "less" end
 
       def friendly_presentation(symbol)
@@ -23,6 +25,8 @@ module Docks
           else name
         end
       end
+
+      def parser; Docks::Parsers::Less.instance end
 
       private
 

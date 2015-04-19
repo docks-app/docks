@@ -12,7 +12,8 @@ module Docks
           id = Docks::Group.group_identifier(parse_result[:name])
           stub_files.each do |file|
             if Docks::Group.group_identifier(file) == id
-              parse_result[:stub] = Docks::Language.load_stub_for(file)
+              language = Docks::Languages.language_for(file)
+              parse_result[:stub] = !language.nil? && language.respond_to?(:load_stub) ? language.load_stub(file) : nil
               break
             end
           end

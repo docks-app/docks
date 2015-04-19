@@ -100,19 +100,11 @@ describe Docks::Configuration do
     end
   end
 
-  describe "#custom_parsers" do
-    it "yields the parser manager" do
-      yielded = nil
-      subject.custom_parsers { |parsers| yielded = parsers }
-      expect(yielded).to be Docks::Parser
-    end
-  end
-
   describe "#custom_languages" do
     it "yields the language manager" do
       yielded = nil
       subject.custom_languages { |languages| yielded = languages }
-      expect(yielded).to be Docks::Language
+      expect(yielded).to be Docks::Languages
     end
   end
 

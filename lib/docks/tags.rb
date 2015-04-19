@@ -1,4 +1,13 @@
 module Docks
+  module Types
+    module Tags
+      ONE_PER_BLOCK      = :opb
+      ONE_PER_FILE       = :opf
+      MULTIPLE_PER_BLOCK = :mpb
+      MULTIPLE_PER_LINE  = :mpl
+    end
+  end
+
   module Tags
     @@tags         = Hash.new
     @@synonyms     = Hash.new
@@ -49,7 +58,7 @@ module Docks
     # documentation is prefixed with "@#{tag_name}", will invoke this tag to
     # process the results.
     #
-    # tag - The tag Class that should be registered. This Class should inherit
+    # tag - The tag class that should be registered. This class should inherit
     # from Docks::Tags::Base.
     #
     # Returns a Boolean indicating whether or not the tag was registered.
@@ -63,7 +72,7 @@ module Docks
         @@synonyms[synonym.to_sym] = tag_name
       end
 
-      Docks::Process.add_post_processors(*tag.post_processors)
+      Process.add_post_processors(*tag.post_processors)
       true
     end
 
@@ -133,7 +142,7 @@ module Docks
       if @@bundled_tags.nil?
         bundled = constants.select do |const|
           klass = const_get(const)
-          Class === klass && !(klass.eql?(Docks::Tags::Base))
+          Class === klass && !(klass.eql?(Base))
         end
 
         @@bundled_tags = bundled.map { |const| const_get(const) }
@@ -149,15 +158,6 @@ module Docks
     def self.clean
       @@tags = {}
       @@synonyms = {}
-    end
-  end
-
-  module Types
-    module Tags
-      ONE_PER_BLOCK      = :opb
-      ONE_PER_FILE       = :opf
-      MULTIPLE_PER_BLOCK = :mpb
-      MULTIPLE_PER_LINE  = :mpl
     end
   end
 end

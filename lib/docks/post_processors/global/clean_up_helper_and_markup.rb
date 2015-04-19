@@ -27,7 +27,7 @@ module Docks
       private
 
       def self.functionize(helper, stub, language)
-        language = Docks::Language.language_for(language)
+        language = Docks::Languages.language_for(language)
         (language.nil? || !language.respond_to?(:helper_markup_for)) ? nil : language.helper_markup_for(helper, stub)
       end
     end

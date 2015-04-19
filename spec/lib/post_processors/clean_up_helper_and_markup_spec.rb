@@ -4,7 +4,7 @@ describe Docks::PostProcessors::CleanUpHelperAndMarkup do
   subject { Docks::PostProcessors::CleanUpHelperAndMarkup }
 
   before :all do
-    Docks::Language.register_bundled_languages
+    Docks::Languages.register_bundled_languages
   end
 
   describe ".post_process" do
@@ -82,7 +82,7 @@ describe Docks::PostProcessors::CleanUpHelperAndMarkup do
       it "functionizes the helper when there is a stub file" do
         component[:helper] = helper_name
         component[:stub] = complex_stub
-        expect(Docks::Language).to receive(:language_for).with(component[:language]).and_return(Docks::Languages::ERB.instance)
+        expect(Docks::Languages).to receive(:language_for).with(component[:language]).and_return(Docks::Languages::ERB.instance)
         subject.post_process([component])
         expect(component[:helper]).to eq Docks::Languages::ERB.instance.helper_markup_for(helper_name, complex_stub["arguments"])
       end

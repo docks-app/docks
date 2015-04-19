@@ -59,7 +59,7 @@ module Docks
           template = Renderers.search_for_template(Template.template_for(id))
           Docks.current_template = Pathname.new(template)
 
-          renderer = Language.language_for(template).renderer
+          renderer = Languages.language_for(template).renderer
           renderer.helper_files = [File.expand_path("../../template/helpers.rb", __FILE__)]
 
           dir = destination + "#{mount_at}/#{id}"

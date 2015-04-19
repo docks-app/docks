@@ -91,7 +91,7 @@ module Docks
       files[Docks::Types::Languages::DESCRIPTION] = []
 
       file_list_from_globs(Docks.config.sources).each do |filename|
-        files[Docks::Language.file_type(filename)] << filename
+        files[Docks::Languages.file_type(filename)] << filename
       end
 
       @@source_files_by_type = files
@@ -115,7 +115,7 @@ module Docks
     # a group and false indicates that it shouldn't.
 
     def self.should_include_file?(filename)
-      Docks::Language.extensions.include?(File.extname(filename)[1..-1]) && !filename.include?('.min.')
+      Docks::Languages.extensions.include?(File.extname(filename)[1..-1]) && !filename.include?('.min.')
     end
 
     def self.file_list_from_globs(globs)

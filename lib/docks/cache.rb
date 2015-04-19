@@ -1,3 +1,5 @@
+require_relative "languages.rb"
+
 module Docks
   class Cache
     PARSE_RESULT_TYPES = [

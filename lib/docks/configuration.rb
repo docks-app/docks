@@ -65,18 +65,11 @@ module Docks
       @configured = true
     end
 
-    # Yields Docks::Parser for registering custom parsers.
-    # Returns nothing.
-
-    def custom_parsers
-      yield Parser
-    end
-
-    # Yields Docks::Language for registering custom languages.
+    # Yields Docks::Languages for registering custom languages.
     # Returns nothing.
 
     def custom_languages
-      yield Language
+      yield Languages
     end
 
     # Yields Docks::Tags for registering custom tags.
@@ -167,8 +160,8 @@ module Docks
     if File.extname(configurer) =~ /rb/
       self.class_eval(File.read(configurer))
     else
-      Language.register_bundled_languages
-      language = Language.language_for(configurer)
+      Languages.register_bundled_languages
+      language = Languages.language_for(configurer)
       configure_with(language.load_stub(configurer)) unless language.nil?
     end
   end
@@ -184,7 +177,7 @@ module Docks
   def self.pre_configuration
     Tags.register_bundled_tags
     Process.register_bundled_post_processors
-    Language.register_bundled_languages
+    Languages.register_bundled_languages
   end
 
   def self.post_configuration

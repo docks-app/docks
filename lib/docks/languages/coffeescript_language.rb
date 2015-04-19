@@ -1,9 +1,13 @@
+require_relative "base_language.rb"
+require_relative "../parsers/coffeescript_parser.rb"
+
 module Docks
   module Languages
     class CoffeeScript < Base
       def self.type; Docks::Types::Languages::SCRIPT end
-      def self.parser; Docks::Parsers::CoffeeScript end
       def self.extensions; ["coffee", "coffeescript"] end
+
+      def parser; Docks::Parsers::CoffeeScript.instance end
 
       def friendly_presentation(symbol)
         symbol_type, name = symbol[:symbol_type], symbol[:name]

@@ -81,7 +81,7 @@ describe Docks::Tags do
   end
 
   describe ".register_bundled_tags" do
-    it "registers all bundled language extensions" do
+    it "registers all bundled tags" do
       subject.register_bundled_tags
       supported_tags = subject.supported_tags
 

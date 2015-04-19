@@ -26,13 +26,5 @@ module Docks
       HIDDEN      = NONE
       DEFAULT     = SELECT
     end
-
-    module Languages
-      MARKUP      = :markup
-      SCRIPT      = :script
-      STYLE       = :style
-      STUB        = :stub
-      DESCRIPTION = :description
-    end
   end
 end
