@@ -22,7 +22,7 @@ module Docks
       def initialize
         @name = :state
         @synonyms = [:states]
-        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
 
         @post_processors = [
           Docks::PostProcessors::JoinOrphanedVariantsAndStates,

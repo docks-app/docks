@@ -4,7 +4,7 @@ describe Docks::Parsers::Base do
   subject { Docks::Parsers::Base.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe "#parse_comment_block" do

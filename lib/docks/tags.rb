@@ -1,8 +1,8 @@
 module Docks
-  class Tag
-
-    @@tags = {}
-    @@synonyms = {}
+  module Tags
+    @@tags         = Hash.new
+    @@synonyms     = Hash.new
+    @@bundled_tags = nil
 
 
     # Public: Returns the tag class instance associated with the passed tag
@@ -14,7 +14,7 @@ module Docks
     # is registered, otherwise returns nil.
 
     def self.tag_for(tag)
-      @@tags[default_tag_name(tag)]
+      @@tags[base_tag_name(tag)]
     end
 
 
@@ -28,7 +28,7 @@ module Docks
     # Returns the base tag name as a Symbol, or nil if no tag has the passed
     # name.
 
-    def self.default_tag_name(tag)
+    def self.base_tag_name(tag)
       @@synonyms[tag.to_sym] || tag
     end
 
@@ -40,9 +40,7 @@ module Docks
     # registered tag or the name of a synonym of a registered tag.
 
     def self.register_bundled_tags
-      Docks::Tags.bundled_tags.each do |tag|
-        register(tag)
-      end
+      bundled_tags.each { |tag| register(tag) }
     end
 
 
@@ -125,13 +123,41 @@ module Docks
 
     private
 
+    # Public: Collects all fully implemented tags that are bundled as part of
+    # Docks (this excludes Docks::Tags::Base, which is meant to be extended
+    # and is not an actual tag).
+    #
+    # Returns an Array of Classes.
+
+    def self.bundled_tags
+      if @@bundled_tags.nil?
+        bundled = constants.select do |const|
+          klass = const_get(const)
+          Class === klass && !(klass.eql?(Docks::Tags::Base))
+        end
+
+        @@bundled_tags = bundled.map { |const| const_get(const) }
+      end
+
+      @@bundled_tags
+    end
+
+
     # Private: Clears our all tags.
     # Returns nothing.
 
-    def self.clear_tags
+    def self.clean
       @@tags = {}
       @@synonyms = {}
     end
+  end
 
+  module Types
+    module Tags
+      ONE_PER_BLOCK      = :opb
+      ONE_PER_FILE       = :opf
+      MULTIPLE_PER_BLOCK = :mpb
+      MULTIPLE_PER_LINE  = :mpl
+    end
   end
 end

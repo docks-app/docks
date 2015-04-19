@@ -4,7 +4,7 @@ describe Docks::Process do
   subject { Docks::Process }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe ".process" do

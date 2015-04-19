@@ -58,7 +58,7 @@ module Docks
 
       return {} if Docks.current_parser.nil?
       result = Docks.current_parser.parse_comment_block(comment_block)
-      result = Docks::Tag.join_synonymous_tags(result)
+      result = Docks::Tags.join_synonymous_tags(result)
       result = Docks::Process.process(result)
       result = Docks::Process.post_process([results]).first if should_post_process
 
@@ -113,7 +113,7 @@ module Docks
       parse_results = Docks.current_parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
 
       parse_results.map! do |parse_result|
-        parse_result = Docks::Tag.join_synonymous_tags(parse_result)
+        parse_result = Docks::Tags.join_synonymous_tags(parse_result)
         Docks::Process.process(parse_result)
       end
 

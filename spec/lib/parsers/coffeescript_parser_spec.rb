@@ -4,7 +4,7 @@ describe Docks::Parsers::CoffeeScript do
   subject { Docks::Parsers::CoffeeScript.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "coffee_parser_fixture_basic.coffee")) }

@@ -128,7 +128,7 @@ describe Docks::Configuration do
     it "yields the tag manager" do
       yielded = nil
       subject.custom_tags { |tags| yielded = tags }
-      expect(yielded).to be Docks::Tag
+      expect(yielded).to be Docks::Tags
     end
   end
 end

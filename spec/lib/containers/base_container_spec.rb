@@ -7,7 +7,7 @@ describe Docks::Containers::Base do
 
   describe "#method_missing" do
     it "sends the base tag of unrecognized symbols to the initialization hash" do
-      expect(Docks::Tag).to receive(:default_tag_name).with(:foo).and_return(:baz)
+      expect(Docks::Tags).to receive(:base_tag_name).with(:foo).and_return(:baz)
       expect(symbol).to receive(:[]).with(:baz)
       subject.foo
     end

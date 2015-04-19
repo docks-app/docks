@@ -4,7 +4,7 @@ describe Docks::Containers::Component do
   subject { Docks::Containers::Component }
 
   before :each do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe "#has_demo?" do

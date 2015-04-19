@@ -15,13 +15,13 @@ class Example2 < Docks::Tags::Base
   end
 end
 
-describe Docks::Tag do
-  subject { Docks::Tag }
+describe Docks::Tags do
+  subject { Docks::Tags }
 
   let(:example) { Example1.instance }
 
   before :each do
-    subject.send(:clear_tags)
+    subject.send(:clean)
   end
 
   describe ".tag_for" do
@@ -44,21 +44,21 @@ describe Docks::Tag do
     end
   end
 
-  describe ".default_tag_name" do
+  describe ".base_tag_name" do
     before :each do
       subject.register(Example1)
     end
 
     it "returns the passed name if it is a base tag name" do
-      expect(subject.default_tag_name(example.name)).to be example.name
+      expect(subject.base_tag_name(example.name)).to be example.name
     end
 
     it "returns the base tag name for a synonym" do
-      expect(subject.default_tag_name(example.synonyms.first)).to be example.name
+      expect(subject.base_tag_name(example.synonyms.first)).to be example.name
     end
 
     it "returns the passed tag if it is not registered" do
-      expect(subject.default_tag_name(:foo)).to be :foo
+      expect(subject.base_tag_name(:foo)).to be :foo
     end
   end
 

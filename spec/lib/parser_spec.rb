@@ -5,7 +5,7 @@ describe Docks::Parser do
 
   before :all do
     Docks::Process.clear_post_processors
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
     Docks::Process.register_bundled_post_processors
     Docks::Language.register_bundled_languages
   end

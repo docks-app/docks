@@ -17,7 +17,7 @@ module Docks
       def initialize
         @name = :param
         @synonyms = [:arg, :argument]
-        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
       # Public: cleans up the param parsed from the documentation. There are

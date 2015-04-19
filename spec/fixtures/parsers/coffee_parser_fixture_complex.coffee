@@ -24,8 +24,8 @@ cleanFootnoteLinks = ($footnoteAnchors, footnoteLinks = []) ->
   $footnoteAnchors.each ->
     $this = $(this)
     linkHREF = "#" + ($this.attr("href")).split("#")[1] # just the fragment ID
-    $parent = $this.closest(settings.anchorParentTagname)
-    $child = $this.find(settings.anchorParentTagname)
+    $parent = $this.closest(settings.anchorParentTagsname)
+    $child = $this.find(settings.anchorParentTagsname)
 
 defaults =
   #*
@@ -62,7 +62,7 @@ footnoteInit = ->
     $this = $(this)
     relAttr = $this.attr "rel"
     relAttr = "" if relAttr == "null" || !relAttr?
-    "#{$this.attr "href"}#{relAttr}".match(settings.anchorPattern) && $this.closest("[class*=#{settings.footnoteParentClass}]:not(a):not(#{settings.anchorParentTagname})").length < 1
+    "#{$this.attr "href"}#{relAttr}".match(settings.anchorPattern) && $this.closest("[class*=#{settings.footnoteParentClass}]:not(a):not(#{settings.anchorParentTagsname})").length < 1
 
       #*
       # Removes any links from the footnote back to the footnote link as these don't make sense when the footnote is shown inline

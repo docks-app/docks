@@ -9,7 +9,7 @@ describe Docks::Containers::Pattern do
   subject { Docks::Containers::Pattern }
 
   before :each do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:simple_parse_results) do
@@ -81,7 +81,7 @@ describe Docks::Containers::Pattern do
   describe "#method_missing" do
     it "delegates missing methods to the pattern block" do
       pattern = subject.new(complex_parse_results)
-      expect(Docks::Tag).to receive(:default_tag_name).with(:foo).and_return(:foo)
+      expect(Docks::Tags).to receive(:base_tag_name).with(:foo).and_return(:foo)
       expect(pattern_block).to receive(:[]).with(:foo)
       pattern.foo
     end

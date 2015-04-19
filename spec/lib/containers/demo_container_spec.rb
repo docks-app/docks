@@ -10,7 +10,7 @@ describe Docks::Containers::Demo do
   subject { Docks::Containers::Demo }
 
   before :each do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:basic_component) do

@@ -79,11 +79,11 @@ module Docks
       yield Language
     end
 
-    # Yields Docks::Tag for registering custom tags.
+    # Yields Docks::Tags for registering custom tags.
     # Returns nothing.
 
     def custom_tags
-      yield Tag
+      yield Tags
     end
 
     # Yields Docks::Template for registering custom templates.
@@ -182,7 +182,7 @@ module Docks
   private
 
   def self.pre_configuration
-    Tag.register_bundled_tags
+    Tags.register_bundled_tags
     Process.register_bundled_post_processors
     Language.register_bundled_languages
   end

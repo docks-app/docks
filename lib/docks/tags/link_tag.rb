@@ -17,7 +17,7 @@ module Docks
       def initialize
         @name = :link
         @synonyms = [:links, :see]
-        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
 

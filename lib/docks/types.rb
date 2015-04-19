@@ -13,13 +13,6 @@ module Docks
       DEMO        = "demo"
     end
 
-    module Tag
-      ONE_PER_BLOCK      = :opb
-      ONE_PER_FILE       = :opf
-      MULTIPLE_PER_BLOCK = :mpb
-      MULTIPLE_PER_LINE  = :mpl
-    end
-
     module Access
       PUBLIC      = "public"
       PRIVATE     = "private"

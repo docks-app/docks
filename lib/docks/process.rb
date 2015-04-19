@@ -110,7 +110,7 @@ module Docks
     # the processors and on the multiplicity of the tags).
 
     def self.process_tag(tag, content)
-      tag = Docks::Tag.tag_for(tag.to_sym)
+      tag = Docks::Tags.tag_for(tag.to_sym)
       return content unless tag
 
       if tag.multiple_per_line_allowed?

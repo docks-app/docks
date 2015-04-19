@@ -27,12 +27,12 @@ module Docks
 
       # Public: Indicates the type of tag, which will govern how many parse
       # results can be pulled out of a single documentation block. The type
-      # should be a constant under Docks::Types::Tag.
+      # should be a constant under Docks::Types::Tags.
       #
-      # Returns a constant from Docks::Types::Tag.
+      # Returns a constant from Docks::Types::Tags.
 
       def type
-        @type ||= Docks::Types::Tag::ONE_PER_BLOCK
+        @type ||= Docks::Types::Tags::ONE_PER_BLOCK
         @type
       end
 
@@ -62,7 +62,7 @@ module Docks
       # Returns a Boolean.
 
       def only_one_per_file_allowed?
-        type == Docks::Types::Tag::ONE_PER_FILE
+        type == Docks::Types::Tags::ONE_PER_FILE
       end
 
 
@@ -73,7 +73,7 @@ module Docks
       # Returns a Boolean.
 
       def multiple_allowed?
-        multiple_per_line_allowed? || type == Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        multiple_per_line_allowed? || type == Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
 
@@ -83,7 +83,7 @@ module Docks
       # Returns a Boolean.
 
       def multiple_per_line_allowed?
-        type == Docks::Types::Tag::MULTIPLE_PER_LINE
+        type == Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
 
@@ -99,28 +99,6 @@ module Docks
       def process(content)
         content
       end
-    end
-
-
-    @@bundled_tags = nil
-
-    # Public: Collects all fully implemented tags that are bundled as part of
-    # Docks (this excludes Docks::Tags::Base, which is meant to be extended
-    # and is not an actual tag).
-    #
-    # Returns an Array of Classes.
-
-    def self.bundled_tags
-      if @@bundled_tags.nil?
-        bundled = constants.select do |const|
-          klass = const_get(const)
-          Class === klass && !(klass.eql?(Base))
-        end
-
-        @@bundled_tags = bundled.map { |const| const_get(const) }
-      end
-
-      @@bundled_tags
     end
   end
 end

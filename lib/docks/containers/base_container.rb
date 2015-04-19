@@ -1,7 +1,5 @@
-require "forwardable"
-
 require File.expand_path("../../types.rb", __FILE__)
-require File.expand_path("../../tag.rb", __FILE__)
+require File.expand_path("../../tags.rb", __FILE__)
 
 module Docks
   module Containers
@@ -12,9 +10,6 @@ module Docks
     # container and the result will be returned as expected.
 
     class Base
-      # extend Forwardable
-      # def_delegators :@item, :each, :[]=, :[]
-
       # Public: initializes a new container.
 
       def initialize(item)
@@ -69,7 +64,7 @@ module Docks
       # Returns a String.
 
       def method_missing(meth)
-        @item[Docks::Tag.default_tag_name(meth)] rescue nil
+        @item[Docks::Tags.base_tag_name(meth)] rescue nil
       end
     end
 
