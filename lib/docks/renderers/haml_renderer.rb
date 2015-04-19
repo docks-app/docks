@@ -1,12 +1,12 @@
 require_relative "base_renderer.rb"
-require_relative "store_helpers.rb"
-require_relative "capturable.rb"
+require_relative "common_features/helperable.rb"
+require_relative "common_features/capturable.rb"
 
 module Docks
   module Renderers
     class Haml < Base
-      include StoreHelpers
-      include Capturable
+      include Common::Helperable
+      include Common::Capturable
 
       def initialize
         require "haml"

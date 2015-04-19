@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Docks::Renderers::ERB do
-  subject { Docks::Renderers::ERB.instance }
+  subject { Docks::Renderers::ERB.new }
 
   after :each do
     subject.instance_variable_set(:@content_blocks, Hash.new)
@@ -22,7 +22,7 @@ describe Docks::Renderers::ERB do
     end
 
     it "captures ERB" do
-      subject.helper_files = [File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)]
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
 
       erb_template = <<-HTML
         <% helper4 do %>
@@ -38,24 +38,17 @@ describe Docks::Renderers::ERB do
     end
 
     it "renders a template with access to the same helpers as the base template" do
-      subject.helper_files = [File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)]
-
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
       expect(subject.render(inline: "<%= helper %>\n<%= helper3 %>").strip).to eq "foo bar baz\nBAR"
     end
 
     it "allows helpers to use classes in their scope" do
-      subject.helper_files = [
-        File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
-      ]
-
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
       expect(subject.render(inline: "<%= helper5 %>").strip).to eq "thing one"
     end
 
     it "allows helpers to be called from within capture blocks" do
-      subject.helper_files = [
-        File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
-      ]
-
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
       expect(subject.render(inline: "<% helper4 do %>\n  <%= render(inline: 'foo') %>\n<% end %>").strip).to eq "foo foo!"
     end
 

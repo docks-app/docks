@@ -166,6 +166,7 @@ describe Docks::Builder do
       original_dir = Dir.pwd
       FileUtils.mkdir_p(existing_dir)
       FileUtils.cd(existing_dir)
+      Docks::Templates.send(:clean)
       Docks.configure_with(destination: destination, root: existing_dir)
 
       default_options[:script_language] = "coffeescript"
@@ -219,7 +220,11 @@ describe Docks::Builder do
 
       patterns.each do |id, group|
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(group)
-        expect(Docks::Renderers::ERB.instance).to receive(:render).and_return(group)
+
+        renderer = double()
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(renderer).to receive(:helpers).and_return(group)
+        expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
 
@@ -245,7 +250,11 @@ describe Docks::Builder do
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout).and_return "application.erb"
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
-        expect(Docks::Renderers::ERB.instance).to receive(:render).with hash_including(locals: { pattern_groups: pattern_groups, pattern: pattern })
+
+        renderer = double()
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(renderer).to receive(:helpers).and_return(group)
+        expect(renderer).to receive(:render).with hash_including(locals: { pattern_groups: pattern_groups, pattern: pattern })
       end
 
       subject.build

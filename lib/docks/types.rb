@@ -13,11 +13,6 @@ module Docks
       DEMO        = "demo"
     end
 
-    module Access
-      PUBLIC      = "public"
-      PRIVATE     = "private"
-    end
-
     module Demo
       SELECT      = "select"
       JOINT       = "joint"

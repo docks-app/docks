@@ -16,7 +16,7 @@ module Docks
         functionize_helper(helper_name, arguments, start_with: "= ")
       end
 
-      def renderer; Docks::Renderers::Haml.instance end
+      def renderer; Docks::Renderers::Haml.new end
       def parser; Docks::Parsers::Haml.instance end
     end
   end

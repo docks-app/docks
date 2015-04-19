@@ -6,7 +6,7 @@ describe Docks::Renderers::Base do
   partials_dir = File.join(template_dir, "partials")
   layouts_dir = File.join(template_dir, "layouts")
 
-  subject { Docks::Renderers::Base.instance }
+  subject { Docks::Renderers::Base.new }
 
   around do |example|
     Docks.configure do |config|

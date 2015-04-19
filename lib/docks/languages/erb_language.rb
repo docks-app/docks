@@ -17,7 +17,7 @@ module Docks
       end
 
       def parser; Docks::Parsers::ERB.instance end
-      def renderer; Docks::Renderers::ERB.instance end
+      def renderer; Docks::Renderers::ERB.new end
     end
   end
 end

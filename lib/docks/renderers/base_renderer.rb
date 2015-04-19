@@ -1,8 +1,6 @@
 module Docks
   module Renderers
     class Base
-      include Singleton
-
       def initialize; @cache = {} end
 
       def render(template, locals = {})
