@@ -12,7 +12,8 @@ module Docks
       @pattern = Cache.pattern_for(pattern)
       @pattern_groups = Cache.pattern_groups
 
-      render Docks.template_for(pattern)
+      template = Docks.template_for(pattern)
+      render(template.path, layout: template.layout)
     end
 
     def demo
@@ -20,7 +21,8 @@ module Docks
       if @demo.nil?
         render(nothing: true)
       else
-        render Docks.template_for(:demo)
+        template = Docks.template_for(:demo)
+        render(template.path, layout: template.layout)
       end
     end
   end

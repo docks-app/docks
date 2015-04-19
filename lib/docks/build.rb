@@ -56,7 +56,10 @@ module Docks
       Group.group(Docks.config.sources).each do |id, group|
         begin
           pattern = Cache.pattern_for(id)
-          template = Renderers.search_for_template(Template.template_for(id))
+
+          template = Templates.template_for(id)
+          layout = Renderers.search_for_template(template.layout)
+          template = Renderers.search_for_template(template.path)
           Docks.current_template = Pathname.new(template)
 
           renderer = Languages.language_for(template).renderer
@@ -68,7 +71,7 @@ module Docks
           FileUtils.mkdir_p(dir)
 
           File.open(html_file, "w") do |file|
-            file.write renderer.render(template: template, layout: Template.default_layout, locals: { pattern: pattern, pattern_groups: pattern_groups })
+            file.write renderer.render(template: template, layout: layout, locals: { pattern: pattern, pattern_groups: pattern_groups })
           end
 
           Messenger.file(html_file, update ? :updated : :created)

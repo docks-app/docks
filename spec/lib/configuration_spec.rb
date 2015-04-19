@@ -78,24 +78,24 @@ describe Docks::Configuration do
     it "registers each template for a pattern matching the passed key" do
       templates = { foo: "bar", bar: "baz" }
       templates.each do |match, template|
-        expect(Docks::Template).to receive(:register).with(template, for: Regexp.new(match.to_s))
+        expect(Docks::Templates).to receive(:register).with(template, for: Regexp.new(match.to_s))
       end
       subject.templates = templates
     end
 
     it "registers a template with the :fallback or :default key as the fallback template" do
       templates = { "foo" => "bar", "default" => "pattern" }
-      expect(Docks::Template).to receive(:fallback=).with(templates["default"])
+      expect(Docks::Templates).to receive(:fallback_template=).with(templates["default"])
       subject.templates = templates
 
       templates = { "foo" => "bar", "fallback" => "pattern" }
-      expect(Docks::Template).to receive(:fallback=).with(templates["fallback"])
+      expect(Docks::Templates).to receive(:fallback_template=).with(templates["fallback"])
       subject.templates = templates
     end
 
     it "registers a template with the :demo key as the demo template" do
       templates = { "foo" => "bar", "demo" => "my-custom-demo" }
-      expect(Docks::Template).to receive(:demo=).with(templates["demo"])
+      expect(Docks::Templates).to receive(:demo_template=).with(templates["demo"])
       subject.templates = templates
     end
   end
@@ -112,7 +112,7 @@ describe Docks::Configuration do
     it "yields the template manager" do
       yielded = nil
       subject.custom_templates { |templates| yielded = templates }
-      expect(yielded).to be Docks::Template
+      expect(yielded).to be Docks::Templates
     end
   end
 

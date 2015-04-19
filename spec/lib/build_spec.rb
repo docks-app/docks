@@ -240,7 +240,10 @@ describe Docks::Builder do
       expect(Docks::Cache).to receive(:pattern_groups).and_return(pattern_groups)
       patterns.each do |id, group|
         pattern = { name: id }
-        expect(Docks::Renderers).to receive(:search_for_template).and_return "pattern.erb"
+
+        default_template = Docks::Templates.default_template
+        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout).and_return "application.erb"
+        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
         expect(Docks::Renderers::ERB.instance).to receive(:render).with hash_including(locals: { pattern_groups: pattern_groups, pattern: pattern })
       end

@@ -46,15 +46,15 @@ module Docks
 
     def templates=(special_templates)
       if fallback = special_templates.delete("default") || special_templates.delete("fallback")
-        Template.fallback = fallback
+        Templates.fallback_template = fallback
       end
 
       if demo = special_templates.delete("demo")
-        Template.demo = demo
+        Templates.demo_template = demo
       end
 
       special_templates.each do |match, template|
-        Template.register(template, for: Regexp.new(match.to_s))
+        Templates.register(template, for: Regexp.new(match.to_s))
       end
     end
 
@@ -79,11 +79,11 @@ module Docks
       yield Tags
     end
 
-    # Yields Docks::Template for registering custom templates.
+    # Yields Docks::Templates for registering custom templates.
     # Returns nothing.
 
     def custom_templates
-      yield Template
+      yield Templates
     end
 
 
