@@ -1,5 +1,5 @@
-require File.expand_path("../base_container.rb", __FILE__)
-require File.expand_path("../common_attributes/privacy.rb", __FILE__)
+require_relative "base_container.rb"
+require_relative "common_attributes/privacy.rb"
 
 module Docks
   module Containers

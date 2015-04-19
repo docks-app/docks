@@ -127,7 +127,7 @@ describe Docks::Builder do
 
   describe ".parse" do
     before :each do
-      Docks.configure_with(root: empty_dir)
+      Docks.configure_with(root: empty_dir, library_assets: "")
     end
 
     it "adds the parse function to the top-level Docks namespace" do
