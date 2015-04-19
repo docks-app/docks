@@ -39,10 +39,16 @@ module Docks
       # Returns nothing (in the case of a block being provided) or the
       # previously-captured block by the passed `name`.
 
-      def content_for(name, &block)
-        @content_blocks[name] unless block_given?
-        @content_blocks[name] = capture(&block)
-        return
+      def content_for(name, value = nil, &block)
+        @content_blocks ||= Hash.new
+
+        if block_given?
+          @content_blocks[name] = capture(&block)
+        elsif !value.nil?
+          @content_blocks[name] = value
+        else
+          @content_blocks[name]
+        end
       end
 
       # Checks whether a block named `name` has been captured.
