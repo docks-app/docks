@@ -242,7 +242,7 @@ describe Docks::Builder do
         pattern = { name: id }
         expect(Docks::Renderers).to receive(:search_for_template).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
-        expect(Docks::Renderers::ERB.instance).to receive(:render).with anything, hash_including(pattern_groups: pattern_groups, pattern: pattern)
+        expect(Docks::Renderers::ERB.instance).to receive(:render).with hash_including(locals: { pattern_groups: pattern_groups, pattern: pattern })
       end
 
       subject.build
