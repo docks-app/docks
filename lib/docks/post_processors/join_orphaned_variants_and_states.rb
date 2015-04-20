@@ -1,6 +1,10 @@
 module Docks
   module PostProcessors
     class JoinOrphanedVariantsAndStates < Base
+      VARIATION_TYPES = [
+        Types::Symbol::STATE,
+        Types::Symbol::VARIANT
+      ]
 
       # Public: Joins up any states and variants that were declared in their own,
       # separate comment block with the relevant component (or, creates a component
@@ -22,11 +26,10 @@ module Docks
       def self.post_process(parsed_file)
         last_component = nil
         new_parse_results = []
-        variant_and_state_types = [Docks::Types::Symbol::STATE, Docks::Types::Symbol::VARIANT]
 
         parsed_file.each do |parse_result|
           last_component = parse_result if parse_result[:symbol_type] == Docks::Types::Symbol::COMPONENT
-          next unless variant_and_state_types.include?(parse_result[:symbol_type])
+          next unless VARIATION_TYPES.include?(parse_result[:symbol_type])
 
           new_item = parse_result.clone
           type = new_item[:symbol_type].to_sym
@@ -66,7 +69,7 @@ module Docks
         end
 
         # Get rid of all the states and variants.
-        parsed_file.delete_if { |parse_result| variant_and_state_types.include?(parse_result[:symbol_type]) }
+        parsed_file.delete_if { |parse_result| VARIATION_TYPES.include?(parse_result[:symbol_type]) }
         parsed_file.concat(new_parse_results)
       end
 

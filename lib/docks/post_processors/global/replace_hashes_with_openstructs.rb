@@ -5,7 +5,8 @@ module Docks
       KEYS_WITHOUT_OSTRUCT = [
         :stub,
         :value,
-        :subcomponents
+        :subcomponents,
+        :methods
       ].freeze
 
       # Public: Processes the passed content by openstructifying all hashes,

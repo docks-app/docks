@@ -35,6 +35,12 @@ module Docks
         @item.to_s
       end
 
+      # Public: returns the base details.
+
+      def to_h
+        @item
+      end
+
       # Public: prints the contained details.
       # Returns a String.
 

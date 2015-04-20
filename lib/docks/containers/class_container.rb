@@ -14,6 +14,17 @@ module Docks
       # Returns the type String.
 
       def self.type; Docks::Types::Symbol::CLASS end
+
+      def initialize(parse_result)
+        super(parse_result)
+
+        parse_result[:methods] ||= []
+        parse_result[:methods].map! { |method| Containers.container_for(method).new(method) }
+      end
+
+      def methods; @item[:methods] end
+      def public_methods; methods.select { |meth| meth.public? } end
+      def private_methods; methods.select { |meth| meth.private? } end
     end
   end
 end

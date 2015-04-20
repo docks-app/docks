@@ -26,6 +26,11 @@ describe Docks::Parsers::Base do
       expect(result[:param]).to eq [[param]]
     end
 
+    it "adds a result even when there is no text content following the tag" do
+      result = subject.parse_comment_block("  @class")
+      expect(result[:class]).to eq ""
+    end
+
     it "appends a second line of a normal tag to the same result array" do
       line_one = "html"
       line_two = " <p>Hello</p>"
