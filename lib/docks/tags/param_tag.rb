@@ -18,6 +18,10 @@ module Docks
         @name = :param
         @synonyms = [:arg, :argument]
         @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
+
+        @post_processors = [
+          Docks::PostProcessors::JoinParamProperties
+        ]
       end
 
       # Public: cleans up the param parsed from the documentation. There are
