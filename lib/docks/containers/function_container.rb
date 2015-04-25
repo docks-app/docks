@@ -15,6 +15,9 @@ module Docks
       # Returns the type String.
 
       def self.type; Docks::Types::Symbol::FUNCTION end
+
+      def static?; !!@item[:static] end
+      def instance?; !static? end
     end
   end
 end

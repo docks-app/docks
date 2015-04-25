@@ -58,7 +58,7 @@ module Docks
           pattern = Cache.pattern_for(id)
 
           template = Templates.template_for(id)
-          layout = Renderers.search_for_template(template.layout)
+          layout = Renderers.search_for_template(template.layout, must_be: :layout)
           template = Renderers.search_for_template(template.path)
           Docks.current_template = Pathname.new(template)
 

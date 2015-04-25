@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe Docks::Tags::Method do
-  subject { Docks::Tags::Method.instance }
+describe Docks::Tags::Property do
+  subject { Docks::Tags::Property.instance }
 
   it "does not allow multiline content" do
     expect(subject.multiline?).to be false

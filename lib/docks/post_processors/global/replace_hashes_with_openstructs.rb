@@ -6,7 +6,8 @@ module Docks
         :stub,
         :value,
         :subcomponents,
-        :methods
+        :methods,
+        :properties
       ].freeze
 
       # Public: Processes the passed content by openstructifying all hashes,

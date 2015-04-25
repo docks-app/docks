@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe Docks::Tags::Method do
-  subject { Docks::Tags::Method.instance }
+describe Docks::Tags::Private do
+  subject { Docks::Tags::Private.instance }
 
   it "does not allow multiline content" do
     expect(subject.multiline?).to be false
@@ -16,9 +16,10 @@ describe Docks::Tags::Method do
   end
 
   describe "#process" do
-    it "sets the method attribute to be true when it exists at all" do
+    it "sets the private attribute to be true when it exists at all" do
       expect(subject.process("")).to be true
-      expect(subject.process("myMethod")).to be true
+      expect(subject.process("true")).to be true
+      expect(subject.process("private")).to be true
     end
   end
 end

@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe Docks::Tags::Method do
-  subject { Docks::Tags::Method.instance }
+describe Docks::Tags::Static do
+  subject { Docks::Tags::Static.instance }
 
   it "does not allow multiline content" do
     expect(subject.multiline?).to be false
@@ -16,9 +16,10 @@ describe Docks::Tags::Method do
   end
 
   describe "#process" do
-    it "sets the method attribute to be true when it exists at all" do
+    it "sets the static attribute to be true when it exists at all" do
       expect(subject.process("")).to be true
-      expect(subject.process("myMethod")).to be true
+      expect(subject.process("true")).to be true
+      expect(subject.process("static")).to be true
     end
   end
 end

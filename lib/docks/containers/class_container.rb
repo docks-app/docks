@@ -25,6 +25,11 @@ module Docks
       def methods; @item[:methods] end
       def public_methods; methods.select { |meth| meth.public? } end
       def private_methods; methods.select { |meth| meth.private? } end
+      def static_methods; methods.select { |meth| meth.static? } end
+
+      def public_properties; properties.select { |prop| prop.public? } end
+      def private_properties; properties.select { |prop| prop.private? } end
+      def static_properties; properties.select { |prop| prop.static? } end
     end
   end
 end

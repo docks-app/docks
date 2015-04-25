@@ -7,7 +7,8 @@ describe Docks::Containers::Klass do
     {
       name: "Foo",
       symbol_type: Docks::Types::Symbol::CLASS,
-      methods: []
+      methods: [],
+      properties: []
     }
   end
 
@@ -15,6 +16,13 @@ describe Docks::Containers::Klass do
     {
       name: "bar",
       symbol_type: Docks::Types::Symbol::FUNCTION
+    }
+  end
+
+  let(:property) do
+    {
+      name: "bar",
+      symbol_type: Docks::Types::Symbol::VARIABLE
     }
   end
 
@@ -26,6 +34,15 @@ describe Docks::Containers::Klass do
     }
   end
 
+  let(:static_method) do
+    {
+      name: "baz",
+      symbol_type: Docks::Types::Symbol::FUNCTION,
+      static: true,
+      access: Docks::Types::Access::PRIVATE
+    }
+  end
+
   describe "#initialize" do
     it "wraps every method in the correct container" do
       klass[:methods] << method
@@ -33,6 +50,10 @@ describe Docks::Containers::Klass do
       expect(container.methods.length).to be 1
       expect(container.methods.first).to be_a Docks::Containers.container_for(method)
       expect(container.methods.first.to_h).to be method
+    end
+
+    it "wraps every property in the correct container" do
+      klass[:properties] <<
     end
   end
 
@@ -66,6 +87,16 @@ describe Docks::Containers::Klass do
       expect(public_methods.length).to be 1
       expect(public_methods.map(&:to_h)).not_to include method
       expect(public_methods.map(&:to_h)).to include private_method
+    end
+  end
+
+  describe "#static_methods" do
+    it "returns all static methods of the class" do
+      klass[:methods] = [method, private_method, static_method]
+      container = subject.new(klass)
+      static_methods = container.static_methods
+      expect(static_methods.length).to be 1
+      expect(static_methods.first.to_h).to be static_method
     end
   end
 end
