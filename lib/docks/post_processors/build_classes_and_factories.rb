@@ -1,23 +1,23 @@
 module Docks
   module PostProcessors
-    class BuildClasses < Base
+    class BuildClassesAndFactories < Base
       def self.post_process(parsed_file)
-        last_class = nil
+        last_object = nil
 
         parsed_file.each do |parse_result|
-          if parse_result[:class]
-            last_class = parse_result
+          if parse_result[:class] || parse_result[:factory]
+            last_object = parse_result
             parse_result[:methods] ||= []
             parse_result[:properties] ||= []
-            parse_result[:symbol_type] = Types::Symbol::CLASS
+            parse_result[:symbol_type] = parse_result[:class] ? Types::Symbol::CLASS : Types::Symbol::FACTORY
           end
 
           if parse_result[:method]
-            last_class[:methods] << parse_result
+            last_object[:methods] << parse_result
           end
 
           if parse_result[:property]
-            last_class[:properties] << parse_result
+            last_object[:properties] << parse_result
           end
         end
 

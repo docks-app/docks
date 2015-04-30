@@ -9,6 +9,7 @@ module Docks
       FUNCTION    = "function"
       VARIABLE    = "variable"
       CLASS       = "class"
+      FACTORY     = "factory"
       PATTERN     = "pattern"
       DEMO        = "demo"
     end

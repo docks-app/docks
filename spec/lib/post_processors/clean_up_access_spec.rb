@@ -26,5 +26,13 @@ describe Docks::PostProcessors::CleanUpAccess do
       expect(function[:access]).to eq Docks::Types::Access::PRIVATE
       expect(function[:private]).to be nil
     end
+
+    it "uses the access tag if there is a conflicting private tag" do
+      function[:access] = Docks::Types::Access::PUBLIC
+      function[:private] = true
+      subject.post_process([function])
+      expect(function[:access]).to eq Docks::Types::Access::PUBLIC
+      expect(function[:private]).to be nil
+    end
   end
 end

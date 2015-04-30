@@ -16,7 +16,7 @@ module Docks
         @name = :class
         @multiline = false
         @post_processors = [
-          Docks::PostProcessors::BuildClasses
+          Docks::PostProcessors::BuildClassesAndFactories
         ]
       end
 
