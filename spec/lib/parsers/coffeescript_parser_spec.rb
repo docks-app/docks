@@ -135,6 +135,27 @@ describe Docks::Parsers::CoffeeScript do
         expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end
+
+      it "identifies a variable that is declared without assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details(target_name)
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
+
+      it "identifies the first variable in a comma-separated list without assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details("  #{target_name}, foo, bar , baz")
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
+
+      it "identifies the first variable in a comma-separated list with assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details("  #{target_name}, foo, bar , baz = 'qux'")
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
     end
   end
 end

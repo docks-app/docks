@@ -39,7 +39,7 @@ module Docks
           else Docks::Types::Symbol::VARIABLE
         end
 
-        clean_first_line = first_code_line.split(/[=:]/).first.gsub(/class\s+/, "").split(".").last.strip
+        clean_first_line = first_code_line.split(/[=:,]/).first.gsub(/class\s+/, "").split(".").last.strip
         bracket_check = clean_first_line.split(/['"]/)
 
         name = bracket_check.length > 1 ? bracket_check[-2] : clean_first_line
