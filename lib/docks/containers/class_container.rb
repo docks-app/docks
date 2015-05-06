@@ -20,12 +20,16 @@ module Docks
 
         parse_result[:methods] ||= []
         parse_result[:methods].map! { |method| Containers.container_for(method).new(method) }
+        parse_result[:properties] ||= []
+        parse_result[:properties].map! { |property| Containers.container_for(property).new(property) }
       end
 
       def methods; @item[:methods] end
       def public_methods; methods.select { |meth| meth.public? } end
       def private_methods; methods.select { |meth| meth.private? } end
+
       def static_methods; methods.select { |meth| meth.static? } end
+      def instance_methods; methods.reject { |meth| meth.static? } end
 
       def public_properties; properties.select { |prop| prop.public? } end
       def private_properties; properties.select { |prop| prop.private? } end

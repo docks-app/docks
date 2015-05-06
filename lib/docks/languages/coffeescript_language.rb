@@ -13,7 +13,7 @@ module Docks
         symbol_type, name = symbol[:symbol_type], symbol[:name]
 
         case symbol_type
-          when Docks::Types::Symbol::MIXIN, Docks::Types::Symbol::FUNCTION
+          when Docks::Types::Symbol::MIXIN, Docks::Types::Symbol::FUNCTION, Docks::Types::Symbol::FACTORY
             presentation = "#{name} ="
             presentation << " (#{(symbol[:param]).map { |param| "#{param[:name]}#{" = #{param[:default]}" if param[:default]}" }.join(", ")})" if symbol[:param] && symbol[:param].length
             "#{presentation} -> # ..."

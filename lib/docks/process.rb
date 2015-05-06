@@ -13,7 +13,9 @@ module Docks
 
     def self.process(parse_result)
       parse_result.each do |tag, value|
-        parse_result[tag] = process_tag(tag, value)
+        tag_handler = Docks::Tags.tag_for(tag.to_sym)
+        next unless tag_handler
+        parse_result[tag] = process_tag(tag_handler, value)
       end
 
       parse_result
@@ -110,8 +112,7 @@ module Docks
     # the processors and on the multiplicity of the tags).
 
     def self.process_tag(tag, content)
-      tag = Docks::Tags.tag_for(tag.to_sym)
-      return content unless tag
+      tag = Docks::Tags.tag_for(tag.to_sym) unless tag.kind_of?(Docks::Tags::Base)
 
       if tag.multiple_per_line_allowed?
         # Multiple allowed per block, and each line may contain

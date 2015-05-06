@@ -9,6 +9,7 @@ module Docks
     TOP_LEVEL_SYMBOLS = [
       Docks::Types::Symbol::COMPONENT,
       Docks::Types::Symbol::CLASS,
+      Docks::Types::Symbol::FACTORY,
       Docks::Types::Symbol::FUNCTION,
       Docks::Types::Symbol::MIXIN,
       Docks::Types::Symbol::VARIABLE

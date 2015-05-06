@@ -53,7 +53,11 @@ describe Docks::Containers::Klass do
     end
 
     it "wraps every property in the correct container" do
-      klass[:properties] <<
+      klass[:properties] << property
+      container = subject.new(klass)
+      expect(container.properties.length).to be 1
+      expect(container.properties.first).to be_a Docks::Containers.container_for(property)
+      expect(container.properties.first.to_h).to be property
     end
   end
 
@@ -97,6 +101,16 @@ describe Docks::Containers::Klass do
       static_methods = container.static_methods
       expect(static_methods.length).to be 1
       expect(static_methods.first.to_h).to be static_method
+    end
+  end
+
+  describe "#instance_methods" do
+    it "returns all instance methods of the class" do
+      klass[:methods] = [private_method, static_method]
+      container = subject.new(klass)
+      the_instance_methods = container.instance_methods
+      expect(the_instance_methods.length).to be 1
+      expect(the_instance_methods.first.to_h).to be private_method
     end
   end
 end

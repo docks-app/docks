@@ -5,7 +5,7 @@ module Docks
 
     # Public: a container for Factory symbols.
 
-    class Factory < Base
+    class Factory < Klass
 
       # Public: the type of symbols that should be encapsulated by this
       # container. This is compared against a symbol's `symbol_type` to
