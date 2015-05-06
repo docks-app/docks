@@ -17,7 +17,7 @@ module Docks
         @name = :compatibility
         @synonyms = [:compatible_with]
         @multiline = false
-        @type = Docks::Types::Tag::MULTIPLE_PER_LINE
+        @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
 

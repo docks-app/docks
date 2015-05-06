@@ -17,7 +17,7 @@ module Docks
       def initialize
         @name = :subtitle
         @synonyms = [:tagline]
-        @type = Docks::Types::Tag::ONE_PER_FILE
+        @type = Docks::Types::Tags::ONE_PER_FILE
         @multiline = false
       end
     end

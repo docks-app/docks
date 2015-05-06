@@ -1,0 +1,28 @@
+@mixin demo-height($component, $height) {
+  #demo__section--#{$component} > .demo__content {
+    height: #{$height} !important;
+  }
+}
+
+@mixin demo-background($component, $color) {
+  #demo__section--#{$component} {
+    background-color: #{$color} !important;
+  }
+}
+
+@mixin demo-styles($component) {
+  #demo__section--#{$component} {
+    @content;
+  }
+}
+
+@mixin demo-no-padding($component) {
+  #demo__section--#{$component} {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@mixin components-with-documentation-only {
+  @if false { @content; }
+}

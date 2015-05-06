@@ -4,6 +4,12 @@
   }
 }
 
+@mixin demo-background($component, $color) {
+  #demo__section--#{$component} {
+    background-color: #{$color} !important;
+  }
+}
+
 @mixin demo-styles($component) {
   #demo__section--#{$component} {
     @content;

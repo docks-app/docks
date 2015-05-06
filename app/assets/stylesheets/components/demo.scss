@@ -29,6 +29,7 @@
 .demo__section {
   position: relative;
   padding: 0 default(spacing) default(spacing);
+  box-sizing: border-box;
 
   ~ .demo__section {
     border-top: 1px solid color(gray-light);
@@ -48,14 +49,11 @@
   padding: (default(spacing) / 2) 0 default(spacing);
   text-align: right;
   margin-right: (default(spacing) / -2);
+  box-sizing: border-box;
 
   > .badge {
     margin: 0;
     top: 0;
-    vertical-align: middle;
-  }
-
-  > .docks-button {
     vertical-align: middle;
   }
 }

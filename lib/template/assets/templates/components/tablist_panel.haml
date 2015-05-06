@@ -1,0 +1,12 @@
+:ruby
+  component.config do |config|
+    config.defaults active?: false,
+                    id: "panel",
+                    tab_id: "tab"
+
+    config.classes  base: "tablist__panel"
+    config.conditional_classes if: :active?, base: "tablist__panel--is-active"
+  end
+
+%div{role: "tab-panel", id: component.id, class: component.classes_for(:base), "aria-hidden" => (!component.active?).to_s, "aria-labelledby" => component.tab_id }
+  = capture(&component.block)

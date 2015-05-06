@@ -16,7 +16,7 @@ describe Docks::Processors::BreakApartStatesAndVariants do
       precludes: [],
       set_by: [],
       include_with: [],
-      demo_type: Docks::Types::Demo::NONE,
+      demo_type: Docks::Types::Demo::DEFAULT,
       active: false,
       javascript_action: nil
     }

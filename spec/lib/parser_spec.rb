@@ -4,10 +4,10 @@ describe Docks::Parser do
   subject { Docks::Parser }
 
   before :all do
-    Docks::Tag.register_bundled_tags
     Docks::Process.clear_post_processors
+    Docks::Tags.register_bundled_tags
     Docks::Process.register_bundled_post_processors
-    Docks::Language.register_bundled_languages
+    Docks::Languages.register_bundled_languages
   end
 
   describe ".parse_group" do
@@ -15,14 +15,14 @@ describe Docks::Parser do
 
     it "includes the parse result of a file in the appropriate group" do
       file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_basic.scss")
-      expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to include(subject.send(:parse_file, file).first)
+      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to include(subject.send(:parse_file, file).first)
     end
 
     it "moves the pattern block to the top level of the parse result" do
       pattern_block = subject.send(:parse_file, file).first
       pattern_block[:title] = pattern_block.delete(:pattern)
       expect(subject.parse_group([file])[:pattern]).to eq pattern_block
-      expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to_not include(pattern_block)
+      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to_not include(pattern_block)
     end
 
     it "moves the pattern block to the top level of the parse result" do
@@ -30,7 +30,7 @@ describe Docks::Parser do
       pattern_block = subject.send(:parse_file, file).first
       pattern_block[:title] = pattern_block.delete(:pattern)
       expect(subject.parse_group([file])[:pattern]).to eq pattern_block
-      expect(subject.parse_group([file])[Docks::Language.file_type(file)]).to_not include(pattern_block)
+      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to_not include(pattern_block)
     end
 
     it "switches the pattern attribute to be the title of the pattern block" do

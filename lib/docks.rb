@@ -8,6 +8,12 @@ require "singleton"
 require "redcarpet"
 require "active_support/inflector"
 
+module Docks
+  CACHE_DIR = "docks_cache"
+  GROUP_CACHE_FILE = "docks_cache_groups"
+  ASSETS_DIR = "pattern_library_assets"
+end
+
 require File.join(File.dirname(__FILE__), "docks", "types.rb")
 require File.join(File.dirname(__FILE__), "docks", "configuration.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "*.rb")].each { |file| require file }
@@ -21,6 +27,8 @@ Dir[File.join(File.dirname(__FILE__), "docks", "processors/*.rb")].each { |file|
 require File.join(File.dirname(__FILE__), "docks", "post_processors/base_post_processor.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "post_processors/**/*.rb")].each { |file| require file }
 
+Dir[File.join(File.dirname(__FILE__), "docks", "renderers/*.rb")].each { |file| require file }
+
 require File.join(File.dirname(__FILE__), "docks", "languages/base_language.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "languages/*.rb")].each { |file| require file }
 
@@ -30,10 +38,3 @@ Dir[File.join(File.dirname(__FILE__), "docks", "tags/*.rb")].each { |file| requi
 Dir[File.join(File.dirname(__FILE__), "docks", "containers/*.rb")].each { |file| require file }
 
 require "docks/rails/engine.rb" if defined?(Rails)
-
-
-module Docks
-  CACHE_DIR = "docks_cache"
-  GROUP_CACHE_FILE = "docks_cache_groups"
-  CONFIG_FILE = "docks_config.yml"
-end

@@ -4,7 +4,7 @@ describe Docks::Parsers::CoffeeScript do
   subject { Docks::Parsers::CoffeeScript.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "coffee_parser_fixture_basic.coffee")) }
@@ -83,20 +83,77 @@ describe Docks::Parsers::CoffeeScript do
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
       end
+
+      it "identifies a function declared using dot notation" do
+        target_name = "activateTab"
+
+        name, type = subject.parse_result_details("  foo.#{target_name} = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+
+        name, type = subject.parse_result_details("  foo.bar.#{target_name} = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+
+        name, type = subject.parse_result_details("  foo['bar'].#{target_name} = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+      end
+
+      it "identifies a function declared using bracket notation" do
+        target_name = "activateTab"
+
+        name, type = subject.parse_result_details("  foo['#{target_name}'] = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+
+        name, type = subject.parse_result_details("  foo[\"#{target_name}\"] = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+
+        name, type = subject.parse_result_details("  foo['bar']['#{target_name}'] = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+
+        name, type = subject.parse_result_details("  foo.bar['#{target_name}'] = ($tab) -> $tab.activate()")
+        expect(type).to eq Docks::Types::Symbol::FUNCTION
+        expect(name).to eq target_name
+      end
     end
 
     describe "variables" do
       it "identifies a variable" do
         target_name = "newTab"
         name, type = subject.parse_result_details("  #{target_name} = @newTab()")
-        expect(type).to eq "variable"
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end
 
       it "identifies a variable declared in a class definition" do
         target_name = "val"
         name, type = subject.parse_result_details("  #{target_name} : (2 * 3) / 4")
-        expect(type).to eq "variable"
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
+
+      it "identifies a variable that is declared without assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details(target_name)
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
+
+      it "identifies the first variable in a comma-separated list without assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details("  #{target_name}, foo, bar , baz")
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
+        expect(name).to eq target_name
+      end
+
+      it "identifies the first variable in a comma-separated list with assignment" do
+        target_name = "val"
+        name, type = subject.parse_result_details("  #{target_name}, foo, bar , baz = 'qux'")
+        expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end
     end

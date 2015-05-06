@@ -1,4 +1,11 @@
 module Docks
+  module Types
+    module Access
+      PUBLIC      = "public"
+      PRIVATE     = "private"
+    end
+  end
+
   module Tags
 
     # Public: The tag attributes for `@access`.

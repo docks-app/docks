@@ -19,6 +19,20 @@ describe Docks::Tags::Returns do
       expect(subject.process([types])[:types]).to eq Docks::Processors::BreakApartTypes.process(types)
     end
 
+    it "splits apart types when no description and no curly braces are provided" do
+      expect(subject.process([types.gsub("{", "").gsub("}", "")])[:types]).to eq Docks::Processors::BreakApartTypes.process(types)
+    end
+
+    it "sets the value to nil when no types are provided" do
+      expect(subject.process([""])).to be nil
+      expect(subject.process(["  "])).to be nil
+    end
+
+    it "sets the value to nil when 'nothing' is set as the type" do
+      expect(subject.process([""])).to be nil
+      expect(subject.process(["  "])).to be nil
+    end
+
     it "splits apart types when a description is provided" do
       type_results = Docks::Processors::BreakApartTypes.process(types)
       expect(subject.process(["#{types} #{description}"])[:types]).to eq type_results

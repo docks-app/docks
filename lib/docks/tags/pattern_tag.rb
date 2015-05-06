@@ -21,7 +21,7 @@ module Docks
       def initialize
         @name = :pattern
         @synonyms = [:page]
-        @type = Docks::Types::Tag::ONE_PER_FILE
+        @type = Docks::Types::Tags::ONE_PER_FILE
         @multiline = false
       end
     end

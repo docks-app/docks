@@ -1,9 +1,8 @@
-require File.expand_path("../base_parser.rb", __FILE__)
+require_relative "base_parser.rb"
 
 module Docks
   module Parsers
     class CoffeeScript < Base
-
       def initialize
         @comment_symbol = "#"
         @page_comment_extractor = /(?:^\s*#\*\n)((?:^\s*?#[^\n]*\n)*(?:^\s*?#[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?#[^\n]*\n)*)/m
@@ -40,7 +39,11 @@ module Docks
           else Docks::Types::Symbol::VARIABLE
         end
 
-        name = first_code_line.match(/^\s*(?:class)?\s*([^\s\(\:\<\=\-]*)/).captures.first
+        clean_first_line = first_code_line.split(/[=:,]/).first.gsub(/class\s+/, "").split(".").last.strip
+        bracket_check = clean_first_line.split(/['"]/)
+
+        name = bracket_check.length > 1 ? bracket_check[-2] : clean_first_line
+
         return name, type
       end
     end

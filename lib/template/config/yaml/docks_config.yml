@@ -1,0 +1,26 @@
+---
+sources:
+  - styles/**/*.scss
+  - scripts/**/*.coffee
+
+destination: public
+
+include_assets:
+  - public/styles/style.css
+  - public/scripts/script.js
+
+
+
+library_assets: pattern_library_assets
+
+cache_location: .docks_cache
+
+
+
+mount_at: pattern-library
+
+github_repo: ""
+
+templates:
+  default: pattern.erb
+  demo: demo.erb

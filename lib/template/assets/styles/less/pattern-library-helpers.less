@@ -1,0 +1,28 @@
+.demo-height(@component, @height) {
+  #demo__section--@{@component} > .demo__content {
+    height: @height !important;
+  }
+}
+
+.demo-background(@component, @color) {
+  #demo__section--@{@component} {
+    background-color: @color !important;
+  }
+}
+
+.demo-styles(@component) {
+  #demo__section--@{@component} {
+    .content();
+  }
+}
+
+.demo-no-padding(@component) {
+  #demo__section--@{@component} {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.components-with-documentation-only(@index: 0) when (@index > 0) {
+  .content()
+}

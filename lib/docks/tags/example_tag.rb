@@ -15,7 +15,7 @@ module Docks
 
       def initialize
         @name = :example
-        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
 
@@ -39,7 +39,7 @@ module Docks
 
       def process(content)
         content = Docks::Processors::CodeBlockWithLanguageAndDescription.process(content)
-        content[:language] ||= Docks::Language.extension_for_file(Docks::Parser.current_file)
+        content[:language] ||= Docks::Languages.extension_for_file(Docks::Parser.current_file)
         content
       end
     end

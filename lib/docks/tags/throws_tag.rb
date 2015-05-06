@@ -26,7 +26,7 @@ module Docks
       def initialize
         @name = :throws
         @synonyms = [:throw, :exception]
-        @type = Docks::Types::Tag::MULTIPLE_PER_BLOCK
+        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
 

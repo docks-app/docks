@@ -15,8 +15,8 @@ module Docks
       def self.process(content)
         return content unless content.kind_of?(Array)
 
-        content = content.join("\n")
-        content.strip.length > 0 ? content : nil
+        content = content.join("\n").strip
+        content.length > 0 ? content : nil
       end
     end
   end

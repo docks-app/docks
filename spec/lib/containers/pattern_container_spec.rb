@@ -9,7 +9,7 @@ describe Docks::Containers::Pattern do
   subject { Docks::Containers::Pattern }
 
   before :each do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:simple_parse_results) do
@@ -81,7 +81,7 @@ describe Docks::Containers::Pattern do
   describe "#method_missing" do
     it "delegates missing methods to the pattern block" do
       pattern = subject.new(complex_parse_results)
-      expect(Docks::Tag).to receive(:default_tag_name).with(:foo).and_return(:foo)
+      expect(Docks::Tags).to receive(:base_tag_name).with(:foo).and_return(:foo)
       expect(pattern_block).to receive(:[]).with(:foo)
       pattern.foo
     end
@@ -154,6 +154,14 @@ describe Docks::Containers::Pattern do
         expect(results_of_symbol.first.class.type).to eq symbol
       end
     end
+
+    it "wraps subcomponents in a container" do
+      subcomponent = { foo: "bar" }
+      component = { subcomponents: [subcomponent], symbol_type: Docks::Types::Symbol::COMPONENT }
+      simple_parse_results[:script] = [component]
+      pattern = Docks::Containers::Pattern.new(simple_parse_results)
+      expect(pattern.components.first.subcomponents.first).to be_a Docks::Containers::Component
+    end
   end
 
   describe "#demos" do
@@ -166,6 +174,16 @@ describe Docks::Containers::Pattern do
 
       expect(pattern.demos.length).to be 1
       expect(pattern.demos.first.component.name).to eq component_one[:name]
+    end
+
+    it "creates a demo for variations that need one" do
+      variant = OpenStruct.new(demo_type: Docks::Types::Demo::OWN, name: "bar--baz")
+      component = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "bar", variant: [variant], markup: "<p>Hi</p>" }
+      simple_parse_results[:style] = [component]
+      pattern = subject.new(simple_parse_results)
+
+      expect(pattern.demos.length).to be 2
+      expect(pattern.demos.last.component.name).to eq variant.name
     end
   end
 

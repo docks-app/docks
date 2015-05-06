@@ -14,14 +14,24 @@ STATES =
 
 HEIGHT_CHANGE_WATCH_DURATION = 1000
 
+MINIMUM_HEIGHT = 160
+
 clear_info_indicators = ->
   $(".#{STATE_DEMO_SECTION_ACTIVE}").removeClass(STATE_DEMO_SECTION_ACTIVE)
 
+allocate_minimum_height = (node) ->
+  demo_sections = node.querySelectorAll(".#{CLASSES.SECTION}")
+
+  for demo_section in demo_sections
+    demo_section.style.minHeight = "#{MINIMUM_HEIGHT / demo_sections.length}px"
+
 Demo = (node) ->
   markup_source = document.querySelector(".#{CLASSES.CONTENT}")
-  demo_handlers = window.parent.Docks.demo_handlers
+  demo_handlers = window.parent.Docks.demo_handlers || {}
   height = 0
   actions = {}
+  allocate_minimum_height(node)
+
 
   context =
     body: document.body
@@ -52,6 +62,7 @@ Demo = (node) ->
       html: markup_source.innerHTML
 
   height_update = (only_increase = false) ->
+
     new_height = node.offsetHeight
     return if new_height == height
     return if only_increase && new_height < height

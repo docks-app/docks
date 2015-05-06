@@ -1,0 +1,18 @@
+:ruby
+  component.config do |config|
+    config.defaults author: OpenStruct.new(name: "", github: "", twitter: "", email: "")
+  end
+
+  service, profile_name, url = if component.author.github
+    ["github", component.author.github, "https://github.com/#{component.author.github}"]
+  elsif component.author.twitter
+    ["twitter", component.author.twitter, "https://twitter.com/#{component.author.twitter}"]
+  elsif component.author.email
+    ["email", component.author.email, "mailto:#{component.author.email}"]
+  else
+    [nil, nil, "javascript:;"]
+  end
+
+%a.avatar{href: url, data: { service: service, "profile-name" => profile_name }}
+  %span.avatar__initials= component.author.name.split(" ").map { |name| name[0] }.join("")
+  %div.avatar__image

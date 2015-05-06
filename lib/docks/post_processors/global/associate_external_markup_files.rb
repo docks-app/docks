@@ -2,8 +2,7 @@ module Docks
   module PostProcessors
     class AssociateExternalMarkupFiles < Base
       def self.post_process(parsed_file)
-        return parsed_file if Docks.configuration.files.nil?
-        markup_files = Docks.configuration.files[Docks::Types::Languages::MARKUP]
+        markup_files = Group.source_files_of_type(Docks::Types::Languages::MARKUP)
         return parsed_file if markup_files.empty?
 
         parsed_file.each do |parse_result|

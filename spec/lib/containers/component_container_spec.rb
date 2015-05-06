@@ -4,7 +4,7 @@ describe Docks::Containers::Component do
   subject { Docks::Containers::Component }
 
   before :each do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe "#has_demo?" do
@@ -26,6 +26,24 @@ describe Docks::Containers::Component do
 
     it "doesn't have a demo when the helper is empty" do
       expect(subject.new(helper: "").has_demo?).to be false
+    end
+  end
+
+  describe "#subcomponents" do
+    let(:subcomponent) do
+      { foo: "bar" }
+    end
+
+    it "has subcomponents when they are included on the component" do
+      component = subject.new(subcomponents: [subcomponent])
+      expect(component.subcomponents.length).to be 1
+      expect(component.subcomponents).to include subcomponent
+    end
+
+    it "has an empty array of subcomponents when not included" do
+      component = subject.new(foo: :bar)
+      expect(component.subcomponents).to be_an Array
+      expect(component.subcomponents).to be_empty
     end
   end
 

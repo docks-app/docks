@@ -1,85 +1,186 @@
 require "singleton"
+require "pathname"
 
 module Docks
   class Configuration
     include Singleton
 
-    @root = nil
-    attr_accessor :src_files, :files, :dest_dir, :partials_dir,
-                  :config_file, :cache_dir, :custom_parsers,
-                  :github_repo, :root
+    ROOT_DEPENDENT_PATHS = [:sources, :destination, :include_assets, :cache_location, :library_assets]
 
-    def custom_parsers
-      yield Docks::Parser
+    # Key details — these are required
+    attr_accessor :sources, :destination, :include_assets
+
+    # Locations
+    attr_accessor :root, :cache_location, :library_assets
+
+    # Random assortment of other stuff
+    attr_accessor :github_repo, :mount_at
+
+    # Stateful stuff
+    attr_reader :configured
+
+    def initialize
+      reset
     end
+
+    # Updates the root directory against which `ROOT_DEPENDENT_PATHS` are
+    # evaluated.
+    #
+    # new_root - A Pathname or string representing the root path.
+    #
+    # Returns nothing.
+
+    def root=(new_root)
+      @root = new_root.kind_of?(Pathname) ? new_root : Pathname.new(new_root)
+    end
+
+    # Adds custom templates. The keys of the passed Hash will be treated as a
+    # pattern to match in order to use the template represented by the
+    # associated value. If the passed Hash has `default` or `fallback` keys,
+    # that template will be used as the fallback template. If a `demo` key
+    # exists, that template will be used as the template for component demos.
+    #
+    # special_templates - A Hash representing the custom templates to use.
+    #
+    # Returns nothing.
+
+    def templates=(special_templates)
+      if fallback = special_templates.delete("default") || special_templates.delete("fallback")
+        Templates.fallback_template = fallback
+      end
+
+      if demo = special_templates.delete("demo")
+        Templates.demo_template = demo
+      end
+
+      special_templates.each do |match, template|
+        Templates.register(template, for: Regexp.new(match.to_s))
+      end
+    end
+
+    # Finalizes the configuration. Run this after a block that configured this
+    # singleton. Returns nothing.
+
+    def finalize
+      @configured = true
+    end
+
+    # Yields Docks::Languages for registering custom languages.
+    # Returns nothing.
 
     def custom_languages
-      yield Docks::Language
+      yield Languages
     end
+
+    # Yields Docks::Tags for registering custom tags.
+    # Returns nothing.
 
     def custom_tags
-      yield Docks::Tag
+      yield Tags
     end
+
+    # Yields Docks::Templates for registering custom templates.
+    # Returns nothing.
 
     def custom_templates
-      yield Docks::Template
+      yield Templates
     end
 
-    def mount_at
-      "/pattern-library"
+
+
+    ROOT_DEPENDENT_PATHS.each do |path|
+      define_method(path) do
+        paths = instance_variable_get("@#{path.to_s}".to_sym)
+
+        if paths.kind_of?(Array)
+          paths.map { |a_path| make_path_absolute(a_path) }
+        else
+          make_path_absolute(paths)
+        end
+      end
     end
-  end
 
-  @@configured = false
-  @@configuration = Configuration.instance
+    private
 
-  def self.configuration
-    @@configuration
-  end
+    def reset
+      @configured = false
+      @sources = []
+      @include_assets = []
+      @github_repo = nil
 
-  def self.configured
-    @@configured
-  end
+      rails = defined?(::Rails)
 
-  def self.configured=(config_status)
-    @@configured = config_status
-  end
+      @root = rails ? ::Rails.root : Pathname.pwd
+      @cache_location = rails ? "tmp/#{Docks::CACHE_DIR}" : ".#{Docks::CACHE_DIR}"
 
-  def self.configure_with(options)
-    return unless options.kind_of?(Hash)
-    configure do |config|
-      options.each do |key, val|
-        key = "#{key}=".to_sym
-        config.send(key, val) if config.respond_to?(key)
+      # These options only apply for static site generation — Rails handles
+      # these details when it's being used
+      @library_assets = Docks::ASSETS_DIR
+      @destination = "public"
+
+      @mount_at = "pattern-library"
+    end
+
+    def make_path_absolute(path)
+      pathname = path.kind_of?(Pathname) ? path : Pathname.new(path)
+      if pathname.absolute?
+        pathname
+      else
+        @root + pathname
       end
     end
   end
 
+
+  @@configuration = Configuration.instance
+
+  def self.config
+    @@configuration
+  end
+
+  def self.configure_with(configurer)
+    if configurer.kind_of?(Hash)
+      configure do |config|
+        configurer.each do |key, val|
+          key = "#{key}=".to_sym
+          config.send(key, val) if config.respond_to?(key)
+        end
+      end
+
+      return
+    end
+
+    configurer = Dir[configurer].first
+
+    unless File.exists?(configurer)
+      Messenger.error("No configuration file could be found.")
+      exit
+    end
+
+    if File.extname(configurer) =~ /rb/
+      self.class_eval(File.read(configurer))
+    else
+      Languages.register_bundled_languages
+      language = Languages.language_for(configurer)
+      configure_with(language.load_stub(configurer)) unless language.nil?
+    end
+  end
+
   def self.configure
-    pre_configuration
+    pre_configuration unless @@configuration.configured
     yield @@configuration if block_given?
     post_configuration
   end
 
-  def self.pre_configuration
-    return if @@configured
+  private
 
-    Tag.register_bundled_tags
+  def self.pre_configuration
+    Tags.register_bundled_tags
     Process.register_bundled_post_processors
-    Language.register_bundled_languages
+    Languages.register_bundled_languages
   end
 
   def self.post_configuration
-    @@configured = true
-
-    rails = defined?(::Rails)
-
-    configuration.root ||= (rails ? ::Rails.root.to_s : Dir.pwd)
-    configuration.cache_dir ||= (rails ? File.join(configuration.root, "tmp", Docks::CACHE_DIR) : File.join(configuration.root, ".#{Docks::CACHE_DIR}"))
-
-    if configuration.src_files.kind_of?(Array) && !configuration.src_files.empty?
-      configuration.src_files.map! { |file| File.join(configuration.root, file) }
-      configuration.files = Docks::Group.group_files_by_type(configuration.src_files)
-    end
+    @@configuration.finalize
   end
 end

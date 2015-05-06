@@ -1,9 +1,11 @@
+require_relative "base_language.rb"
+require_relative "../parsers/scss_parser.rb"
+
 module Docks
   module Languages
     class SCSS < Base
       def self.type; Docks::Types::Languages::STYLE end
-      def self.parser; Docks::Parsers::SCSS end
-      def self.extensions; ["scss", "sass"] end
+      def self.extensions; "scss" end
 
       def friendly_presentation(symbol)
         symbol_type, name = symbol[:symbol_type], symbol[:name]
@@ -25,6 +27,8 @@ module Docks
           else name
         end
       end
+
+      def parser; Docks::Parsers::SCSS.instance end
 
       private
 

@@ -4,7 +4,7 @@ describe Docks::Parsers::Base do
   subject { Docks::Parsers::Base.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe "#parse_comment_block" do
@@ -24,6 +24,11 @@ describe Docks::Parsers::Base do
       param = "{String} name"
       result = subject.parse_comment_block("   @param #{param}")
       expect(result[:param]).to eq [[param]]
+    end
+
+    it "adds a result even when there is no text content following the tag" do
+      result = subject.parse_comment_block("  @class")
+      expect(result[:class]).to eq ""
     end
 
     it "appends a second line of a normal tag to the same result array" do

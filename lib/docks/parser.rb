@@ -28,23 +28,13 @@ module Docks
         # Do not process a file that is either a) does not have a supported extension
         # or b) does not exist
         next unless File.exists?(file)
-        next unless Docks::Language.is_supported_file_type?(file)
+        next unless Docks::Languages.supported_file?(file)
         next unless is_parseable_file?(file)
-        parsed_file_group[Docks::Language.file_type(file)].concat(parse_file(file))
+        parsed_file_group[Docks::Languages.file_type(file)].concat(parse_file(file))
       end
 
       fix_pattern_block(parsed_file_group)
       parsed_file_group
-    end
-
-
-
-    @@parsers = []
-
-    def self.register(parser, options)
-      return if !options[:extensions] && !options[:matches]
-      options[:matches] = /\.(#{[options[:extensions]].flatten.join("|")})$/ if options[:extensions]
-      @@parsers << { parser: parser, matcher: options[:matches] }
     end
 
     def self.is_parseable_file?(file)
@@ -58,7 +48,7 @@ module Docks
 
       return {} if Docks.current_parser.nil?
       result = Docks.current_parser.parse_comment_block(comment_block)
-      result = Docks::Tag.join_synonymous_tags(result)
+      result = Docks::Tags.join_synonymous_tags(result)
       result = Docks::Process.process(result)
       result = Docks::Process.post_process([results]).first if should_post_process
 
@@ -85,11 +75,8 @@ module Docks
     end
 
     def self.parser_for(file)
-      @@parsers.reverse_each do |parser_details|
-        return parser_details[:parser].instance if parser_details[:matcher] =~ file
-      end
-
-      nil
+      language = Docks::Languages.language_for(file)
+      language.nil? ? nil : language.parser
     end
 
 
@@ -113,7 +100,7 @@ module Docks
       parse_results = Docks.current_parser.parse(File.read(file).gsub(/\r\n?/, "\n"))
 
       parse_results.map! do |parse_result|
-        parse_result = Docks::Tag.join_synonymous_tags(parse_result)
+        parse_result = Docks::Tags.join_synonymous_tags(parse_result)
         Docks::Process.process(parse_result)
       end
 
@@ -128,7 +115,7 @@ module Docks
     def self.setup_current_details
       Docks.current_file = @@current_file
       Docks.current_parser = parser_for(@@current_file)
-      Docks.current_language = Docks::Language.language_for(@@current_file)
+      Docks.current_language = Docks::Languages.language_for(@@current_file)
     end
 
     def self.teardown_current_details

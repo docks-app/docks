@@ -9,6 +9,6 @@ require "spec_helper"
 #   end
 
 #   it "defaults the root path" do
-#     expect(Docks.configuration.root.join("fixtures/rails").to_s).to eq Rails.root.to_s
+#     expect(Docks.config.root.join("fixtures/rails").to_s).to eq Rails.root.to_s
 #   end
 # end

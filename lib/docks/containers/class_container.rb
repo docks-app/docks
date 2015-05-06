@@ -1,4 +1,4 @@
-require File.expand_path("../base_container.rb", __FILE__)
+require_relative "base_container.rb"
 
 module Docks
   module Containers
@@ -14,6 +14,26 @@ module Docks
       # Returns the type String.
 
       def self.type; Docks::Types::Symbol::CLASS end
+
+      def initialize(parse_result)
+        super(parse_result)
+
+        parse_result[:methods] ||= []
+        parse_result[:methods].map! { |method| Containers.container_for(method).new(method) }
+        parse_result[:properties] ||= []
+        parse_result[:properties].map! { |property| Containers.container_for(property).new(property) }
+      end
+
+      def methods; @item[:methods] end
+      def public_methods; methods.select { |meth| meth.public? } end
+      def private_methods; methods.select { |meth| meth.private? } end
+
+      def static_methods; methods.select { |meth| meth.static? } end
+      def instance_methods; methods.reject { |meth| meth.static? } end
+
+      def public_properties; properties.select { |prop| prop.public? } end
+      def private_properties; properties.select { |prop| prop.private? } end
+      def static_properties; properties.select { |prop| prop.static? } end
     end
   end
 end

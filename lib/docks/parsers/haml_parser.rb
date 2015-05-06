@@ -1,4 +1,4 @@
-require File.expand_path("../base_parser.rb", __FILE__)
+require_relative "base_parser.rb"
 
 module Docks
   module Parsers

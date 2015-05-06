@@ -1,4 +1,4 @@
-require File.expand_path("../base_container.rb", __FILE__)
+require_relative "base_container.rb"
 
 module Docks
   module Containers
@@ -31,6 +31,16 @@ module Docks
 
       def variations
         (states || []) + (variants || [])
+      end
+
+      # Public: returns an array of subcomponents for this component.
+
+      def subcomponents
+        (@item[:subcomponents] || [])
+      end
+
+      def included_symbols
+        (@item[:included_symbols] || [])
       end
     end
   end

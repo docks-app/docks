@@ -1,0 +1,14 @@
+{
+  "sources": [
+    "styles/**/*.scss",
+    "scripts/**/*.coffee"
+  ],
+  "destination": "pattern_library",
+  "templates": {
+    "default": "pattern_library_assets/templates/pattern.html.erb"
+  },
+  "include_assets": [
+    "public/styles/style.css",
+    "public/scripts/script.js"
+  ]
+}

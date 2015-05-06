@@ -1,7 +1,7 @@
 Docks.configure do |config|
   config.github_repo = "https://github.com/lemonmade/docks"
 
-  config.src_files = %w(
+  config.sources = %w(
     app/assets/stylesheets/**/*.scss
     app/assets/javascripts/**/*.coffee
   )

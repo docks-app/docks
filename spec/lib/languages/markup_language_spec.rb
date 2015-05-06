@@ -1,10 +1,10 @@
 require "spec_helper"
 
 class MarkupLanguageTester
-  include Docks::Languages::MarkupLanguage
+  include Docks::Languages::Common::Markup
 end
 
-describe Docks::Languages::MarkupLanguage do
+describe Docks::Languages::Common::Markup do
   subject { MarkupLanguageTester.new }
 
   let(:mixed_arguments) { ["hello", 10, false, :goodbye, { bar: "baz", "baz" => :qux }] }

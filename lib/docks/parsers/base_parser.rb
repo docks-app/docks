@@ -63,7 +63,7 @@ module Docks
       def parse_comment_block(comment_block, docs = {})
         # TODO: ensure that pluralized tags are handled first
         if @tag_pattern.nil?
-          supported_tags = Docks::Tag.supported_tags.sort! { |a, b| b.length <=> a.length }
+          supported_tags = Docks::Tags.supported_tags.sort! { |a, b| b.length <=> a.length }
           @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")}) ?)?(?<text>.*)/
         end
 
@@ -90,7 +90,7 @@ module Docks
           else
             # New tag declaration
             tag = tag.to_sym
-            tag_handler = Docks::Tag.tag_for(tag)
+            tag_handler = Docks::Tags.tag_for(tag)
             multiline = tag_handler.multiline?
             last_tag = multiline ? tag : nil
 

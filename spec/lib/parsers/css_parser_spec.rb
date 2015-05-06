@@ -4,7 +4,7 @@ describe Docks::Parsers::CSS do
   subject { Docks::Parsers::CSS.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "css_parser_fixture_basic.css")) }

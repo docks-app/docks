@@ -4,13 +4,13 @@ describe Docks::Process do
   subject { Docks::Process }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   describe ".process" do
     it "parses each tag individually" do
-      expect(subject).to receive(:process_tag).with(:pattern, "Page")
-      expect(subject).to receive(:process_tag).with(:subtitle, "Subtitle")
+      expect(subject).to receive(:process_tag).with(Docks::Tags::Pattern.instance, "Page")
+      expect(subject).to receive(:process_tag).with(Docks::Tags::Subtitle.instance, "Subtitle")
 
       subject.process({ pattern: "Page", subtitle: "Subtitle" })
     end

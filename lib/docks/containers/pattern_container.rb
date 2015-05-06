@@ -1,4 +1,4 @@
-require File.expand_path("../base_container.rb", __FILE__)
+require_relative "base_container.rb"
 
 module Docks
   module Containers
@@ -16,8 +16,10 @@ module Docks
 
       def self.type; Docks::Types::Symbol::PATTERN end
 
+
       attr_reader :demos, :modified, :name, :title, :files
       alias_method :demo, :demos
+
 
       # Public: initializes a new pattern. This includes setting up the `name`,
       # `title`, and `modified` instance variables, as well as setting the
@@ -40,6 +42,7 @@ module Docks
         build_demos
       end
 
+
       # Public: checks whether or not there are markup-related parse symbols.
       # Returns a boolean.
 
@@ -48,12 +51,14 @@ module Docks
         @parse_results[Docks::Types::Languages::STYLE].length > 0
       end
 
+
       # Public: checks whether or not there are script-related parse symbols.
       # Returns a boolean.
 
       def has_behavior?
         @parse_results[Docks::Types::Languages::SCRIPT].length > 0
       end
+
 
       # Public: retrieves all of the symbols of the passed type, optionally
       # filtered with the passed options Hash.
@@ -84,6 +89,7 @@ module Docks
         end
       end
 
+
       # For each top level symbol, this block creates a convenience method for
       # accessing parse results of that type. For example, retrieving all
       # component symbols is assigned to `#components`. As with
@@ -102,6 +108,7 @@ module Docks
         end
       end
 
+
       # Public: Retrieves the demo associated with the component of the passed
       # name, or nil if none exists.
       #
@@ -112,6 +119,7 @@ module Docks
       def demo_for(demo_name)
         @demos.select { |demo| demo.name == demo_name }.first
       end
+
 
       # All of this methods are overriden from their Base defaults because we
       # want to provide details for the whole pattern when prompted for these,
@@ -137,7 +145,22 @@ module Docks
             Docks::Containers.container_for(parse_result).new(parse_result)
           end
         end
+
+        components.each do |component|
+          component.subcomponents.map! do |subcomponent|
+            Docks::Containers::Component.new(subcomponent)
+          end
+
+          component.included_symbols.map! do |included_symbol|
+            if included_symbol.kind_of?(OpenStruct)
+              included_symbol
+            else
+              Docks::Containers::Component.new(included_symbol)
+            end
+          end
+        end
       end
+
 
       # Private: wraps a demo container around sets of components that indicate
       # that they should have an associated demo.
@@ -148,6 +171,10 @@ module Docks
         @demos = []
         components.each do |component|
           @demos << Demo.new(component) if component.has_demo?
+
+          component.variations.each do |variation|
+            @demos << Demo.new(variation) if variation.demo_type == Docks::Types::Demo::OWN
+          end
         end
       end
     end

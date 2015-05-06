@@ -8,7 +8,7 @@ describe Docks::Processors::CodeBlockWithLanguageAndDescription do
   let(:code) { [".foo {", "  content: 'bar';", "}"] }
 
   before :all do
-    Docks::Language.register_bundled_languages
+    Docks::Languages.register_bundled_languages
   end
 
   it "uses the passed language if one is provided" do

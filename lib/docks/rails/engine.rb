@@ -16,11 +16,11 @@ module Docks
     end
 
     def self.default_root_path(root)
-      Docks.configuration.root ||= root
+      Docks.config.root ||= root
     end
 
     def self.prepend_routes(app)
-      mount_at = Docks.configuration.mount_at
+      mount_at = "/#{Docks.config.mount_at.split("/", 2).last}"
       return if app.routes.recognize_path(mount_at)[:action] != "routing_error" rescue nil
 
       app.routes.prepend do

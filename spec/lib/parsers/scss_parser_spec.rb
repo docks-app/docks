@@ -4,7 +4,7 @@ describe Docks::Parsers::SCSS do
   subject { Docks::Parsers::SCSS.instance }
 
   before :all do
-    Docks::Tag.register_bundled_tags
+    Docks::Tags.register_bundled_tags
   end
 
   let(:basic_fixture) { File.read(File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "scss_parser_fixture_basic.scss")) }

@@ -9,35 +9,18 @@ module Docks
       FUNCTION    = "function"
       VARIABLE    = "variable"
       CLASS       = "class"
+      FACTORY     = "factory"
       PATTERN     = "pattern"
       DEMO        = "demo"
-    end
-
-    module Tag
-      ONE_PER_BLOCK      = :opb
-      ONE_PER_FILE       = :opf
-      MULTIPLE_PER_BLOCK = :mpb
-      MULTIPLE_PER_LINE  = :mpl
-    end
-
-    module Access
-      PUBLIC      = "public"
-      PRIVATE     = "private"
     end
 
     module Demo
       SELECT      = "select"
       JOINT       = "joint"
+      OWN         = "own"
       NONE        = "none"
-      DEFAULT     = NONE
-    end
-
-    module Languages
-      MARKUP      = :markup
-      SCRIPT      = :script
-      STYLE       = :style
-      STUB        = :stub
-      DESCRIPTION = :description
+      HIDDEN      = NONE
+      DEFAULT     = SELECT
     end
   end
 end

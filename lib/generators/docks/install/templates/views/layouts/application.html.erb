@@ -6,7 +6,7 @@
     <title>Pattern Library</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <%= stylesheet_link_tag "http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic" %>
-    <%= stylesheet_link_tag "docks" %>
+    <%= stylesheet_link_tag "pattern" %>
   </head>
 
 
@@ -79,12 +79,12 @@
               <div class="type-container">
                 <div class="grid grid--outside-spacing">
                   <%
-                    root = Docks.configuration.root
+                    root = Docks.config.root
                     files = @pattern.files.map { |file| file.sub(root, "") }
                   %>
                   <div class="grid__item">
                     <%
-                      github_url = Docks.configuration.github_repo.sub(/(.)\/?$/, '\1')
+                      github_url = Docks.config.github_repo.sub(/(.)\/?$/, '\1')
 
                       file_checklist = files.map { |file| "- [#{@pattern.files.length == 1 ? "x" : " "}] #{file}" }.join("\n")
                       message = "\n\n\n---\n\nThis issue is related to the following files:\n\n#{file_checklist}"
@@ -124,7 +124,7 @@
               </div>
 
               <div class="media__helpers--show-after-medium">
-                <%= render "symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
+                <%= render "docks/partials/symbol_meta", symbol: @pattern, details: pattern_details, subdue_dates: false %>
               </div>
             </div>
           </div>
@@ -141,6 +141,6 @@
       window.pattern = <%= CGI.unescapeHTML(@pattern.to_json).html_safe %>;
     <% end %>
 
-    <%= javascript_include_tag "docks" %>
+    <%= javascript_include_tag "pattern" %>
   </body>
 </html>

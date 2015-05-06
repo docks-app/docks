@@ -22,7 +22,7 @@ module Docks
       def self.post_process(parsed_file)
         parsed_file.each do |parse_result|
           parse_result.each do |key, value|
-            parse_result[key] = if key == :description
+            parse_result[key] = if key == :description && value.kind_of?(String)
               @@markdown.render(value.strip)
             else
               recursive_markdown_description(value)
