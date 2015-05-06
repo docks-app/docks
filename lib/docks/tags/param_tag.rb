@@ -16,7 +16,7 @@ module Docks
 
       def initialize
         @name = :param
-        @synonyms = [:arg, :argument]
+        @synonyms = [:arg, :argument, :parameter]
         @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
 
         @post_processors = [
@@ -37,8 +37,10 @@ module Docks
       # of multiple being allowed, the `types` are always returned as an
       # array, even if only one is provided.
       #
-      # 3. The `default` value of the parameter. This can be included by
-      # putting it a set of parentheses *after* the `name`.
+      # 3. Whether or not the parameter is `optional`. This is indicated by
+      # wrapping the name in square brackets. If there is a `default` value,
+      # this can be indicated by putting it after the name, within the square
+      # brackets, preceeded by an equal sign.
       #
       # 4. The `description`. This can be a single or multiline string,
       # starting on the line of the tag or the line after the tag, and
@@ -50,36 +52,48 @@ module Docks
       #
       # Examples
       #   Docks::Tags::Param.process(["{String} foo"])
-      #   # => { name: "foo", types: ["String"] }
+      #   # => { name: "foo", types: ["String"], optional: false }
       #
       #   Docks::Tags::Param.process(["{String | Array} bar - A cool param."])
-      #   # => { name: "bar", types: ["String", "Array"], description: "A cool param." }
+      #   # => { name: "bar", types: ["String", "Array"], description: "A cool param.", optional: false }
       #
-      #   Docks::Tags::Param.process(["{Object} baz ({}) - A multiline", "description."])
-      #   # => { name: "baz", types: ["Object"], default: "{}", description: "A multiline description." }
+      #   Docks::Tags::Param.process(["{Object} [baz]"])
+      #   # => { name: "baz", types: ["Object"], optional: true }
+      #
+      #   Docks::Tags::Param.process(["{Object} [baz = {}] - A multiline", "description."])
+      #   # => { name: "baz", types: ["Object"], optional: true, default: "{}", description: "A multiline description." }
       #
       # Returns a Hash representing the parsed param details.
 
       def process(content)
         Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          match = first_line.match(/(?:\s*\{(?<type>[^\}]*)\})?\s*(?<name>[a-zA-Z\-_0-9\$]*)(?:\s*\((?<paren>[^\)]*)\))?(?:\s*\-?\s*(?<description>.*))?/)
-          return nil if match.nil?
+          first_line = first_line.strip
 
-          description = match[:description]
-          main_result = {
-            name: match[:name],
-            types: Docks::Processors::BreakApartTypes.process(match[:type]),
-            description: description.nil? || description.length == 0 ? nil : match[:description]
-          }
+          result = Hash.new
 
-          paren_result = Docks::Processors::ParentheticalOptionsWithDefault.process(match[:paren], :default)
-          if paren_result.kind_of?(Hash)
-            main_result = paren_result.merge(main_result)
+          if type_match = first_line.match(/^\{([^\}]*)\}\s*/)
+            result[:types] = Docks::Processors::BreakApartTypes.process(type_match.captures.first)
+            first_line = first_line.sub(type_match.to_s, "")
           else
-            main_result[:default] = nil
+            result[:types] = Array.new
           end
 
-          main_result
+          name_match = first_line.match(/(?<optional>\[)?(?<name>[^\s=\]]*)[\s=\]]*/)
+          result[:optional] = !name_match[:optional].nil?
+          result[:name] = name_match[:name]
+          first_line = first_line.sub(name_match.to_s, "")
+
+          description_match = first_line.match(/\s*\-\s*(.*)/)
+          result[:description] = description_match.nil? ? nil : description_match.captures.first
+          first_line.sub!(description_match.to_s, "") unless description_match.nil?
+
+          default_match = first_line.match(/(.*)\]\s*/)
+          result[:default] = default_match.nil? ? nil : default_match.captures.first
+          first_line = first_line.sub(default_match.to_s, "") unless default_match.nil?
+
+          result[:description] = first_line if result[:description].nil? && !first_line.empty?
+
+          result
         end
       end
     end
