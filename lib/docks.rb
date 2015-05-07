@@ -9,8 +9,6 @@ require "redcarpet"
 require "active_support/inflector"
 
 module Docks
-  CACHE_DIR = "docks_cache"
-  GROUP_CACHE_FILE = "docks_cache_groups"
   ASSETS_DIR = "pattern_library_assets"
 end
 

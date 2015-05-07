@@ -1,4 +1,5 @@
 require_relative "languages.rb"
+require_relative "version.rb"
 
 module Docks
   class Cache
@@ -8,7 +9,9 @@ module Docks
       Docks::Types::Languages::SCRIPT
     ]
 
-    @@group_cache_file = nil
+    DIR = "docks_cache"
+    GROUP_FILE = "docks_cache_groups"
+    META_FILE = "docks_meta"
 
     def self.pattern_for(pattern)
       pattern = pattern.to_s
@@ -22,11 +25,10 @@ module Docks
     end
 
     def self.pattern_groups
-      @@group_cache_file = File.join(Docks.config.cache_location, Docks::GROUP_CACHE_FILE)
       patterns = {}
 
-      if File.exists?(@@group_cache_file)
-        YAML::load_file(@@group_cache_file).each_value do |details|
+      if File.exists?(group_cache_file)
+        YAML::load_file(group_cache_file).each_value do |details|
           group = details.delete(:group)
           patterns[group] ||= []
           patterns[group] << details
@@ -36,10 +38,14 @@ module Docks
       patterns
     end
 
+    def self.clear
+      FileUtils.rm_rf Dir[Docks.config.cache_location + "*"]
+    end
+
     def initialize
       FileUtils.mkdir_p(Docks.config.cache_location)
-      @@group_cache_file = File.join(Docks.config.cache_location, Docks::GROUP_CACHE_FILE)
-      @group_cache = File.exists?(@@group_cache_file) ? (YAML::load_file(@@group_cache_file) || Hash.new) : Hash.new
+      load_metadata
+      load_group_cache
     end
 
     def <<(parse_result)
@@ -56,15 +62,46 @@ module Docks
     end
 
     def dump
-      File.open(@@group_cache_file, "w") do |file|
+      File.open(self.class.group_cache_file, "w") do |file|
         file.write(@group_cache.to_yaml)
+      end
+
+      File.open(self.class.meta_file, "w") do |file|
+        file.write(@metadata.to_yaml)
       end
     end
 
     private
 
+    def self.group_cache_file
+      @@group_cache_file ||= File.join(Docks.config.cache_location, GROUP_FILE)
+    end
+
+    def self.meta_file
+      @@meta_file ||= File.join(Docks.config.cache_location, META_FILE)
+    end
+
     def pattern_is_valid?(parse_results)
-      !parse_results[:pattern].nil? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
+      !parse_results[:pattern].empty? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
+    end
+
+    def load_metadata
+      if File.exists?(self.class.meta_file)
+        @metadata = YAML::load_file(self.class.meta_file) || Hash.new
+      else
+        @metadata = Hash.new
+      end
+
+      self.class.clear if @metadata[:version] != VERSION
+      @metadata[:version] = VERSION
+    end
+
+    def load_group_cache
+      if File.exists?(self.class.group_cache_file)
+        @group_cache = YAML::load_file(self.class.group_cache_file) || Hash.new
+      else
+        @group_cache = Hash.new
+      end
     end
 
     def group_details(parse_results)

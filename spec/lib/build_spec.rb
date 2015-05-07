@@ -135,6 +135,11 @@ describe Docks::Builder do
       Docks.parse
     end
 
+    it "clears the cache if the clear_cache options is passed" do
+      expect(Docks::Cache).to receive(:clear)
+      Docks.parse(clear_cache: true)
+    end
+
     it "passes each group to Parser and the Cache" do
       groups = {
         foo: ["foo.scss", "foo.haml"],
@@ -247,7 +252,7 @@ describe Docks::Builder do
         pattern = { name: id }
 
         default_template = Docks::Templates.default_template
-        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout).and_return "application.erb"
+        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
 

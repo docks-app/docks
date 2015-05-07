@@ -7,7 +7,8 @@ module Docks
     #
     # Returns nothing.
 
-    def self.parse
+    def self.parse(options = {})
+      Cache.clear if options[:clear_cache]
       cache = Cache.new
 
       Group.group(Docks.config.sources).each do |group_identifier, group|
@@ -192,8 +193,8 @@ module Docks
 
   # See Docks::Builder.parse.
 
-  def self.parse
-    Builder.parse
+  def self.parse(options = {})
+    Builder.parse(options)
   end
 
   # See Docks::Builder.build.
