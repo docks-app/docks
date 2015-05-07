@@ -1,3 +1,5 @@
+require "set"
+
 module Docks
   class Builder
 
@@ -8,12 +10,15 @@ module Docks
     # Returns nothing.
 
     def self.parse(options = {})
-      Cache.clear if options[:clear_cache]
       cache = Cache.new
+      cache.clear if options[:clear_cache]
 
       Group.group(Docks.config.sources).each do |group_identifier, group|
         # this needs tests
-        next unless should_parse?(group)
+        unless should_parse?(group)
+          cache.no_update(group_identifier)
+          next
+        end
 
         parse_result = Parser.parse_group(group)
         parse_result[:modified] = most_recent_modified_date(group).to_s
@@ -53,6 +58,7 @@ module Docks
       end
 
       pattern_groups = Cache.pattern_groups
+      rendered_patterns = Set.new
       Messenger.file_header("Pages:")
       Group.group(Docks.config.sources).each do |id, group|
         begin
@@ -76,8 +82,16 @@ module Docks
           end
 
           Messenger.file(html_file, update ? :updated : :created)
+          rendered_patterns << pattern.name.to_sym
         rescue Docks::NoPatternError => e
         end
+      end
+
+      Dir[destination + mount_at + "*"].each do |pattern_dir|
+        next if rendered_patterns.include?(File.basename(pattern_dir).to_sym)
+        deleted_file = Dir[File.join(pattern_dir, "*")].first
+        FileUtils.rm_rf(pattern_dir)
+        Messenger.file(deleted_file, :deleted)
       end
     end
 

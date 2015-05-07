@@ -39,7 +39,7 @@ module Docks
 
     def run
       return init if arguments[0] == "init"
-      config = arguments[0] || "docks_config.*"
+      config = "docks_config.*"
       options = {
         clear_cache: false
       }

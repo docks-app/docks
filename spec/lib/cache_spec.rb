@@ -61,37 +61,35 @@ describe Docks::Cache do
 
   describe "#initialize" do
     it "leaves the cache alone when the last cache was on the same version" do
-      expect(described_class).to receive(:clear)
       subject << result
       subject.dump
 
-      expect(described_class).to_not receive(:clear)
+      expect_any_instance_of(described_class).to_not receive(:clear)
       second_instance = described_class.new
       second_instance << result
       second_instance.dump
     end
 
     it "clears the cache when a change of version happens" do
-      expect(described_class).to receive(:clear)
       subject << result
       subject.dump
 
       old_version = Docks.send(:remove_const, :VERSION)
       Docks.const_set(:VERSION, "#{old_version}.1")
 
-      expect(described_class).to receive(:clear)
+      expect_any_instance_of(described_class).to receive(:clear)
       second_instance = described_class.new
       second_instance << result
       second_instance.dump
     end
   end
 
-  describe ".clear" do
+  describe "#clear" do
     it "removes all cache files" do
       File.open(cache_file, "w") { |file| file.write("") }
 
       expect(Dir[Docks.config.cache_location + "*"]).to_not be_empty
-      described_class.clear
+      subject.clear
       expect(Dir[Docks.config.cache_location + "*"]).to be_empty
     end
   end
@@ -135,6 +133,27 @@ describe Docks::Cache do
       cached_groups = YAML::load_file(described_class.send(:group_cache_file))[example_file]
       expect(cached_groups[:group]).to eq Docks::Types::Symbol::COMPONENT.capitalize
       expect(cached_groups[:title]).to eq example_file.capitalize
+    end
+
+    it "removes any cache results that are no longer used" do
+      subject << result
+      subject.dump
+
+      second_instance = described_class.new
+      second_instance.dump
+
+      expect(File.exists?(cache_file)).to be false
+    end
+
+    it "doesn't remove cache results that simply had no updates" do
+      subject << result
+      subject.dump
+
+      second_instance = described_class.new
+      second_instance.no_update(result[:name])
+      second_instance.dump
+
+      expect(File.exists?(cache_file)).to be true
     end
   end
 end
