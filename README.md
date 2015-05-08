@@ -1,4 +1,4 @@
-# Docks
+# Docks [![Build Status](https://travis-ci.org/lemonmade/docks.svg?branch=master)](https://travis-ci.org/lemonmade/docks)
 
 Docks is for creating beautiful, live, styleguides.
 
