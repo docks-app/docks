@@ -86,6 +86,7 @@ describe Docks::Cache do
 
   describe "#clear" do
     it "removes all cache files" do
+      FileUtils.mkdir_p Docks.config.cache_location
       File.open(cache_file, "w") { |file| file.write("") }
 
       expect(Dir[Docks.config.cache_location + "*"]).to_not be_empty
