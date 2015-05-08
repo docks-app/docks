@@ -49,6 +49,7 @@ module Docks
     end
 
 
+
     public
 
     def initialize
