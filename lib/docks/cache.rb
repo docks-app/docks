@@ -100,7 +100,7 @@ module Docks
     private
 
     def pattern_is_valid?(parse_results)
-      !parse_results[:pattern].empty? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
+      !parse_results[:description].nil? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
     end
 
     def load_metadata
