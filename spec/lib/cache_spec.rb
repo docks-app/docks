@@ -6,7 +6,7 @@ describe Docks::Cache do
   subject { described_class.new }
 
   let(:result) do
-    parse_result = { name: example_file, now: Date.new.to_s, pattern: { foo: "Bar" } }
+    parse_result = { name: example_file, now: Date.new.to_s, pattern: { foo: "Bar", description: "foo" } }
     Docks::Cache::PARSE_RESULT_TYPES.each { |type| parse_result[type] = Array.new }
     parse_result
   end
