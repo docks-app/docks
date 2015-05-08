@@ -6,7 +6,7 @@ describe Docks::Cache do
   subject { described_class.new }
 
   let(:result) do
-    parse_result = { name: example_file, now: Date.new.to_s, pattern: { foo: "Bar" } }
+    parse_result = { name: example_file, now: Date.new.to_s, pattern: { foo: "Bar", description: "foo" } }
     Docks::Cache::PARSE_RESULT_TYPES.each { |type| parse_result[type] = Array.new }
     parse_result
   end
@@ -86,6 +86,7 @@ describe Docks::Cache do
 
   describe "#clear" do
     it "removes all cache files" do
+      FileUtils.mkdir_p Docks.config.cache_location
       File.open(cache_file, "w") { |file| file.write("") }
 
       expect(Dir[Docks.config.cache_location + "*"]).to_not be_empty
