@@ -1,7 +1,7 @@
 require "optparse"
 require "fileutils"
 require "ostruct"
-require File.join(File.dirname(__FILE__), "version.rb")
+require_relative "version.rb"
 
 module Docks
   class CommandLine
@@ -12,7 +12,12 @@ module Docks
     end
 
     def init
-      options = { config_type: "yaml", template_language: "erb", script_language: "javascript", style_preprocessor: "scss" }
+      options = {
+        config_type: "yaml",
+        template_language: "erb",
+        script_language: "javascript",
+        style_preprocessor: "scss"
+      }
 
       OptionParser.new do |opt|
         opt.banner = "Usage: docks init [options]"
@@ -34,21 +39,25 @@ module Docks
 
     def run
       return init if arguments[0] == "init"
-      config = arguments[0] || "docks_config.*"
+      config = "docks_config.*"
+      options = {
+        clear_cache: false
+      }
 
-      OptionParser.new do |option|
-        option.on_tail("-h", "--help", "Show this message again.") { puts option; exit }
-        option.on_tail("-v", "--version", "Show the version of docks that's running.") { puts "docks #{Docks::VERSION}"; exit }
-        option.on("--config FILE", "Path to the configuration file. If no such file is provided, it will default to 'docks_config.yml'.") { |config_file| config = config_file }
+      OptionParser.new do |opt|
+        opt.on("--config FILE", "Path to the configuration file. If no such file is provided, it will default to 'docks_config.yml'.") { |config_file| config = config_file }
+        opt.on("--clear-cache", "Discard the cache of previous parse results before running.") { |clear_cache| options[:clear_cache] = clear_cache }
+        opt.on_tail("-h", "--help", "Show this message again.") { puts opt; exit }
+        opt.on_tail("-v", "--version", "Show the version of docks that's running.") { puts "docks #{Docks::VERSION}"; exit }
 
         begin
-          option.parse!(arguments)
+          opt.parse!(arguments)
         rescue => e
         end
       end
 
       Docks.configure_with(config)
-      Docks.parse
+      Docks.parse(options)
       Docks.build
     end
   end

@@ -135,6 +135,11 @@ describe Docks::Builder do
       Docks.parse
     end
 
+    it "clears the cache if the clear_cache options is passed" do
+      expect_any_instance_of(Docks::Cache).to receive(:clear)
+      Docks.parse(clear_cache: true)
+    end
+
     it "passes each group to Parser and the Cache" do
       groups = {
         foo: ["foo.scss", "foo.haml"],
@@ -219,7 +224,7 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(group)
+        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
@@ -236,6 +241,48 @@ describe Docks::Builder do
       end
     end
 
+    # Gross test, must refactor
+    it "removes pattens that are no longer part of the pattern group" do
+      files = {}
+      expect(Docks::Group).to receive(:group).and_return(patterns)
+
+      patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+        renderer = double()
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(renderer).to receive(:helpers).and_return(group)
+        expect(renderer).to receive(:render).and_return(group)
+        files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+      end
+
+      subject.build
+
+      files = {}
+      excluded_pattern = patterns.keys.first
+      patterns.delete(excluded_pattern)
+      expect(Docks::Group).to receive(:group).and_return(patterns)
+
+      patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+        renderer = double()
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(renderer).to receive(:helpers).and_return(group)
+        expect(renderer).to receive(:render).and_return(group)
+        files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+      end
+
+      subject.build
+
+      files.each do |id, details|
+        expect(File.exists?(details[:file])).to be true
+        expect(File.read(details[:file]).strip).to eq details[:content]
+      end
+
+      expect(File.exists?(File.join(dest_dir, Docks.config.mount_at, excluded_pattern.to_s, "index.html"))).to be false
+    end
+
     it "provides the pattern and pattern group to every render call" do
       pattern_groups = {
         components: patterns.keys.map { |name| { name: name }  }
@@ -244,10 +291,10 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(patterns)
       expect(Docks::Cache).to receive(:pattern_groups).and_return(pattern_groups)
       patterns.each do |id, group|
-        pattern = { name: id }
+        pattern = OpenStruct.new(name: id)
 
         default_template = Docks::Templates.default_template
-        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout).and_return "application.erb"
+        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
 

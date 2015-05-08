@@ -37,7 +37,7 @@ describe Docks::Configuration do
     expect(subject.github_repo).to be nil
     expect(subject.root).to eq Pathname.pwd
     expect(subject.destination).to eq subject.root + "public"
-    expect(subject.cache_location).to eq subject.root + ".#{Docks::CACHE_DIR}"
+    expect(subject.cache_location).to eq subject.root + ".#{Docks::Cache::DIR}"
     expect(subject.library_assets).to eq subject.root + Docks::ASSETS_DIR
     expect(subject.mount_at).to eq "pattern-library"
   end
@@ -53,7 +53,7 @@ describe Docks::Configuration do
 
       expect(subject.root).to eq Pathname.new(test_dir_name).realpath
       expect(subject.destination).to eq subject.root + "public"
-      expect(subject.cache_location).to eq subject.root + ".#{Docks::CACHE_DIR}"
+      expect(subject.cache_location).to eq subject.root + ".#{Docks::Cache::DIR}"
       expect(subject.library_assets).to eq subject.root + Docks::ASSETS_DIR
       expect(subject.sources).to eq [subject.root + "styles/foo.css"]
 

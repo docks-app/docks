@@ -40,10 +40,11 @@ module Docks
       end
 
       file = file.to_s.sub((Docks.config.root || Pathname.pwd).to_s, "").sub(/^\//, "")
-      if action == :updated
-        puts "Updated #{file}"
-      elsif action == :created
-        succeed "Created #{file}"
+
+      case action
+      when :updated then puts "Updated #{file}"
+      when :created then puts green("Created #{file}")
+      when :deleted then puts red("Deleted #{file}")
       end
     end
 

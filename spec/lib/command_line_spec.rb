@@ -12,6 +12,24 @@ describe Docks::CommandLine do
       expect(cli).to receive(:init)
       cli.run
     end
+
+    it "runs the core parsing and building steps when the first argument isn't init" do
+      args = []
+      cli = subject.new(args)
+      expect(Docks).to receive(:configure_with)
+      expect(Docks).to receive(:parse)
+      expect(Docks).to receive(:build)
+      cli.run
+    end
+
+    it "passes the clear cache switch to Docks.parse" do
+      args = ["--clear-cache"]
+      cli = subject.new(args)
+      expect(Docks).to receive(:configure_with)
+      expect(Docks).to receive(:parse).with hash_including(clear_cache: true)
+      expect(Docks).to receive(:build)
+      cli.run
+    end
   end
 
   describe "#init" do

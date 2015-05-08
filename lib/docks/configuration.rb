@@ -1,6 +1,9 @@
 require "singleton"
 require "pathname"
 
+require_relative "cache.rb"
+require_relative "templates.rb"
+
 module Docks
   class Configuration
     include Singleton
@@ -111,7 +114,7 @@ module Docks
       rails = defined?(::Rails)
 
       @root = rails ? ::Rails.root : Pathname.pwd
-      @cache_location = rails ? "tmp/#{Docks::CACHE_DIR}" : ".#{Docks::CACHE_DIR}"
+      @cache_location = rails ? "tmp/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
 
       # These options only apply for static site generation — Rails handles
       # these details when it's being used
