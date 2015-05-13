@@ -82,7 +82,7 @@ module Docks
     # Returns a Template object.
 
     def self.template_for(id)
-      return demo_template if id.to_sym == :demo
+      return demo_template if id.to_sym == :demo_template
 
       @@templates.reverse_each do |template|
         return template if template.matches?(id)

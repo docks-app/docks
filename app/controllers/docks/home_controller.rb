@@ -22,7 +22,7 @@ module Docks
         render(nothing: true)
       else
         template = Docks.template_for(:demo)
-        render template.path
+        render template.path, locals: { demo: @demo }
       end
     end
   end
