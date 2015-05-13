@@ -34,7 +34,7 @@ describe Docks::Templates do
     end
 
     it "returns the demo template when the ID is :demo" do
-      expect(subject.template_for(:demo)).to eq subject.demo_template
+      expect(subject.template_for(:demo_template)).to eq subject.demo_template
     end
   end
 
