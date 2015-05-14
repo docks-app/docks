@@ -37,6 +37,18 @@ describe Docks::Parsers::ERB do
     end
   end
 
+  describe "#comment_pattern" do
+    it "trims leading spaces on a line" do
+      content = "  Foo bar"
+      expect(content.gsub(subject.comment_pattern, "")).to eq "Foo bar"
+    end
+
+    it "leaves empty lines intact" do
+      content = "Foo\n\n1. Bar\n\n2. Baz"
+      expect(content.gsub(subject.comment_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
+    end
+  end
+
   describe "#parse_result_details" do
     it "identifies a component with a single class" do
       target_name = "tab-list__tab"

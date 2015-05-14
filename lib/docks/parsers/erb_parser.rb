@@ -8,7 +8,7 @@ module Docks
         @comment_symbol = "<%#"
         @page_comment_extractor = /\s*<%#\*(.*@(?:page|pattern).*?)%>/m
         @comment_extractor = /(?:\s*<%#\*\n)(.*?)%>\s*([^\n]*)/m
-        @comment_pattern = /^\s?/m
+        @comment_pattern = /^ +/m
       end
 
 
