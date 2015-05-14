@@ -7,5 +7,4 @@ Here is the second paragraph.
 
 <p>Here is the end.</p>
 ```
-
 Here is the third paragraph.

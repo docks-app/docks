@@ -1,3 +1,0 @@
-This is a single paragraph. Because the first letter on
-the second line is not captailized, the paragraph is
-assumed to continue, despite the hard line breaks.

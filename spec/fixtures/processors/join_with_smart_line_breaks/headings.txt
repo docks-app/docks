@@ -1,0 +1,15 @@
+Foo
+===
+
+Bar
+---
+
+Here is some actual content.
+
+Sneaky paragraph one
+Heading
+=======
+### Header
+Subheader
+---------
+Sneaky paragraph two

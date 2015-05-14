@@ -1,4 +1,5 @@
 require "docks"
+require "awesome_print"
 
 Docks::Messenger.quiet
 
