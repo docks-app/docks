@@ -116,12 +116,14 @@ module Docks
       Docks.current_file = @@current_file
       Docks.current_parser = parser_for(@@current_file)
       Docks.current_language = Docks::Languages.language_for(@@current_file)
+      Docks.current_pattern = Group.group_identifier(@@current_file)
     end
 
     def self.teardown_current_details
       Docks.current_file = nil
       Docks.current_parser = nil
       Docks.current_language = nil
+      Docks.current_pattern = nil
     end
   end
 
@@ -131,4 +133,6 @@ module Docks
   def self.current_language=(language); @@current_language = language end
   def self.current_parser; @@current_parser end
   def self.current_parser=(parser); @@current_parser = parser end
+  def self.current_pattern; @@current_pattern end
+  def self.current_pattern=(pattern); @@current_pattern = pattern.to_s end
 end
