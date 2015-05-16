@@ -48,9 +48,9 @@ module Docks
         symbols.each do |symbol|
           next unless symbol[:description].nil?
 
-          regex = Regexp.new("^(?<heading>#+)\\s*#{Regexp.escape(symbol[:name])}\\s*$", Regexp::MULTILINE)
+          regex = Regexp.new("^(#+)\\s*#{Regexp.escape(symbol[:name])}\\s*$", Regexp::MULTILINE)
           if match = regex.match(description)
-            next_matched_heading = Regexp.new("^#\{1,#{match[:heading].length}} [^#]", Regexp::MULTILINE).match(description, match.offset(:heading)[1])
+            next_matched_heading = Regexp.new("^#\{1,#{match[1].length}} [^#]", Regexp::MULTILINE).match(description, match.offset(1)[1])
             next_matched_heading_position = next_matched_heading.nil? ? description.length : next_matched_heading.offset(0)[0] - 1
 
             description_range = match.offset(0)[1]..next_matched_heading_position
