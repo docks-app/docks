@@ -1,0 +1,11 @@
+This is the first paragraph.
+This is still the first paragraph, because no line break occurs between this
+and the previous line.
+
+This is the second paragraph - it also
+contains two lines.
+
+This is the third paragraph. It contains only a single line.
+
+This is the
+"fourth" paragraph.

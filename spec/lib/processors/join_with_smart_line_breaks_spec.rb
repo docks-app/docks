@@ -19,8 +19,8 @@ require "spec_helper"
 # //    calculation to determine necessary padding) should be done by passing the
 # //    same argument discussed above to the `font-size` *function*.
 
-def content_for_multiline_text_fixture(fixture)
-  file = File.join(File.dirname(__FILE__), "..", "..", "fixtures", "processors", "#{fixture}.txt")
+def content_for_fixture(fixture)
+  file = File.join(File.dirname(__FILE__), "..", "..", "fixtures", "processors", "join_with_smart_line_breaks", "#{fixture}.txt")
   File.read(file).split("\n")
 end
 
@@ -31,84 +31,88 @@ end
 describe Docks::Processors::JoinWithSmartLineBreaks do
   subject { Docks::Processors::JoinWithSmartLineBreaks }
 
-  it "correctly returns a non-array argument" do
+  it "returns a non-array argument" do
     non_array = "I'm not an array!"
     expect(subject.process(non_array)).to eq non_array
   end
 
-  it "correctly identifies paragraphs without joins" do
-    content = content_for_multiline_text_fixture(:multiline_text_without_joins)
-    paragraphs = paragraph_count(subject.process(content))
-    expect(paragraphs).to eq 1
-  end
-
-  it "correctly identifies paragraphs with joins" do
-    content = content_for_multiline_text_fixture(:multiline_text_with_joins)
-    paragraphs = paragraph_count(subject.process(content))
-    expect(paragraphs).to eq 2
-  end
-
-  it "correctly identifies paragraphs with mixed joins" do
-    content = content_for_multiline_text_fixture(:multiline_text_with_mixed_joins)
-    paragraphs = paragraph_count(subject.process(content))
-    expect(paragraphs).to eq 4
-  end
-
-  it "correctly identifies paragraphs with leading uncapitalized letters" do
-    content = content_for_multiline_text_fixture(:multiline_text_with_uncapitalized_paragraph)
-    paragraphs = paragraph_count(subject.process(content))
-    expect(paragraphs).to eq 2
-  end
-
-  it "correctly identifies paragraphs with indented lists" do
-    content = content_for_multiline_text_fixture(:multiline_text_with_indented_lists)
-    paragraphs = paragraph_count(subject.process(content))
-    expect(paragraphs).to eq 4
-  end
-
-  it "correctly returns nil for an empty array" do
+  it "returns nil for an empty array" do
     expect(subject.process([])).to be nil
   end
 
-  it "correctly returns nil for an array containing only whitespace strings" do
+  it "returns nil for an array containing only whitespace strings" do
     expect(subject.process([" "])).to be nil
     expect(subject.process([" ", "   "])).to be nil
   end
 
+  it "identifies paragraphs as any block of text separated by at least one newline" do
+    content = subject.process(content_for_fixture(:multiple_paragraphs))
+    expect(paragraph_count(content)).to eq 4
+  end
 
-  describe "fenced code blocks" do
-    let(:text) do
-      content = content_for_multiline_text_fixture(:multiline_text_with_code_block)
-      subject.process(content)
+  context "when there are lists" do
+    let(:content) { subject.process(content_for_fixture(:lists)) }
+
+    it "separates lists by a single newline even when they are directly beside each other" do
+      expect(paragraph_count(content)).to eq 9
+    end
+
+    context "when there are nested items" do
+      let(:content) { subject.process(content_for_fixture(:lists_with_nesting)) }
+
+      it "puts nested lists directly following one another on their own lines" do
+        content.sub!(/```[^`]*```\s*/, "")
+        expect(paragraph_count(content)).to eq 6
+      end
+
+      it "preserves indentation nested under lists" do
+        expect(content).to match /\n\n\s\sindented paragraph/i
+      end
+
+      it "preserves nested code block indentation" do
+        expect(content).to match /\n\n\s\s```/
+      end
+
+      it "preserves nested list indentation" do
+        expect(content).to match /\n\n\s\s\* items/i
+      end
+    end
+  end
+
+  context "when there are headers" do
+    let(:content) { subject.process(content_for_fixture(:headings)) }
+
+    it "puts a newline between the header and its underline" do
+      expect(content).to match /foo\n===/i
+      expect(content).to match /bar\n---/i
+    end
+
+    it "separates paragraphs from immediately preceeding and following contents" do
+      content.gsub!(/\n[=\-]+\n/, "")
+      expect(paragraph_count(content)).to eq 8
+    end
+  end
+
+  context "when there are fenced code blocks" do
+    let(:content) do
+      subject.process(content_for_fixture(:code_blocks))
     end
 
     let(:code_block) do
-      first_code_fence_index = text.index("```")
-      second_code_fence_index = text.index("```", first_code_fence_index + 1) + 2
+      first_code_fence_index = content.index("```")
+      second_code_fence_index = content.index("```", first_code_fence_index + 1) + 2
 
-      text[first_code_fence_index..second_code_fence_index]
+      content[first_code_fence_index..second_code_fence_index]
     end
 
-    it "correctly creates only a single line break between fenced code blocks" do
+    it "creates only a single line break between fenced code blocks" do
       expect(code_block.split("\n").length).to eq 5
     end
 
-    it "correctly creates paragraphs with an embedded fenced code block" do
-      text.sub!(code_block, "")
-      paragraphs = paragraph_count(text)
+    it "creates paragraphs when a code block is followed immediately by a paragraph" do
+      content.sub!(code_block, "")
+      paragraphs = paragraph_count(content)
       expect(paragraphs).to eq 3
-    end
-
-    it "correctly creates paragraphs when a code block is followed by an uncapitalized paragraph" do
-      content = content_for_multiline_text_fixture(:multiline_text_with_code_block_and_trailing_uncapitalized_paragraph)
-      content = subject.process(content)
-      content.sub!(/```[^`]*```/, "")
-      paragraphs = paragraph_count(subject.process(content))
-      expect(paragraphs).to eq 3
-    end
-
-    it "handles numbered lists" do
-      content = []
     end
   end
 end

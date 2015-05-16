@@ -52,6 +52,11 @@ describe Docks::Parsers::CoffeeScript do
     it "strips line complex comments" do
       expect("# #{complex_comment}".gsub(subject.comment_pattern, "")).to eq complex_comment
     end
+
+    it "leaves empty lines intact" do
+      content = "# Foo\n#\n# 1. Bar\n\n# 2. Baz"
+      expect(content.gsub(subject.comment_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
+    end
   end
 
   describe "#parse_result_details" do

@@ -85,5 +85,11 @@ describe Docks::Parsers::Base do
       result = subject.parse_comment_block("@pattern   #{pattern}")
       expect(result[:pattern]).to eq "  #{pattern}"
     end
+
+    it "preserves newlines in multiline tags" do
+      description = "This is\na description"
+      result = subject.parse_comment_block(description)
+      expect(result[:description].join("\n")).to eq description
+    end
   end
 end
