@@ -11,6 +11,12 @@ module Docks
     # container and the result will be returned as expected.
 
     class Base
+      # Public: creates a summary of a symbol.
+
+      def self.summarize(symbol_hash)
+        Summary.new(symbol_hash)
+      end
+
       # Public: initializes a new container.
 
       def initialize(item)
@@ -72,6 +78,25 @@ module Docks
 
       def method_missing(meth)
         @item[Docks::Tags.base_tag_name(meth)] rescue nil
+      end
+
+
+      # Public: a summary of a symbol, used for storing a lightweight cache
+      # of the details of the entire pattern library.
+
+      class Summary
+        def initialize(symbol_hash)
+          @details = {
+            name: symbol_hash[:name],
+            symbol_type: symbol_hash[:symbol_type]
+          }
+        end
+
+        def name; @details[:name] end
+        def symbol_type; @details[:symbol_type] end
+
+        def to_yaml; @details.to_yaml end
+        def to_json; @details.to_json end
       end
     end
   end

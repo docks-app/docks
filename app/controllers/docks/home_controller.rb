@@ -10,7 +10,7 @@ module Docks
 
       pattern = Group.group_identifier(params[:pattern])
       @pattern = Cache.pattern_for(pattern)
-      @pattern_groups = Cache.pattern_groups
+      @pattern_library = Cache.pattern_library
 
       template = Docks.template_for(pattern)
       render template.path

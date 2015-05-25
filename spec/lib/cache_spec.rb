@@ -6,31 +6,37 @@ describe Docks::Cache do
   subject { described_class.new }
 
   let(:result) do
-    parse_result = { name: example_file, now: Date.new.to_s, pattern: { foo: "Bar", description: "foo" } }
-    Docks::Cache::PARSE_RESULT_TYPES.each { |type| parse_result[type] = Array.new }
+    parse_result = {
+      name: example_file,
+      now: Date.new.to_s,
+      pattern: { foo: "Bar", description: "foo" }
+    }
+
+    described_class::PARSE_RESULT_TYPES.each { |type| parse_result[type] = Array.new }
     parse_result
   end
 
-  let(:cache_file) { File.expand_path(example_file, Docks.config.cache_location) }
+  let(:root) {
+    File.expand_path("../../fixtures/cache", __FILE__)
+  }
 
-  before :each do
+  let(:cache_file) {
+    File.expand_path(example_file, Docks.config.cache_location)
+  }
+
+  around do |example|
+
     Docks.configure do |config|
-      config.root = File.expand_path("../../fixtures/cache", __FILE__)
+      config.root = root
     end
-  end
 
-  after :each do
-    FileUtils.rm_rf(Dir[Docks.config.cache_location + "*"])
-  end
+    example.run
 
-  after :all do
-    FileUtils.rm_rf(Docks.config.cache_location)
+    FileUtils.rm_rf(root)
   end
 
   describe ".pattern_for" do
     it "sends the cached parse results back when it exists" do
-      expect(subject).to receive(:group_details).and_return Hash.new
-
       subject << result
 
       pattern = Hash.new
@@ -41,21 +47,6 @@ describe Docks::Cache do
 
     it "throws an error when no such pattern exists" do
       expect { described_class.pattern_for("foo") }.to raise_error Docks::NoPatternError
-    end
-  end
-
-  describe ".pattern_groups" do
-    it "returns a list of pattern details, grouped by their group attribute" do
-      subject << result
-      subject.dump
-
-      details = YAML::load_file(described_class.send(:group_cache_file))[example_file]
-      group = details.delete(:group)
-
-      pattern_groups = described_class.pattern_groups
-      expect(pattern_groups).to be_a Hash
-      expect(pattern_groups[group]).to be_an Array
-      expect(pattern_groups[group]).to include details
     end
   end
 
@@ -97,9 +88,8 @@ describe Docks::Cache do
 
   describe "#<<" do
     it "writes the contents of a parse result to the corresponding cache file" do
-      expect(subject).to receive(:group_details).and_return Hash.new
       subject << result
-      expect(YAML::load_file(cache_file)).to eq result
+      expect(Marshal::load(File.read(cache_file))).to eq result
     end
 
     it "doesn't cache a file that has no parse results" do
@@ -108,32 +98,21 @@ describe Docks::Cache do
       subject << result
       expect(File.exists?(cache_file)).to be false
       subject.dump
-      expect(YAML::load_file(described_class.send(:group_cache_file))[example_file]).to be nil
+      expect(described_class.pattern_library[example_file]).to be nil
     end
   end
 
   describe "#dump" do
-    it "collects the parse result details for each result added to the cache" do
-      expect(subject).to receive(:group_details).with(result).and_return Hash.new
+    it "collects the sumarized symbol details for each result added to the cache" do
+      expect(Docks::Containers::Pattern).to receive(:summarize).with(result).and_call_original
       subject << result
     end
 
     it "dumps the parse result details" do
-      details = { name: example_file, title: example_file.capitalize, group: "Component" }
-      expect(subject).to receive(:group_details).with(result).and_return details
       subject << result
       subject.dump
 
-      expect(YAML::load_file(described_class.send(:group_cache_file))[example_file]).to eq details
-    end
-
-    it "provides sensible group details" do
-      subject << result
-      subject.dump
-
-      cached_groups = YAML::load_file(described_class.send(:group_cache_file))[example_file]
-      expect(cached_groups[:group]).to eq Docks::Types::Symbol::COMPONENT.capitalize
-      expect(cached_groups[:title]).to eq example_file.capitalize
+      expect(described_class.pattern_library[example_file]).to eq Docks::Containers::Pattern.summarize(result)
     end
 
     it "removes any cache results that are no longer used" do
