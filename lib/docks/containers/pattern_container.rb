@@ -213,6 +213,12 @@ module Docks
           }
         end
 
+        def find(descriptor)
+          descriptor = Naming.parse_descriptor(descriptor)
+          return if descriptor[:symbol].nil?
+          @details[:symbols][descriptor[:symbol]]
+        end
+
         def ==(other_pattern)
           return false unless other_pattern.class == self.class
           @details == other_pattern.instance_variable_get(:@details)

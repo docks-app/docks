@@ -42,6 +42,21 @@ module Docks
       def groups(&block)
         group_by(:group, &block)
       end
+
+      def find(descriptor)
+        descriptor = Naming.parse_descriptor(descriptor)
+
+        pattern_name = descriptor[:pattern]
+        pattern_name = descriptor.delete(:symbol) if pattern_name.nil?
+        return if pattern_name.nil?
+
+        pattern = @patterns[pattern_name]
+        return if pattern.nil?
+
+        symbol = pattern.find(descriptor)
+
+        OpenStruct.new(pattern: pattern, id: symbol.nil? ? "" : symbol.symbol_id)
+      end
     end
   end
 end

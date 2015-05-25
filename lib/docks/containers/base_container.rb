@@ -92,8 +92,13 @@ module Docks
           }
         end
 
-        def name; @details[:name] end
-        def symbol_type; @details[:symbol_type] end
+        def method_missing(sym)
+          @details[sym] || super
+        end
+
+        def symbol_id
+          "#{@details[:symbol_type]}-#{@details[:name]}"
+        end
 
         def to_yaml; @details.to_yaml end
         def to_json; @details.to_json end
