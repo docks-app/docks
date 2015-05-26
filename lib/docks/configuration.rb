@@ -181,6 +181,7 @@ module Docks
     Tags.register_bundled_tags
     Process.register_bundled_post_processors
     Languages.register_bundled_languages
+    SymbolSources.register_bundled_symbol_sources
   end
 
   def self.post_configuration
