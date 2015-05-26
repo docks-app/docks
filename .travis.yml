@@ -6,3 +6,5 @@ rvm:
   - 2.2
   - rbx-2
   - ruby-head
+notifications:
+  slack: lemon:SeSji4OVQ1qGtQ2Gg2iTLCge
