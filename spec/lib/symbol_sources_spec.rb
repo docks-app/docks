@@ -46,11 +46,22 @@ describe Docks::SymbolSources::MDN do
       expect(subject.recognizes?("Iterator")).to be true
       expect(subject.recognizes?("Set")).to be true
     end
+
+    it "identifies a symbol that is a web API object" do
+      expect(subject.recognizes?("HTMLElement")).to be true
+      expect(subject.recognizes?("htmlelement")).to be true
+      expect(subject.recognizes?("Blob")).to be true
+      expect(subject.recognizes?("NodeList")).to be true
+    end
   end
 
   describe "#path_for" do
     it "creates a path to the MDN reference for a global object" do
       expect(subject.path_for("Object")).to eq "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object"
+    end
+
+    it "creates a path to the MDN reference for a web API object" do
+      expect(subject.path_for("NodeList")).to eq "https://developer.mozilla.org/docs/Web/API/NodeList"
     end
   end
 end
