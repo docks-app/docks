@@ -58,6 +58,10 @@ module Docks
 
     def special_description_render(description)
       @example_count ||= 0
+      description.gsub! /href\s*=\s*['"]@link\s([^'"]*)/ do |match|
+        "href='#{docks_path_to($1)}'"
+      end
+
       render(inline: description.gsub(/<fenced_code_block[^>]*>(.*?)<\/fenced_code_block>/m) { |match|
         @example_count += 1
         code = $1.dup
@@ -76,6 +80,24 @@ module Docks
                          id: "code-block--example-#{@example_count}",
                          demo?: has_demo
       }).html_safe
+    end
+
+    def docks_path_to(symbol)
+      @path_cache ||= {}
+
+      return @path_cache[symbol] unless @path_cache[symbol].nil?
+
+      if search_result = @pattern_library.find(symbol)
+        @path_cache[symbol] = docks.pattern_path(search_result.pattern.name, anchor: search_result.id)
+      elsif path = DOcks::SymbolSources.path_for(symbol)
+        @path_cache[symbol] = path
+      end
+
+      if path = @path_cache[symbol]
+        path
+      else
+        raise ArgumentError, "No valid symbol sources were found for '#{descriptor}'"
+      end
     end
 
     def docks_icons
