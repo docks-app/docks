@@ -1,9 +1,12 @@
 require "docks"
 require "awesome_print"
+require "rspec-html-matchers"
 
 Docks::Messenger.quiet
 
 RSpec.configure do |config|
+  config.include RSpecHtmlMatchers
+
   # config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
 

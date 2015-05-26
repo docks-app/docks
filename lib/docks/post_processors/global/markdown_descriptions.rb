@@ -9,9 +9,10 @@ module Docks
           "<fenced_code_block #{"data-has-demo='true'" unless (language =~ /demo/).nil?} data-language='#{language.sub(/_?demo/, "")}'>#{code}</fenced_code_block>"
         end
 
-        def header(text, header_level)
-          header_level = [header_level + 4, 6].min
-          "<h#{header_level}>#{text}</h#{header_level}>"
+        def link(href, title, content)
+          href = "@link #{content.gsub(/<[^>]*>/, "").strip}" if href.strip == "@link"
+          content = "<span>#{content}</span>" unless content.strip.start_with?("<")
+          "<a href=\"#{href}\"#{" title=\"#{title}\"" unless title.nil?}>#{content}</a>"
         end
       end
 

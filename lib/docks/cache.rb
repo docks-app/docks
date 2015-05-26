@@ -22,12 +22,12 @@ module Docks
         raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
       end
 
-      Docks::Containers::Pattern.new(Marshal::load(File.read(cache_file)))
+      Docks::Containers::Pattern.new(Marshal::load(File.binread(cache_file)))
     end
 
     def self.pattern_library
       if File.exists?(pattern_library_cache_file)
-        Marshal::load(File.read(pattern_library_cache_file)) || Containers::PatternLibrary.new
+        Marshal::load(File.binread(pattern_library_cache_file)) || Containers::PatternLibrary.new
       else
         Containers::PatternLibrary.new
       end
@@ -63,7 +63,7 @@ module Docks
 
       id = pattern_summary.name.to_s
 
-      File.open(Docks.config.cache_location + id, 'w') do |file|
+      File.open(Docks.config.cache_location + id, "wb") do |file|
         file.write Marshal::dump(pattern_hash)
       end
 
@@ -79,11 +79,11 @@ module Docks
 
 
     def dump
-      File.open(self.class.pattern_library_cache_file, "w") do |file|
+      File.open(self.class.pattern_library_cache_file, "wb") do |file|
         file.write Marshal::dump(@pattern_library)
       end
 
-      File.open(self.class.meta_file, "w") do |file|
+      File.open(self.class.meta_file, "wb") do |file|
         file.write Marshal::dump(@metadata)
       end
 
@@ -100,7 +100,7 @@ module Docks
       patterns = {}
 
       return unless File.exists?(group_cache_file)
-      pattern_cache = Marshal::load(File.read(group_cache_file))
+      pattern_cache = Marshal::load(File.binread(group_cache_file))
 
       if block_given?
         pattern_cache.each_value(&block)
@@ -111,7 +111,7 @@ module Docks
 
     def load_metadata
       if File.exists?(self.class.meta_file)
-        @metadata = Marshal::load(File.read(self.class.meta_file)) || Hash.new
+        @metadata = Marshal::load(File.binread(self.class.meta_file)) || Hash.new
       else
         @metadata = Hash.new
       end
