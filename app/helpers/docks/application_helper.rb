@@ -87,16 +87,18 @@ module Docks
 
       return @path_cache[symbol] unless @path_cache[symbol].nil?
 
-      if search_result = @pattern_library.find(symbol)
-        @path_cache[symbol] = docks.pattern_path(search_result.pattern.name, anchor: search_result.id)
-      elsif path = DOcks::SymbolSources.path_for(symbol)
+      if search_result = @pattern.find(symbol)
+        @path_cache[symbol] = "##{search_result.symbol_id}"
+      elsif search_result = @pattern_library.find(symbol)
+        @path_cache[symbol] = docks.pattern_path(search_result.pattern.name, anchor: search_result.symbol.try(:symbol_id))
+      elsif path = Docks::SymbolSources.path_for(symbol)
         @path_cache[symbol] = path
       end
 
       if path = @path_cache[symbol]
         path
       else
-        raise ArgumentError, "No valid symbol sources were found for '#{descriptor}'"
+        raise ArgumentError, "No valid symbol sources were found for '#{symbol}'"
       end
     end
 

@@ -135,6 +135,19 @@ module Docks
       def inspect; to_s end
       def to_json(options = nil); @parse_results.to_json(options) end
 
+      def find(descriptor)
+        descriptor = Naming.parse_descriptor(descriptor)
+        return unless symbol = descriptor[:symbol]
+
+        Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
+          @parse_results[parse_result_type].each do |parse_result|
+            return parse_result if parse_result.name == symbol
+          end
+        end
+
+        nil
+      end
+
 
 
       private

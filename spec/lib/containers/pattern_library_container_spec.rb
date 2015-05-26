@@ -48,11 +48,11 @@ describe Docks::Containers::PatternLibrary do
     end
 
     it "finds a pattern with a name matching the passed descriptor" do
-      expect(subject.find(pattern_two.name)).to eq OpenStruct.new(pattern: pattern_two, id: "")
+      expect(subject.find(pattern_two.name)).to eq OpenStruct.new(pattern: pattern_two, symbol: nil)
     end
 
     it "finds a pattern with a contained symbol" do
-      expect(subject.find("#{pattern_two.name}::CodeBlock")).to eq OpenStruct.new(pattern: pattern_two, id: pattern_two.symbols["CodeBlock"].symbol_id)
+      expect(subject.find("#{pattern_two.name}::CodeBlock")).to eq OpenStruct.new(pattern: pattern_two, symbol: pattern_two.symbols["CodeBlock"])
     end
   end
 end

@@ -17,6 +17,8 @@ module Docks
         Summary.new(symbol_hash)
       end
 
+      def self.type; "symbol" end
+
       # Public: initializes a new container.
 
       def initialize(item)
@@ -66,6 +68,14 @@ module Docks
         @item.each(&block)
       end
 
+      def symbol_id
+        "#{self.class.type}-#{name}"
+      end
+
+      def ==(other_container)
+        self.class == other_container.class && @item == other_container.instance_variable_get(:@item)
+      end
+
       # Public: forwards any missing methods to the encapsulated details.
       # Before doing so, the container will get the default tag name for the
       # missing method and use that to access the relevant item from the
@@ -100,7 +110,6 @@ module Docks
           "#{@details[:symbol_type]}-#{@details[:name]}"
         end
 
-        def to_yaml; @details.to_yaml end
         def to_json; @details.to_json end
       end
     end

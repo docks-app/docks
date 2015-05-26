@@ -54,8 +54,7 @@ module Docks
         return if pattern.nil?
 
         symbol = pattern.find(descriptor)
-
-        OpenStruct.new(pattern: pattern, id: symbol.nil? ? "" : symbol.symbol_id)
+        OpenStruct.new(pattern: pattern, symbol: symbol)
       end
     end
   end
