@@ -57,7 +57,7 @@ module Docks
         Messenger.file(copied_file.to_s.gsub(Docks.config.destination.dirname.to_s, "").sub(/^\//, ""), update ? :updated : :created)
       end
 
-      pattern_groups = Cache.pattern_groups
+      pattern_library = Cache.pattern_library
       rendered_patterns = Set.new
       Messenger.file_header("Pages:")
       Group.group(Docks.config.sources).each do |id, group|
@@ -78,7 +78,7 @@ module Docks
           FileUtils.mkdir_p(dir)
 
           File.open(html_file, "w") do |file|
-            file.write renderer.render(template: template, layout: layout, locals: { pattern: pattern, pattern_groups: pattern_groups })
+            file.write renderer.render(template: template, layout: layout, locals: { pattern: pattern, pattern_library: pattern_library })
           end
 
           Messenger.file(html_file, update ? :updated : :created)

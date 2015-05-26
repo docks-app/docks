@@ -1,5 +1,6 @@
 require_relative "languages.rb"
 require_relative "version.rb"
+# require_relative "helpers/url_helper.rb"
 
 module Docks
   class Cache
@@ -10,8 +11,8 @@ module Docks
     ]
 
     DIR = "docks_cache"
-    GROUP_FILE = "docks_cache_groups"
     META_FILE = "docks_meta"
+    PATTERN_LIBRARY_FILE = "docks_pattern_library"
 
     def self.pattern_for(pattern)
       pattern = pattern.to_s
@@ -21,31 +22,25 @@ module Docks
         raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
       end
 
-      Docks::Containers::Pattern.new(YAML::load_file(cache_file))
+      Docks::Containers::Pattern.new(Marshal::load(File.binread(cache_file)))
     end
 
-    def self.pattern_groups
-      patterns = {}
-
-      if File.exists?(group_cache_file)
-        YAML::load_file(group_cache_file).each_value do |details|
-          group = details.delete(:group)
-          patterns[group] ||= []
-          patterns[group] << details
-        end
+    def self.pattern_library
+      if File.exists?(pattern_library_cache_file)
+        Marshal::load(File.binread(pattern_library_cache_file)) || Containers::PatternLibrary.new
+      else
+        Containers::PatternLibrary.new
       end
-
-      patterns
     end
 
     private
 
-    def self.group_cache_file
-      File.join(Docks.config.cache_location, GROUP_FILE)
+    def self.pattern_library_cache_file
+      Docks.config.cache_location + PATTERN_LIBRARY_FILE
     end
 
     def self.meta_file
-      File.join(Docks.config.cache_location, META_FILE)
+      Docks.config.cache_location + META_FILE
     end
 
 
@@ -55,57 +50,68 @@ module Docks
     def initialize
       FileUtils.mkdir_p(Docks.config.cache_location)
       load_metadata
-      load_group_cache
+      load_pattern_library
     end
 
     def clear
       FileUtils.rm_rf Dir[Docks.config.cache_location + "*"]
     end
 
-    def <<(parse_result)
-      return unless pattern_is_valid?(parse_result)
+    def <<(pattern_hash)
+      pattern_summary = Containers::Pattern.summarize(pattern_hash)
+      return unless pattern_summary.is_valid?
 
-      id = parse_result[:name].to_s
+      id = pattern_summary.name.to_s
 
-      File.open(Docks.config.cache_location + id, 'w') do |file|
-        file.write(parse_result.to_yaml)
+      File.open(Docks.config.cache_location + id, "wb") do |file|
+        file.write Marshal::dump(pattern_hash)
       end
 
-      @new_group_cache[id] = group_details(parse_result)
+      @pattern_library << pattern_summary
     end
 
     # When a pattern exists but did not need to be re-parsed, this needs to
     # be communicated so that we can keep track of what patterns still exist.
     def no_update(id)
       id = id.to_s
-      @new_group_cache[id] = @old_group_cache[id]
+      @pattern_library << @old_pattern_library[id]
     end
 
 
     def dump
-      File.open(self.class.group_cache_file, "w") do |file|
-        file.write(@new_group_cache.to_yaml)
+      File.open(self.class.pattern_library_cache_file, "wb") do |file|
+        file.write Marshal::dump(@pattern_library)
       end
 
-      File.open(self.class.meta_file, "w") do |file|
-        file.write(@metadata.to_yaml)
+      File.open(self.class.meta_file, "wb") do |file|
+        file.write Marshal::dump(@metadata)
       end
 
       # Clear out anything that didn't get written to the new cache
-      @old_group_cache.keys.each do |id|
-        FileUtils.rm_rf(Docks.config.cache_location + id.to_s) if @new_group_cache[id].nil?
+      @old_pattern_library.patterns.each do |name, pattern|
+        id = name.to_s
+        FileUtils.rm_rf(Docks.config.cache_location + id) unless @pattern_library.has_pattern?(id)
       end
     end
 
     private
 
-    def pattern_is_valid?(parse_results)
-      !parse_results[:pattern][:description].nil? || PARSE_RESULT_TYPES.any? { |parse_result_type| !parse_results[parse_result_type].empty? }
+    def self.load_pattern_cache(&block)
+      patterns = {}
+
+      return unless File.exists?(group_cache_file)
+      pattern_cache = Marshal::load(File.binread(group_cache_file))
+
+      if block_given?
+        pattern_cache.each_value(&block)
+      end
+
+      nil
     end
 
     def load_metadata
       if File.exists?(self.class.meta_file)
-        @metadata = YAML::load_file(self.class.meta_file) || Hash.new
+        @metadata = Marshal::load(File.binread(self.class.meta_file)) || Hash.new
       else
         @metadata = Hash.new
       end
@@ -114,25 +120,9 @@ module Docks
       @metadata[:version] = VERSION
     end
 
-    def load_group_cache
-      if File.exists?(self.class.group_cache_file)
-        @old_group_cache = YAML::load_file(self.class.group_cache_file) || Hash.new
-      else
-        @old_group_cache = Hash.new
-      end
-
-      @new_group_cache = Hash.new
-    end
-
-    def group_details(parse_results)
-      name = parse_results[:name]
-      pattern_block = parse_results[:pattern]
-
-      {
-        name: name,
-        title: pattern_block[:title] || name.capitalize,
-        group: pattern_block[:group] || Docks::Types::Symbol::COMPONENT.capitalize
-      }
+    def load_pattern_library
+      @old_pattern_library = self.class.pattern_library
+      @pattern_library = Containers::PatternLibrary.new
     end
   end
 end

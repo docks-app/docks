@@ -39,5 +39,11 @@ module Docks
       type = type.to_sym unless type.nil?
       @@container_associations[type] || Base
     end
+
+    # Public: summarizes a symbol for use in the full pattern listing.
+
+    def self.summarize(symbol)
+      container_for(symbol).summarize(symbol)
+    end
   end
 end

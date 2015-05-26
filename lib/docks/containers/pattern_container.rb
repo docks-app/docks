@@ -7,6 +7,11 @@ module Docks
     # from a given group, plus additional metadata about the pattern.
 
     class Pattern < Base
+      PARSE_RESULT_TYPES = [
+        Docks::Types::Languages::STYLE,
+        Docks::Types::Languages::MARKUP,
+        Docks::Types::Languages::SCRIPT
+      ]
 
       # Public: the type of symbols that should be encapsulated by this
       # container. This is compared against a symbol's `symbol_type` to
@@ -130,6 +135,19 @@ module Docks
       def inspect; to_s end
       def to_json(options = nil); @parse_results.to_json(options) end
 
+      def find(descriptor)
+        descriptor = Naming.parse_descriptor(descriptor)
+        return unless symbol = descriptor[:symbol]
+
+        Docks::Cache::PARSE_RESULT_TYPES.each do |parse_result_type|
+          @parse_results[parse_result_type].each do |parse_result|
+            return parse_result if parse_result.name == symbol
+          end
+        end
+
+        nil
+      end
+
 
 
       private
@@ -175,6 +193,52 @@ module Docks
           component.variations.each do |variation|
             @demos << Demo.new(variation) if variation.demo_type == Docks::Types::Demo::OWN
           end
+        end
+      end
+
+
+
+      def self.summarize(pattern_hash)
+        Summary.new(pattern_hash)
+      end
+
+      class Summary < Base::Summary
+        def initialize(pattern_hash)
+          name = pattern_hash[:name]
+          pattern_block = pattern_hash[:pattern]
+
+          symbols = PARSE_RESULT_TYPES.inject(Hash.new) do |summarized_symbols, parse_result_type|
+            pattern_hash[parse_result_type].each do |symbol|
+              summarized_symbols[symbol[:name]] ||= Containers.summarize(symbol)
+            end
+
+            summarized_symbols
+          end
+
+          @has_description = !(pattern_block[:description].nil? || pattern_block[:description].length == 0)
+
+          @details = {
+            name: name,
+            symbol_type: Docks::Types::Symbol::PATTERN,
+            title: pattern_block[:title] || name.capitalize,
+            group: pattern_block[:group] || Docks::Types::Symbol::COMPONENT.capitalize,
+            symbols: symbols
+          }
+        end
+
+        def find(descriptor)
+          descriptor = Naming.parse_descriptor(descriptor)
+          return if descriptor[:symbol].nil?
+          @details[:symbols][descriptor[:symbol]]
+        end
+
+        def ==(other_pattern)
+          return false unless other_pattern.class == self.class
+          @details == other_pattern.instance_variable_get(:@details)
+        end
+
+        def is_valid?
+          @has_description || !@details[:symbols].empty?
         end
       end
     end

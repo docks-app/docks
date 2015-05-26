@@ -11,6 +11,14 @@ module Docks
     # container and the result will be returned as expected.
 
     class Base
+      # Public: creates a summary of a symbol.
+
+      def self.summarize(symbol_hash)
+        Summary.new(symbol_hash)
+      end
+
+      def self.type; "symbol" end
+
       # Public: initializes a new container.
 
       def initialize(item)
@@ -60,6 +68,14 @@ module Docks
         @item.each(&block)
       end
 
+      def symbol_id
+        "#{self.class.type}-#{name}"
+      end
+
+      def ==(other_container)
+        self.class == other_container.class && @item == other_container.instance_variable_get(:@item)
+      end
+
       # Public: forwards any missing methods to the encapsulated details.
       # Before doing so, the container will get the default tag name for the
       # missing method and use that to access the relevant item from the
@@ -72,6 +88,29 @@ module Docks
 
       def method_missing(meth)
         @item[Docks::Tags.base_tag_name(meth)] rescue nil
+      end
+
+
+      # Public: a summary of a symbol, used for storing a lightweight cache
+      # of the details of the entire pattern library.
+
+      class Summary
+        def initialize(symbol_hash)
+          @details = {
+            name: symbol_hash[:name],
+            symbol_type: symbol_hash[:symbol_type]
+          }
+        end
+
+        def method_missing(sym)
+          @details[sym] || super
+        end
+
+        def symbol_id
+          "#{@details[:symbol_type]}-#{@details[:name]}"
+        end
+
+        def to_json; @details.to_json end
       end
     end
   end

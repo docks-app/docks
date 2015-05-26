@@ -123,6 +123,20 @@ describe Docks::Containers::Pattern do
     end
   end
 
+  describe "#find" do
+    it "returns nil when it can't find a given symbol" do
+      pattern = subject.new(simple_parse_results)
+      expect(pattern.find("foo")).to be nil
+    end
+
+    it "returns a symbol whose name matches the passed descriptor" do
+      component = { symbol_type: Docks::Types::Symbol::COMPONENT, name: "bar" }
+      simple_parse_results[:style] = [component]
+      pattern = subject.new(simple_parse_results)
+      expect(pattern.find("bar")).to eq Docks::Containers::Component.new(component)
+    end
+  end
+
   describe "container associations" do
     it "includes a method to access all symbols of a given type" do
       Docks::Containers::TOP_LEVEL_SYMBOLS.each do |symbol|

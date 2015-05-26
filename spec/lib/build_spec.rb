@@ -283,13 +283,11 @@ describe Docks::Builder do
       expect(File.exists?(File.join(dest_dir, Docks.config.mount_at, excluded_pattern.to_s, "index.html"))).to be false
     end
 
-    it "provides the pattern and pattern group to every render call" do
-      pattern_groups = {
-        components: patterns.keys.map { |name| { name: name }  }
-      }
+    it "provides the pattern and pattern library to every render call" do
+      pattern_library = Docks::Containers::PatternLibrary.new
 
       expect(Docks::Group).to receive(:group).and_return(patterns)
-      expect(Docks::Cache).to receive(:pattern_groups).and_return(pattern_groups)
+      expect(Docks::Cache).to receive(:pattern_library).and_return(pattern_library)
       patterns.each do |id, group|
         pattern = OpenStruct.new(name: id)
 
@@ -301,7 +299,7 @@ describe Docks::Builder do
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(renderer).to receive(:helpers).and_return(group)
-        expect(renderer).to receive(:render).with hash_including(locals: { pattern_groups: pattern_groups, pattern: pattern })
+        expect(renderer).to receive(:render).with hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
       end
 
       subject.build
