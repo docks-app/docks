@@ -28,19 +28,10 @@ module Docks
         end
       end
 
-
-      # Public: cleans up the access type parsed from the documentation. If
-      # the parsed access type is one of the constants in
-      # `Docks::Types::Access`, it will be returned; otherwise, `nil` will be
-      # returned.
-      #
-      # content - The parsed access type as a String.
-      #
-      # Returns the original content if it is a valid access type, `nil`
-      # otherwise.
-
-      def process(content)
-        @access_types.include?(content) ? content : nil
+      def process(symbol)
+        symbol.update(@name) do |access|
+          @access_types.include?(access) ? access : Docks::Types::Access::PUBLIC
+        end
       end
     end
   end

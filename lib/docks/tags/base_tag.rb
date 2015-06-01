@@ -1,3 +1,5 @@
+require_relative "../processors.rb"
+
 module Docks
   module Tags
 
@@ -5,6 +7,7 @@ module Docks
 
     class Base
       include Singleton
+      include Processors
 
       # Public: gets the primary tag name (as a Symbol).
       attr_reader :name
@@ -33,7 +36,11 @@ module Docks
 
       def type
         @type ||= Docks::Types::Tags::ONE_PER_BLOCK
-        @type
+      end
+
+      def parseable?
+        @parseable = true if @parseable.nil?
+        @parseable
       end
 
 
@@ -42,19 +49,6 @@ module Docks
 
       def synonyms
         @synonyms ||= []
-        @synonyms
-      end
-
-
-      # Public: Lists all post-processors that this tag needs to be run when
-      # it is included in the parse results for a given file.
-      #
-      # Returns an Array of post-processor objects, each of which should
-      # conform to Docks::PostProcessors::Base.
-
-      def post_processors
-        @post_processors ||= []
-        @post_processors
       end
 
 
@@ -86,18 +80,18 @@ module Docks
         type == Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
+      def process(symbol); symbol end
 
-      # Public: Takes in the content that was derived from parsing one or more
-      # lines denoted by this tag and return the final representation of the
-      # parse result as it will appear to the pattern library views.
-      #
-      # content - A String or Array of Strings that were parsed for the tag.
-      # an Array of Strings represents each line of a tag's parse result when
-      # that tag allows for multiline content (see `#multiline`) — a single
-      # String is passed when the tag does not allowe multiline content.
+      def setup_post_processors; end
 
-      def process(content)
-        content
+      protected
+
+      def after_each_pattern(hook = nil, &block)
+        Process.register_pattern_processor(hook, &block)
+      end
+
+      def after_all(hook = nil, &block)
+        Process.register_pattern_library_processor(hook, &block)
       end
     end
   end

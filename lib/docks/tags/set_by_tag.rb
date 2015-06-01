@@ -29,29 +29,11 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
-
-      # Public: Processes the parsed documentation into an Array of Hashes
-      # representing the `set by`s' details. Regardless of whether you have
-      # one or multiple `set by` declarations attached to a single tag, every
-      # `set by` detail will be parsed such that the text before a set of
-      # parentheses will be treated as the setting symbol's name (the
-      # `setter`), and the contents of the parentheses will be treated as a
-      # set of key-value pairs. If no such pairs are found (that is, there is
-      # only a single value), the contents of the parentheses are assumed to
-      # be the constant required for the `setter` to activate the symbol being
-      # documented.
-      #
-      # See `Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes` and
-      # `Docks::Processors::NameAndParenthetical` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Hashes where each Hash represents a single
-      # `set by`'s details.
-
-      def process(content)
-        content = Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes.process(content)
-        Docks::Processors::NameAndParenthetical.process(content, :setter, :constant)
+      def process(symbol)
+        symbol.update(@name) do |set_bys|
+          set_bys = Array(set_bys).map { |set_by| split_on_top_level_parens_commas_and_pipes(set_by) }.flatten
+          set_bys.map { |set_by| OpenStruct.new name_and_parenthetical(set_by, :setter, :constant) }
+        end
       end
     end
   end

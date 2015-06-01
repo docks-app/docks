@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Docks::Group do
   subject { Docks::Group }
 
-  before :all do
+  before :each do
     Docks::Languages.register_bundled_languages
   end
 
@@ -20,7 +20,7 @@ describe Docks::Group do
     expect(subject.group_identifier(:nothing_to_see_here)).to be nil
   end
 
-  it 'correctly groups together files of the same name that match the passed globbing patterns in an Array' do
+  it 'groups together files of the same name that match the passed globbing patterns in an Array' do
     pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/button/*')
     files = Dir.glob(pattern)
 
@@ -30,7 +30,7 @@ describe Docks::Group do
     expect(button_result).to eq files
   end
 
-  it 'correctly groups together files of the same name when some of them have leading underscores' do
+  it 'groups together files of the same name when some of them have leading underscores' do
     pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/checkbox/*')
     files = Dir.glob(pattern)
 
@@ -40,7 +40,7 @@ describe Docks::Group do
     expect(result).to eq files
   end
 
-  it 'correctly groups together files of the same name when some of them have underscores instead of dashes' do
+  it 'groups together files of the same name when some of them have underscores instead of dashes' do
     pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/next-expanding-textarea/*')
     files = Dir.glob(pattern)
 
@@ -50,7 +50,7 @@ describe Docks::Group do
     expect(result).to eq files
   end
 
-  it 'correctly groups together files of the same name that match the passed globbing patterns with multiple globbing patterns, some of which do not reference actual files' do
+  it 'groups together files of the same name that match the passed globbing patterns with multiple globbing patterns, some of which do not reference actual files' do
     button_pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/button/*')
     button_files = Dir.glob(button_pattern)
     pattern_non_match = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/non-existent-thing/*')
@@ -61,7 +61,7 @@ describe Docks::Group do
     expect(button_result).to eq button_files
   end
 
-  it 'correctly groups together files of the same name that match the passed globbing patterns with multiple globbing patterns that match' do
+  it 'groups together files of the same name that match the passed globbing patterns with multiple globbing patterns that match' do
     button_pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/button/*')
     button_files = Dir.glob(button_pattern)
 
@@ -94,13 +94,13 @@ describe Docks::Group do
       }
     }
 
-    it 'correctly groups together files in dedicated scripts/ markup/ style folders' do
+    it 'groups together files in dedicated scripts/ markup/ style folders' do
       expected_results.each do |group, file_count|
         expect(result[group].length).to eq file_count
       end
     end
 
-    it 'correctly groups together files in dedicated scripts/ markup/ style folders and in component folders' do
+    it 'groups together files in dedicated scripts/ markup/ style folders and in component folders' do
       globs << File.join(File.dirname(__FILE__), '../fixtures/grouper/components/button/*')
       globs << File.join(File.dirname(__FILE__), '../fixtures/grouper/components/checkbox/*')
       expected_results[:button] = 3
@@ -115,7 +115,7 @@ describe Docks::Group do
   end
 
   describe 'acceptance criteria' do
-    it 'correctly rejects minified files' do
+    it 'rejects minified files' do
       pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/segmented control/*')
       files = Dir.glob(pattern).reject! { |filename| filename =~ /\.min\..*$/ }
 
@@ -125,7 +125,7 @@ describe Docks::Group do
       expect(component_result).to eq files
     end
 
-    it 'correctly rejects files not recognized by Docks' do
+    it 'rejects files not recognized by Docks' do
       pattern = File.join(File.dirname(__FILE__), '../fixtures/grouper/components/form/*')
       files = Dir.glob(pattern).select! { |filename| Docks::Languages.extensions.include?(File.extname(filename)[1..-1]) }
 

@@ -17,19 +17,10 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
-
-      # Public: Proccesses the parsed documentation into a list of symbols
-      # to which this tag should be aliased.
-      #
-      # See `Docks::Processors::BreakApartOnCommasSpacesAndPipes` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Strings showing the symbols to alias with this
-      # symbol.
-
-      def process(content)
-        Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(symbol)
+        symbol.update(@name) do |aliases|
+          Array(aliases).map { |alias_line| split_on_commas_spaces_and_pipes(alias_line) }.flatten
+        end
       end
     end
   end

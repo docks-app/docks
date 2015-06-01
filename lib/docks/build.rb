@@ -11,7 +11,7 @@ module Docks
 
     def self.parse(options = {})
       cache = Cache.new
-      cache.clear if options[:clear_cache]
+      cache.clear if options.fetch(:clear_cache, false)
 
       Group.group(Docks.config.sources).each do |group_identifier, group|
         # this needs tests
@@ -20,10 +20,9 @@ module Docks
           next
         end
 
-        parse_result = Parser.parse_group(group)
-        parse_result[:modified] = most_recent_modified_date(group).to_s
-        parse_result[:generated_by] = Docks::VERSION
-        cache << parse_result
+        pattern = Parser.parse(group)
+        pattern.modified = most_recent_modified_date(group)
+        cache << pattern
       end
 
       cache.dump

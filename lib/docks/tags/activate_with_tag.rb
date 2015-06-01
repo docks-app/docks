@@ -22,19 +22,10 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
-
-      # Public: Proccesses the parsed documentation into a list of symbols
-      # with which this tag should be activated.
-      #
-      # See `Docks::Processors::BreakApartOnCommasSpacesAndPipes` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Strings showing the symbols to activate with this
-      # symbol.
-
-      def process(content)
-        Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(symbol)
+        symbol.update(@name) do |activate_withs|
+          Array(activate_withs).map { |with| split_on_commas_spaces_and_pipes(with) }.flatten
+        end
       end
     end
   end

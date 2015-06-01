@@ -1,49 +1,61 @@
 require "spec_helper"
 
 describe Docks::Containers::Component do
-  subject { Docks::Containers::Component }
-
-  before :each do
-    Docks::Tags.register_bundled_tags
-  end
-
   describe "#has_demo?" do
     it "has a demo when it has non-empty markup" do
-      expect(subject.new(markup: "<p>Hi!</p>").has_demo?).to be true
+      expect(described_class.new(markup: "<p>Hi!</p>").has_demo?).to be true
     end
 
     it "has a demo when it has non-empty helper" do
-      expect(subject.new(helper: "<p><%= foo %></p>").has_demo?).to be true
+      expect(described_class.new(helper: "<p><%= foo %></p>").has_demo?).to be true
     end
 
     it "doesn't have a demo when there is no markup or helper" do
-      expect(subject.new(foo: "bar").has_demo?).to be false
+      expect(described_class.new(foo: "bar").has_demo?).to be false
     end
 
     it "doesn't have a demo when the markup is empty" do
-      expect(subject.new(markup: "").has_demo?).to be false
+      expect(described_class.new(markup: "").has_demo?).to be false
     end
 
     it "doesn't have a demo when the helper is empty" do
-      expect(subject.new(helper: "").has_demo?).to be false
+      expect(described_class.new(helper: "").has_demo?).to be false
     end
   end
 
   describe "#subcomponents" do
+    let(:sub_subcomponent) do
+      described_class.new(name: "foo__bar__baz")
+    end
+
     let(:subcomponent) do
-      { foo: "bar" }
+      described_class.new(name: "foo__bar", subcomponents: [sub_subcomponent])
     end
 
-    it "has subcomponents when they are included on the component" do
-      component = subject.new(subcomponents: [subcomponent])
-      expect(component.subcomponents.length).to be 1
-      expect(component.subcomponents).to include subcomponent
+    let(:component) do
+      described_class.new(name: "foo", subcomponents: [subcomponent])
     end
 
-    it "has an empty array of subcomponents when not included" do
-      component = subject.new(foo: :bar)
-      expect(component.subcomponents).to be_an Array
-      expect(component.subcomponents).to be_empty
+    context "when no options are passed" do
+      it "has subcomponents when they are included on the component" do
+        expect(component.subcomponent.length).to be 1
+        expect(component.subcomponents).to include subcomponent
+      end
+
+      it "has an empty array of subcomponents when not included" do
+        component = described_class.new
+        expect(component.subcomponent).to be_an Array
+        expect(component.subcomponent).to be_empty
+      end
+    end
+
+    context "when the :recursive option is true" do
+      it "returns subcomponents recursively" do
+        subcomponents = component.subcomponents(recursive: true)
+        expect(subcomponents.length).to be 2
+        expect(subcomponents).to include subcomponent
+        expect(subcomponents).to include sub_subcomponent
+      end
     end
   end
 
@@ -52,12 +64,12 @@ describe Docks::Containers::Component do
     let(:variants) { [{ bar: "foo" }, { qux: "baz" }] }
 
     it "has no variations when there are no states or variants" do
-      component = subject.new({})
+      component = described_class.new({})
       expect(component.variations).to be_empty
     end
 
     it "has variations when there are only states" do
-      component = subject.new(state: states)
+      component = described_class.new(state: states)
       variations = component.variations
 
       expect(variations).not_to be_empty
@@ -67,7 +79,7 @@ describe Docks::Containers::Component do
     end
 
     it "has variations when there are only variants" do
-      component = subject.new(variant: variants)
+      component = described_class.new(variant: variants)
       variations = component.variations
 
       expect(variations).not_to be_empty
@@ -77,7 +89,7 @@ describe Docks::Containers::Component do
     end
 
     it "has variations when there are states and variants" do
-      component = subject.new(state: states, variant: variants)
+      component = described_class.new(state: states, variant: variants)
       variations = component.variations
 
       expect(variations).not_to be_empty

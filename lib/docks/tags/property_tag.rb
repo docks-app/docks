@@ -17,11 +17,6 @@ module Docks
         @name = :property
         @multiline = false
       end
-
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `property` attribute will be marked as `true`.
-
-      def process(content); true end
     end
   end
 end

@@ -1,12 +1,11 @@
-require_relative "base_container.rb"
-require_relative "common_attributes/privacy.rb"
+require_relative "symbol_container.rb"
 
 module Docks
   module Containers
 
     # Public: a container for Mixin symbols.
 
-    class Mixin < Base
+    class Mixin < Symbol
 
       # Public: the type of symbols that should be encapsulated by this
       # container. This is compared against a symbol's `symbol_type` to

@@ -17,8 +17,15 @@ describe Docks::Tags::Factory do
 
   describe "#process" do
     it "sets the class to be true when it exists at all" do
-      expect(subject.process("")).to be true
-      expect(subject.process("MyFactory")).to be true
+      symbol = Docks::Containers::Symbol.new
+
+      symbol[subject.name] = ""
+      subject.process(symbol)
+      expect(symbol[subject.name]).to be true
+
+      symbol[subject.name] = "Factory"
+      subject.process(symbol)
+      expect(symbol[subject.name]).to be true
     end
   end
 end

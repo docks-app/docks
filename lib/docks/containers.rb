@@ -17,17 +17,7 @@ module Docks
 
     @@container_associations = Hash.new
 
-
-    # Public: gets the container that should be used to contain the passed
-    # symbol. The association is based on the equality of the symbol's
-    # `symbol_type` key and the container's `type` class variable. If no
-    # matching containers are found, the Base container is used.
-    #
-    # symbol - a Hash representing a parsed symbol.
-    #
-    # Returns the container class to use to encapsulate this symbol.
-
-    def self.container_for(symbol)
+    def self.container_for(type = nil)
       if @@container_associations.empty?
         constants.each do |const|
           klass = const_get(const)
@@ -35,15 +25,7 @@ module Docks
         end
       end
 
-      type = symbol[:symbol_type]
-      type = type.to_sym unless type.nil?
-      @@container_associations[type] || Base
-    end
-
-    # Public: summarizes a symbol for use in the full pattern listing.
-
-    def self.summarize(symbol)
-      container_for(symbol).summarize(symbol)
+      type.nil? ? Symbol : @@container_associations.fetch(type.to_sym, Symbol)
     end
   end
 end

@@ -17,13 +17,12 @@ module Docks
       def initialize
         @name = :private
         @multiline = false
-        @post_processors = [PostProcessors::CleanUpAccess]
       end
 
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `private` attribute will be marked as true.
-
-      def process(content); true end
+      def process(symbol)
+        symbol.delete(@name)
+        symbol[Access] = Docks::Types::Access::PRIVATE
+      end
     end
   end
 end

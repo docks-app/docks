@@ -29,39 +29,22 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
+      def process(symbol)
+        symbol.update(@name) do |throws|
+          Array(throws).map do |a_throw|
+            a_throw = multiline_description(a_throw) do |first_line|
+              if match = first_line.match(/\s*\{(?<type>[^\}]*)\}(?:\s*\-?\s*(?<description>.*))?/)
+                description = match[:description]
 
-      # Public: The error type is denoted as it is for `param` — one or more
-      # types in curly braces immediately following the tag, separated by
-      # commas, pipes, or spaces. Since there can be many types, the types are
-      # always returned as an array. The (optional) description is also
-      # treated the same was as `param`: you can have a single or multiline
-      # description, starting on the line of the tag or the following line,
-      # and optionally separated from the error type(s) by a hyphen.
-      #
-      # content - An Array of Strings showing the lines parsed from the
-      # documentation.
-      #
-      # Examples
-      #
-      #   Docks::Tags::Throws.process(["{NameError | TypeError}"])
-      #   # => { types: ["NameError", "TypeError"] }
-      #
-      #   Docks::Tags::Throws.process(["{ TypeError } - The error", "details."])
-      #   # => { types: ["TypeError"], description: "The error details." }
-      #
-      # Returns a Hash showing the type and description of the error that can
-      # be thrown by this symbol.
+                {
+                  types: split_types(match[:type]),
+                  description: description.nil? || description.length == 0 ? nil : match[:description]
+                }
+              end
+            end
 
-      def process(content)
-        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          match = first_line.match(/\s*\{(?<type>[^\}]*)\}(?:\s*\-?\s*(?<description>.*))?/)
-          return nil if match.nil?
-
-          description = match[:description]
-          {
-            types: Docks::Processors::BreakApartTypes.process(match[:type]),
-            description: description.nil? || description.length == 0 ? nil : match[:description]
-          }
+            OpenStruct.new(a_throw)
+          end
         end
       end
     end

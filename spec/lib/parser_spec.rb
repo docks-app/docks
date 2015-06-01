@@ -3,61 +3,58 @@ require "spec_helper"
 describe Docks::Parser do
   subject { Docks::Parser }
 
-  before :all do
-    Docks::Process.clear_post_processors
+  before :each do
     Docks::Tags.register_bundled_tags
-    Docks::Process.register_bundled_post_processors
     Docks::Languages.register_bundled_languages
   end
 
-  describe ".parse_group" do
-    let(:file) { file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_complex.scss") }
+  describe ".parse" do
+    let(:style_file) { File.expand_path("../../fixtures/parsers/scss_parser_fixture_basic.scss", __FILE__) }
+    let(:script_file) { File.expand_path("../../fixtures/parsers/coffee_parser_fixture_basic.coffee", __FILE__) }
+    let(:style_parser) { Docks::Parsers::SCSS.instance }
+    let(:script_parser) { Docks::Parsers::CoffeeScript.instance }
+
+    it "returns a pattern" do
+      expect(subject.parse(style_file)).to be_a Docks::Containers::Pattern
+    end
+
+    it "parses the contents of each file" do
+      expect(style_parser).to receive(:parse).with(style_file).and_call_original
+      expect(script_parser).to receive(:parse).with(script_file).and_call_original
+      subject.parse([style_file, script_file])
+    end
+
+    it "processes all parsed symbols and the final pattern" do
+      symbols = style_parser.parse(style_file) + script_parser.parse(script_file)
+      symbols.each { |symbol| expect(Docks::Process).to receive(:process).with(symbol) }
+      expect(Docks::Process).to receive(:process).with(an_instance_of(Docks::Containers::Pattern))
+      subject.parse([style_file, script_file])
+    end
 
     it "includes the parse result of a file in the appropriate group" do
-      file = File.join(File.dirname(__FILE__), "..", "fixtures", "parsers", "scss_parser_fixture_basic.scss")
-      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to include(subject.send(:parse_file, file).first)
+      expect(Docks::Process).to receive(:process).at_least(:once).and_return nil
+      expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:style, style_parser.parse(style_file))
+      expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:script, script_parser.parse(script_file))
+      subject.parse([style_file, script_file])
     end
 
-    it "moves the pattern block to the top level of the parse result" do
-      pattern_block = subject.send(:parse_file, file).first
-      pattern_block[:title] = pattern_block.delete(:pattern)
-      expect(subject.parse_group([file])[:pattern]).to eq pattern_block
-      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to_not include(pattern_block)
+    it "doesn't try to parse a file that doesn't exist" do
+      expect(File).to_not receive(:read).with("foo.bar")
+      subject.parse("foo.bar")
     end
 
-    it "moves the pattern block to the top level of the parse result" do
-      expect(File).to receive(:read).at_least(:once).and_return(File.read(file).sub("@pattern", "@page"))
-      pattern_block = subject.send(:parse_file, file).first
-      pattern_block[:title] = pattern_block.delete(:pattern)
-      expect(subject.parse_group([file])[:pattern]).to eq pattern_block
-      expect(subject.parse_group([file])[Docks::Languages.file_type(file)]).to_not include(pattern_block)
+    it "doesn't try to parse a file that has no parser" do
+      File.open("foo.md", "w") { |file| file.write("foo bar") }
+      expect(subject).to_not receive(:parse_file).with("foo.md")
+      subject.parse("foo.md")
+      FileUtils.rm("foo.md")
     end
 
-    it "switches the pattern attribute to be the title of the pattern block" do
-      pattern = subject.parse_group([file])[:pattern]
-      expect(pattern[:title]).not_to be nil
-      expect(pattern[:pattern]).to be nil
-
-      expect(File).to receive(:read).at_least(:once).and_return(File.read(file).sub("@pattern", "@page"))
-      pattern = subject.parse_group([file])[:pattern]
-      expect(pattern[:title]).not_to be nil
-      expect(pattern[:page]).to be nil
-    end
-
-    it "does not include any parse result if the file is not a supported file type" do
-      file = File.join(File.dirname(__FILE__), "..", "fixtures", "grouper", "components", "form", "form.m")
-      parse_group_result = subject.parse_group([file])
-      expect(parse_group_result[Docks::Types::Languages::MARKUP]).to be_empty
-      expect(parse_group_result[Docks::Types::Languages::SCRIPT]).to be_empty
-      expect(parse_group_result[Docks::Types::Languages::STYLE]).to be_empty
-    end
-
-    it "does not include any parse result if the file does not exist" do
-      file = File.join(File.dirname(__FILE__), "..", "fixtures", "grouper", "form", "form.haml")
-      parse_group_result = subject.parse_group([file])
-      expect(parse_group_result[Docks::Types::Languages::MARKUP]).to be_empty
-      expect(parse_group_result[Docks::Types::Languages::SCRIPT]).to be_empty
-      expect(parse_group_result[Docks::Types::Languages::STYLE]).to be_empty
+    it "doesn't try to parse a file that doesn't have a supported extension" do
+      File.open("foo.bar", "w") { |file| file.write("foo bar") }
+      expect(File).to_not receive(:read).with("foo.bar")
+      subject.parse("foo.bar")
+      FileUtils.rm("foo.bar")
     end
   end
 end

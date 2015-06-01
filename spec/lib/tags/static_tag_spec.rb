@@ -16,10 +16,16 @@ describe Docks::Tags::Static do
   end
 
   describe "#process" do
-    it "sets the static attribute to be true when it exists at all" do
-      expect(subject.process("")).to be true
-      expect(subject.process("true")).to be true
-      expect(subject.process("static")).to be true
+    it "sets the class to be true when it exists at all" do
+      symbol = Docks::Containers::Symbol.new
+
+      symbol[subject.name] = ""
+      subject.process(symbol)
+      expect(symbol[subject.name]).to be true
+
+      symbol[subject.name] = "static"
+      subject.process(symbol)
+      expect(symbol[subject.name]).to be true
     end
   end
 end

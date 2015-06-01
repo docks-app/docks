@@ -15,6 +15,13 @@ class Example2 < Docks::Tags::Base
   end
 end
 
+class Example3 < Docks::Tags::Base
+  def initialize
+    @name = :group
+    @parseable = false
+  end
+end
+
 describe Docks::Tags do
   subject { Docks::Tags }
 
@@ -57,8 +64,12 @@ describe Docks::Tags do
       expect(subject.base_tag_name(example.synonyms.first)).to be example.name
     end
 
-    it "returns the passed tag if it is not registered" do
-      expect(subject.base_tag_name(:foo)).to be :foo
+    it "returns nil if the tag is not registered" do
+      expect(subject.base_tag_name(:foo)).to be nil
+    end
+
+    it "returns the name if the tag class is passed" do
+      expect(subject.base_tag_name(example)).to be example.name
     end
   end
 
@@ -77,6 +88,26 @@ describe Docks::Tags do
       supported_tags = subject.supported_tags
       expect(supported_tags.length).to be tag_count
       expect(supported_tags).to include Example2.instance.name
+
+      subject.register(Example3)
+      tag_count += 1
+      supported_tags = subject.supported_tags
+      expect(supported_tags.length).to be tag_count
+      expect(supported_tags).to include Example3.instance.name
+    end
+  end
+
+  describe ".supported_parseable_tags" do
+    it "lists only tags that are parseable" do
+      subject.register(Example1)
+      subject.register(Example2)
+      subject.register(Example3)
+
+      parseable_tags = subject.supported_parseable_tags
+      expect(parseable_tags.length).to be 2 + Example1.instance.synonyms.length + Example2.instance.synonyms.length
+      expect(parseable_tags).to include Example1.instance.name
+      expect(parseable_tags).to include Example2.instance.name
+      expect(parseable_tags).to_not include Example3.instance.name
     end
   end
 
@@ -119,6 +150,12 @@ describe Docks::Tags do
       expect(subject.join_synonymous_tags(example_hash)).to eq target_hash
     end
 
+    it "renames a pluralized tag to its base tag name" do
+      example_hash[example.name.to_s.pluralize.to_sym] = value
+      target_hash[example.name] = value
+      expect(subject.join_synonymous_tags(example_hash)).to eq target_hash
+    end
+
     it "joins together results of a synonym with results of the base tag name" do
       example_hash[example.name] = [-1]
       example.synonyms.each_with_index do |synonym, index|
@@ -129,9 +166,9 @@ describe Docks::Tags do
       expect(subject.join_synonymous_tags(example_hash)).to eq target_hash
     end
 
-    it "leaves results for non-registered tags alone" do
+    it "removes results for unrecognized tags" do
       example_hash[:foo] = "bar"
-      expect(subject.join_synonymous_tags(example_hash)).to eq example_hash
+      expect(subject.join_synonymous_tags(example_hash)).to eq Hash.new
     end
   end
 
@@ -182,8 +219,8 @@ describe Docks::Tags do
       end
     end
 
-    it "adds post processors included on the tag" do
-      expect(Docks::Process).to receive(:add_post_processors).with(*example.post_processors)
+    it "allows the tag to setup its post processing" do
+      expect(Example1.instance).to receive(:setup_post_processors)
       subject.register(Example1)
     end
   end

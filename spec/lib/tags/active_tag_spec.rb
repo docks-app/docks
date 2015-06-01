@@ -10,4 +10,15 @@ describe Docks::Tags::Active do
   it "only allows one tag per block" do
     expect(subject.multiple_allowed?).to be false
   end
+
+  describe "#process" do
+    it "boolean-ifies the parsed value" do
+      symbol = Docks::Containers::Symbol.new
+      symbol[subject.name] = "false"
+
+      expect(subject).to receive(:stringy_boolean).and_call_original
+      subject.process(symbol)
+      expect(symbol[subject.name]).to be false
+    end
+  end
 end

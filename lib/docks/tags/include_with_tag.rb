@@ -1,39 +1,55 @@
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@include_with`.
-    #
-    # This tag specifies another symbol within the same file that this symbol
-    # should be grouped with. In the default template, this is most useful for
-    # presenting variations of one component with another, for example, to
-    # present variations on a label with the demo of a text field.
-
     class IncludeWith < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@include_with` name for use in documentation, will allow only a single
-      # line of documentation to be included in the tag, and will allow multiple
-      # results to be included on a single line.
-
       def initialize
         @name = :include_with
         @multiline = false
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
+      def process(symbol)
+        symbol.update(@name) do |include_with|
+          Array(include_with).map { |with| split_on_commas_spaces_and_pipes(with) }.flatten
+        end
+      end
 
-      # Public: Proccesses the parsed documentation into a list of symbols
-      # with which this tag should be included.
-      #
-      # See `Docks::Processors::BreakApartOnCommasSpacesAndPipes` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Strings showing the symbols with which to include
-      # this symbol.
+      def setup_post_processors
+        after_each_pattern(:late) do |pattern|
+          components = pattern.components
+          components.each { |component| find_and_associate_inclusion(component, components) }
+        end
+      end
 
-      def process(content)
-        content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      private
+
+      def find_and_associate_inclusion(component, components)
+        include_withs = component.fetch(:include_with, [])
+        unless include_withs.empty?
+          components.each do |other|
+            next unless include_withs.include?(other.name)
+            other.included_symbols ||= []
+            other.included_symbols << component
+          end
+        end
+
+        component.variations do |variation|
+          include_withs = variation.fetch(:include_with, [])
+          next if include_withs.empty?
+          components.each do |other|
+            next unless include_withs.include?(other.name)
+            other.included_symbols ||= []
+            other.included_symbols << variation
+          end
+        end
+
+        component.subcomponents { |subcomponent| find_and_associate_inclusion(subcomponent, components) }
+      end
+    end
+
+    class IncludedSymbol < Base
+      def initialize
+        @name = :included_symbol
+        @parseable = false
       end
     end
   end

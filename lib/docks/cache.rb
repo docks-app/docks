@@ -4,12 +4,6 @@ require_relative "version.rb"
 
 module Docks
   class Cache
-    PARSE_RESULT_TYPES = [
-      Docks::Types::Languages::STYLE,
-      Docks::Types::Languages::MARKUP,
-      Docks::Types::Languages::SCRIPT
-    ]
-
     DIR = "docks_cache"
     META_FILE = "docks_meta"
     PATTERN_LIBRARY_FILE = "docks_pattern_library"
@@ -43,8 +37,6 @@ module Docks
       Docks.config.cache_location + META_FILE
     end
 
-
-
     public
 
     def initialize
@@ -57,17 +49,14 @@ module Docks
       FileUtils.rm_rf Dir[Docks.config.cache_location + "*"]
     end
 
-    def <<(pattern_hash)
-      pattern_summary = Containers::Pattern.summarize(pattern_hash)
-      return unless pattern_summary.is_valid?
+    def <<(pattern)
+      return unless pattern.valid?
 
-      id = pattern_summary.name.to_s
-
-      File.open(Docks.config.cache_location + id, "wb") do |file|
-        file.write Marshal::dump(pattern_hash)
+      File.open(Docks.config.cache_location + pattern.name.to_s, "wb") do |file|
+        file.write Marshal::dump(pattern)
       end
 
-      @pattern_library << pattern_summary
+      @pattern_library << pattern
     end
 
     # When a pattern exists but did not need to be re-parsed, this needs to
@@ -76,7 +65,6 @@ module Docks
       id = id.to_s
       @pattern_library << @old_pattern_library[id]
     end
-
 
     def dump
       File.open(self.class.pattern_library_cache_file, "wb") do |file|

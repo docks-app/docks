@@ -20,28 +20,11 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
-
-      # Public: Processes the parsed documentation into an Array of Hashes
-      # representing the browsers' details. Regardless of whether you have one
-      # or multiple compatibility declarations attached to a single tag, every
-      # compatibility detail will be parsed such that the text before a set of
-      # parentheses will be treated as the browsers's name, and the contents
-      # of the parentheses will be treated as a set of key-value pairs. If no
-      # such pairs are found (that is, there is only a single value, most
-      # likely a version number), the contents of the parentheses are assumed
-      # to be the the version details.
-      #
-      # See `Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes` and
-      # `Docks::Processors::NameAndParenthetical` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Hashes where each Hash represents a single
-      # compatibility's details.
-
-      def process(content)
-        content = Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes.process(content)
-        Docks::Processors::NameAndParenthetical.process(content, :browser, :version)
+      def process(symbol)
+        symbol.update(@name) do |compatibilities|
+          compatibilities = Array(compatibilities).map { |compatibility| split_on_top_level_parens_commas_and_pipes(compatibility) }.flatten
+          compatibilities.map { |compatibility| OpenStruct.new name_and_parenthetical(compatibility, :browser, :version) }
+        end
       end
     end
   end

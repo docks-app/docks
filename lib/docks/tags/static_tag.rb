@@ -19,10 +19,9 @@ module Docks
         @multiline = false
       end
 
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `static` attribute will be marked as true.
-
-      def process(content); true end
+      def process(symbol)
+        symbol[@name] = true
+      end
     end
   end
 end

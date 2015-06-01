@@ -21,18 +21,8 @@ module Docks
         @multiline = false
       end
 
-
-      # Public: Proccesses the parsed documentation into a boolean indicating
-      # whether or not the symbol should be active by default.
-      #
-      # See `Docks::Processors::StringyBoolean` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns a Boolean.
-
-      def process(content)
-        Docks::Processors::StringyBoolean.process(content)
+      def process(symbol)
+        symbol.update(@name) { |active| stringy_boolean(active) }
       end
     end
   end

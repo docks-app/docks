@@ -1,6 +1,5 @@
-require_relative "../containers.rb"
+require "forwardable"
 require_relative "../tags.rb"
-require_relative "../types.rb"
 
 module Docks
   module Containers
@@ -11,106 +10,84 @@ module Docks
     # container and the result will be returned as expected.
 
     class Base
-      # Public: creates a summary of a symbol.
+      extend Forwardable
 
-      def self.summarize(symbol_hash)
-        Summary.new(symbol_hash)
+      def_delegators :@details, :to_s, :inspect, :to_json, :each
+
+      def initialize(details = {})
+        details = Tags.join_synonymous_tags(details)
+        @details = details
       end
 
-      def self.type; "symbol" end
-
-      # Public: initializes a new container.
-
-      def initialize(item)
-        @item = item
-      end
-
-      # Public: dumps the details of this container to JSON.
-      #
-      # options - A Hash of options to forward to the JSON dump of the
-      # encapsulated details Hash. Defaults to nil.
-      #
-      # Returns the JSON String of the details contained by this object.
-
-      def to_json(options = nil)
-        @item.to_json(options)
-      end
-
-      # Public: prints the contained details.
-      # Returns a String.
-
-      def to_s
-        @item.to_s
-      end
-
-      # Public: returns the base details.
-
-      def to_h
-        @item
-      end
-
-      # Public: prints the contained details.
-      # Returns a String.
-
-      def inspect
-        to_s
-      end
-
-      def [](symbol)
-        @item[symbol]
-      end
-
-      def []=(symbol, new_value)
-        @item[symbol] = new_value
-      end
-
-      def each(&block)
-        @item.each(&block)
-      end
-
-      def symbol_id
-        "#{self.class.type}-#{name}"
-      end
+      def to_h; @details end
+      alias_method :to_hash, :to_h
 
       def ==(other_container)
-        self.class == other_container.class && @item == other_container.instance_variable_get(:@item)
+        self.class == other_container.class && @details == other_container.instance_variable_get(:@details)
       end
 
-      # Public: forwards any missing methods to the encapsulated details.
-      # Before doing so, the container will get the default tag name for the
-      # missing method and use that to access the relevant item from the
-      # details Hash. In this way, any synonymous tag will get the same value
-      # from the contained details.
-      #
-      # meth - The missing method's name.
-      #
-      # Returns a String.
-
-      def method_missing(meth)
-        @item[Docks::Tags.base_tag_name(meth)] rescue nil
+      def update(tag)
+        self[tag] = yield(self[tag])
       end
 
+      def [](tag)
+        fetch(tag, nil)
+      end
 
-      # Public: a summary of a symbol, used for storing a lightweight cache
-      # of the details of the entire pattern library.
+      def []=(tag, new_value)
+        tag = Tags.base_tag_name(tag)
+        @details[tag] = new_value unless tag.nil?
+      end
+
+      def delete(tag)
+        @details.delete(Tags.base_tag_name(tag))
+      end
+
+      def fetch(tag, *args)
+        @details.fetch(Tags.base_tag_name(tag), *args)
+      end
+
+      def tags
+        @details.keys.map { |tag| Tags.tag_for(tag) }
+      end
+
+      def method_missing(meth, *args, &block)
+        meth = meth.to_s
+        stripped = meth.singularize.sub("=", "").to_sym
+        has_tag = Tags.has_tag?(stripped)
+
+        if meth.end_with?("=") && has_tag
+          self[stripped] = args.first
+        elsif stripped.to_s != meth && has_tag
+          fetched = fetch(stripped, Array.new)
+          fetched.kind_of?(Array) ? fetched : [fetched]
+        elsif has_tag
+          fetch(meth.to_sym, nil)
+        else
+          super(meth.to_sym, *args, &block)
+        end
+      end
+
+      def respond_to?(meth)
+        Tags.has_tag?(meth.to_s.sub("=", "")) || super
+      end
+
+      def summary
+        Summary.new(self)
+      end
+
+      protected
 
       class Summary
-        def initialize(symbol_hash)
-          @details = {
-            name: symbol_hash[:name],
-            symbol_type: symbol_hash[:symbol_type]
-          }
+        attr_reader :name
+
+        def initialize(item)
+          @name = item.name
         end
 
-        def method_missing(sym)
-          @details[sym] || super
+        def ==(other_summary)
+          self.class == other_summary.class && name == other_summary.name
         end
-
-        def symbol_id
-          "#{@details[:symbol_type]}-#{@details[:name]}"
-        end
-
-        def to_json; @details.to_json end
       end
     end
   end

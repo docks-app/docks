@@ -15,16 +15,47 @@ module Docks
       def initialize
         @name = :class
         @multiline = false
-        @post_processors = [
-          Docks::PostProcessors::BuildClassesAndFactories
-        ]
       end
 
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `class` attribute will be marked as `true`.
+      def process(symbol)
+        symbol[@name] = true
+      end
 
-      def process(content)
-        true
+
+      def setup_post_processors
+        # Since factories/ classes in JS are just functions, convert them early
+        # to their rightful classes.
+        after_each_pattern(:early) do |pattern|
+          pattern.script_symbols.map! do |symbol|
+            if symbol[Tags::Klass]
+              symbol.delete(:class)
+              Containers::Klass.new(symbol.to_h)
+            elsif symbol[Tags::Factory]
+              symbol.delete(:factory)
+              Containers::Factory.new(symbol.to_h)
+            else
+              symbol
+            end
+          end
+        end
+
+        # Move classes/ properties to the preceeding class-like object
+        after_each_pattern(:middle) do |pattern|
+          last_classlike = nil
+
+          pattern.script_symbols.each do |symbol|
+            if [Containers::Klass, Containers::Factory].include?(symbol.class)
+              last_classlike = symbol
+              next
+            end
+
+            next if last_classlike.nil?
+            last_classlike.methods << symbol if symbol[:method]
+            last_classlike.properties << symbol if symbol[:property]
+          end
+
+          pattern.script_symbols.delete_if { |symbol| ![Containers::Klass, Containers::Factory].include?(symbol.class) && (symbol[:method] || symbol[:property]) }
+        end
       end
     end
   end

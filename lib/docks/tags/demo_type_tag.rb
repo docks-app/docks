@@ -21,21 +21,8 @@ module Docks
         @multiline = false
       end
 
-
-      # Public: cleans up the access type parsed from the documentation. If
-      # the parsed demo type is one of the constants in `Docks::Types::Demo`,
-      # it will be returned; otherwise, the default demo type will be
-      # returned.
-      #
-      # See `Docks::Processors::EnsureValidDemoType` for examples.
-      #
-      # content - The parsed demo type as a String.
-      #
-      # Returns the original content if it is a valid demo type, or the
-      # default demo type otherwise.
-
-      def process(content)
-        Docks::Processors::EnsureValidDemoType.process(content)
+      def process(symbol)
+        symbol.update(@name) { |demo_type| ensure_valid_demo_type(demo_type) }
       end
     end
   end

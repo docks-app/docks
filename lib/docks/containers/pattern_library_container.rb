@@ -8,15 +8,16 @@ module Docks
       end
 
       def <<(pattern)
+        pattern = pattern.summary unless pattern.kind_of?(Containers::Base::Summary)
         @patterns[pattern.name.to_s] ||= pattern
       end
 
       def [](pattern_name)
-        @patterns[pattern_name.to_s]
+        @patterns[Group.group_identifier(pattern_name).to_s]
       end
 
       def has_pattern?(pattern_name)
-        !@patterns[pattern_name.to_s].nil?
+        !self[pattern_name].nil?
       end
 
       def to_json; @patterns.to_json end
@@ -50,7 +51,7 @@ module Docks
         pattern_name = descriptor.delete(:symbol) if pattern_name.nil?
         return if pattern_name.nil?
 
-        pattern = @patterns[pattern_name]
+        pattern = @patterns[Group.group_identifier(pattern_name).to_s]
         return if pattern.nil?
 
         symbol = pattern.find(descriptor)
