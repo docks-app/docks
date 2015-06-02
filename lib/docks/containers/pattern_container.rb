@@ -46,7 +46,7 @@ module Docks
       end
 
       def valid?
-        !@details.empty? || SYMBOL_SOURCES.any? { |source| !@symbols[source].empty? }
+        !@details.values.compact.empty? || SYMBOL_SOURCES.any? { |source| !@symbols[source].empty? }
       end
 
       def ==(other_pattern)

@@ -27,9 +27,9 @@ module Docks
               { description: match[:description] }
 
             else
-              match = first_line.match(/\{?(?<type>[^\}]*)\}?(?:\s*\-?\s*(?<description>.*))?/)
+              match = first_line.match(/\{?(?<type>[^\}\-]*)\}?(?:\s*\-?\s*(?<description>.*))?/)
               {
-                types: split_types(match[:type]),
+                types: split_types(match[:type].strip),
                 description: match[:description]
               }
             end

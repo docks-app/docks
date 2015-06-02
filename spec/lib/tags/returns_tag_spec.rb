@@ -59,6 +59,21 @@ describe Docks::Tags::Returns do
       expect(process_returns_with("#{types}-  #{description}").description).to eq target_description
     end
 
+    it "splits a apart types without curly braces with a following description" do
+      types.gsub!("{", "")
+      types.gsub!("}", "")
+
+      type_results = Docks::Processors.split_types(types)
+      expect(process_returns_with("#{types} -  #{description}").types).to eq type_results
+      expect(process_returns_with("#{types}   -#{description}").types).to eq type_results
+      expect(process_returns_with("#{types}-  #{description}").types).to eq type_results
+
+      target_description = Docks::Processors.join_with_smart_line_breaks(description)
+      expect(process_returns_with("#{types} -  #{description}").description).to eq target_description
+      expect(process_returns_with("#{types}   -#{description}").description).to eq target_description
+      expect(process_returns_with("#{types}-  #{description}").description).to eq target_description
+    end
+
     private
 
     def process_returns_with(content)

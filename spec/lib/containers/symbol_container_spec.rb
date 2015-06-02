@@ -59,7 +59,7 @@ describe Docks::Containers::Symbol do
 
   describe "#symbol_id" do
     it "creates a symbol_id" do
-      expect(subject.symbol_id).to_not be nil
+      expect(subject.symbol_id).to eq "#{subject.symbol_type}-#{subject.name}"
     end
 
     it "creates a symbol_id that is unique between two symbol types with the same name" do

@@ -13,11 +13,11 @@ module Docks
         @symbol_type = self[:symbol_type] = self.class.type
       end
 
-      def private?; self[Docks::Tags::Access] == Docks::Types::Access::PRIVATE end
+      def private?; fetch(:access, nil) == Docks::Types::Access::PRIVATE end
       def public?; !private? end
 
       def symbol_id
-        "#{@symbol_type}-#{@name}"
+        "#{fetch(:symbol_type)}-#{fetch(:name)}"
       end
 
       def summary

@@ -52,19 +52,15 @@ module Docks
       end
 
       def method_missing(meth, *args, &block)
-        meth = meth.to_s
-        stripped = meth.singularize.sub("=", "").to_sym
+        stripped = meth.to_s.sub("=", "").to_sym
         has_tag = Tags.has_tag?(stripped)
 
-        if meth.end_with?("=") && has_tag
+        if stripped != meth && has_tag
           self[stripped] = args.first
-        elsif stripped.to_s != meth && has_tag
-          fetched = fetch(stripped, Array.new)
-          fetched.kind_of?(Array) ? fetched : [fetched]
         elsif has_tag
-          fetch(meth.to_sym, nil)
+          fetch(meth, nil)
         else
-          super(meth.to_sym, *args, &block)
+          super(meth, *args, &block)
         end
       end
 

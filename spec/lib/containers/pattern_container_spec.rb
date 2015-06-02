@@ -52,6 +52,11 @@ describe Docks::Containers::Pattern do
       expect(pattern.valid?).to be true
     end
 
+    it "isn't valid if all details of the pattern are nil" do
+      pattern.description = nil
+      expect(pattern.valid?).to be false
+    end
+
     it "is valid if any other symbol has been added" do
       pattern.add(:script, Docks::Containers::Function.new)
       expect(pattern.valid?).to be true

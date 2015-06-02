@@ -28,7 +28,7 @@ describe Docks::Tags::Example do
     end
 
     it "uses the extension for the current file as the language when none is provided" do
-      expect(Docks::Parser).to receive(:current_file).and_return "foo_bar.#{language}"
+      expect(Docks).to receive(:current_file).and_return "foo_bar.#{language}"
       symbol[subject.name] = [[code]]
       subject.process(symbol)
       expect(symbol[subject.name].first).to eq OpenStruct.new(language: language, code: code)

@@ -34,7 +34,7 @@ module Docks
           lines_from_pattern_block -= replacement.lines.count
 
           symbol = parse_comment_block(parseable_block)
-          symbol.source = OpenStruct.new(file: file, line_number: start_line_number)
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: start_line_number)
           symbols << symbol
 
           replacement
@@ -47,7 +47,7 @@ module Docks
           symbol_details[:name], symbol_details[:symbol_type] = parse_result_details(match[:first_line])
           symbol = Containers.container_for(symbol_details[:symbol_type]).new(symbol_details)
           parse_comment_block(match[:comments], symbol)
-          symbol.source = OpenStruct.new(file: file, line_number: lines_from_pattern_block + match.pre_match.lines.count + match[0].lines.count)
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: lines_from_pattern_block + match.pre_match.lines.count + match[0].lines.count)
           symbols << symbol
 
           last_match_position = match.offset(0).last

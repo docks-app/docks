@@ -24,6 +24,14 @@ describe Docks::Parsers::Base do
       end
     end
 
+    it "adds the language code of the file" do
+      example_files.each do |file|
+        example_parser.parse(file).each do |symbol|
+          expect(symbol.source.language_code).to eq Docks::Languages.extension_for_file(file)
+        end
+      end
+    end
+
     it "adds the line number for the start of the pattern block" do
       symbols = example_parser.parse(example_files.first)
       pattern_symbol = symbols.find { |symbol| !symbol.pattern.nil?  }

@@ -15,7 +15,7 @@ describe Docks::Languages::SCSS do
     let(:name) { "foo" }
 
     let(:function_no_params) { Docks::Containers::Function.new(name: name) }
-    let(:function_with_params) { Docks::Containers::Function.new(name: name, params: [OpenStruct.new(name: "bar"), OpenStruct.new(name: "baz", default: "qux")]) }
+    let(:function_with_params) { Docks::Containers::Function.new(name: name, params: [OpenStruct.new(name: "bar"), OpenStruct.new(name: "baz", default: "'qux'")]) }
     let(:mixin_no_params) { Docks::Containers::Mixin.new(name: name) }
     let(:mixin_with_params) { Docks::Containers::Mixin.new(name: name, params: [OpenStruct.new(name: "bar"), OpenStruct.new(name: "baz", default: "'qux'")]) }
 
