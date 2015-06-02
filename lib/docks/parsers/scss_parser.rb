@@ -5,7 +5,7 @@ module Docks
     class SCSS < Base
 
       def initialize
-        @comment_symbol = "\/\/"
+        @comment_symbol = /\/\//
         @pattern_comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)*(?:^\s*?\/\/[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?\/\/[^\n]*\n)*)/m
         @comment_extractor = /(?:^\s*\/\/\*\n)(?<comments>(?:^\s*?\/\/[^\n]*\n)+)\s*(?<first_line>(?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m
         @comment_pattern = /^ *\/\/ ?/m

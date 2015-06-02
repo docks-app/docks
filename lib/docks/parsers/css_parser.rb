@@ -5,7 +5,7 @@ module Docks
     class CSS < Base
 
       def initialize
-        @comment_symbol = "\/\*"
+        @comment_symbol = /\/\*/
         @pattern_comment_extractor = /\s*\/\*\*(.*@(?:page|pattern).*?)\*\//m
         @comment_extractor = /\s*\/\*\*(?<comments>.*?)\*\/\s*(?<first_line>[^\n]*)/m
         @comment_pattern = /(^ *\/?\*? ?|\s*\*\/$)/m
