@@ -56,4 +56,16 @@ describe Docks::Containers::Symbol do
       expect(subject.public?).to be false
     end
   end
+
+  describe "#symbol_id" do
+    it "creates a symbol_id" do
+      expect(subject.symbol_id).to_not be nil
+    end
+
+    it "creates a symbol_id that is unique between two symbol types with the same name" do
+      descendants = ObjectSpace.each_object(Class).select { |klass| klass < described_class }.sample(2)
+      descendants.map! { |descendant| descendant.new(name: "foo") }
+      expect(descendants.first.symbol_id).to_not eq descendants.last.symbol_id
+    end
+  end
 end

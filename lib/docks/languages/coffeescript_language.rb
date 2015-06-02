@@ -9,17 +9,14 @@ module Docks
 
       def parser; Docks::Parsers::CoffeeScript.instance end
 
-      def friendly_presentation(symbol)
-        symbol_type, name = symbol[:symbol_type], symbol[:name]
+      def signature_for(symbol)
+        is_class = symbol.symbol_type == Types::Symbol::CLASS
+        return unless is_class || [Types::Symbol::MIXIN, Types::Symbol::FUNCTION, Types::Symbol::FACTORY].include?(symbol.symbol_type)
+        params = symbol.fetch(:params, [])
 
-        case symbol_type
-          when Docks::Types::Symbol::MIXIN, Docks::Types::Symbol::FUNCTION, Docks::Types::Symbol::FACTORY
-            presentation = "#{name} ="
-            presentation << " (#{(symbol[:param]).map { |param| "#{param[:name]}#{" = #{param[:default]}" if param[:default]}" }.join(", ")})" if symbol[:param] && symbol[:param].length
-            "#{presentation} -> # ..."
-
-          else name
-        end
+        presentation = is_class ? "class #{symbol.name}\n  constructor: " : "#{symbol.name} = "
+        presentation << "(#{params.map { |param| "#{param.name}#{" = #{param.default}" if param.default}" }.join(", ")}) " unless params.empty?
+        "#{presentation}-> # ..."
       end
     end
   end

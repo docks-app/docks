@@ -1,7 +1,5 @@
 require "spec_helper"
 
-name = "foo"
-
 describe Docks::Languages::Less do
   subject { Docks::Languages::Less.instance }
 
@@ -13,54 +11,29 @@ describe Docks::Languages::Less do
     end
   end
 
-  describe "#friendly_presentation" do
-    let(:variable) do
-      { symbol_type: Docks::Types::Symbol::VARIABLE, name: name }
+  describe "#signature_for" do
+    let(:name) { "foo" }
+
+    let(:mixin_no_params) { Docks::Containers::Mixin.new(name: name) }
+    let(:mixin_with_params) { Docks::Containers::Mixin.new(name: name, params: [OpenStruct.new(name: "bar"), OpenStruct.new(name: "baz", default: "'qux'")]) }
+
+    let(:something_else) { Docks::Containers::Component.new(name: name) }
+
+    it "gives a signature to mixins with no params" do
+      expect(subject.signature_for(mixin_no_params)).to eq ".#{name}() { /* ... */ }"
     end
 
-    let(:mixin_no_params) do
-      { symbol_type: Docks::Types::Symbol::MIXIN, name: name }
+    it "gives a signature to mixins with params, including default values" do
+      expect(subject.signature_for(mixin_with_params)).to eq ".#{name}(@bar, @baz: 'qux') { /* ... */ }"
     end
 
-    let(:mixin_with_params) do
-      {
-        symbol_type: Docks::Types::Symbol::MIXIN,
-        name: name,
-        param: [
-          { name: "bar" },
-          { name: "baz", default: "qux" }
-        ]
-      }
+    it "only prefixes variable names with @ if they don't already have it" do
+      mixin_with_params.params.first.name = "@bar"
+      expect(subject.signature_for(mixin_with_params)).to eq ".#{name}(@bar, @baz: 'qux') { /* ... */ }"
     end
 
-    let(:something_else) do
-      { symbol_type: Docks::Types::Symbol::COMPONENT, name: name }
-    end
-
-    it "gives a friendly presentation for variables" do
-      expect(subject.friendly_presentation(variable)).to eq "@#{name}"
-    end
-
-    it "only prefixes variable names with @ signs if they don't already exist" do
-      variable[:name] = "@#{name}"
-      expect(subject.friendly_presentation(variable)).to eq "@#{name}"
-    end
-
-    it "gives a friendly presentation for mixins with no params" do
-      expect(subject.friendly_presentation(mixin_no_params)).to eq ".#{name}() { /* ... */ }"
-    end
-
-    it "gives a friendly presentation for mixins with params, including default values" do
-      expect(subject.friendly_presentation(mixin_with_params)).to eq ".#{name}(@bar, @baz: qux) { /* ... */ }"
-    end
-
-    it "only prefixes variable names with dollar signs if they don't already exist" do
-      mixin_with_params[:param].first[:name] = "@bar"
-      expect(subject.friendly_presentation(mixin_with_params)).to eq ".#{name}(@bar, @baz: qux) { /* ... */ }"
-    end
-
-    it "defaults the friendly presentation to the name of the symbol" do
-      expect(subject.friendly_presentation(something_else)).to eq name
+    it "returns nil if the symbol is not a function/ mixin" do
+      expect(subject.signature_for(something_else)).to be nil
     end
   end
 end

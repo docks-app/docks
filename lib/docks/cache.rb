@@ -16,7 +16,7 @@ module Docks
         raise Docks::NoPatternError, "No pattern by the name of '#{pattern}' exists. Make sure you have a script, markup, or style file with that filename that is included in your 'docks_config' source directories."
       end
 
-      Docks::Containers::Pattern.new(Marshal::load(File.binread(cache_file)))
+      Marshal::load(File.binread(cache_file))
     end
 
     def self.pattern_library

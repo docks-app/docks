@@ -16,6 +16,10 @@ module Docks
       def private?; self[Docks::Tags::Access] == Docks::Types::Access::PRIVATE end
       def public?; !private? end
 
+      def symbol_id
+        "#{@symbol_type}-#{@name}"
+      end
+
       def summary
         Summary.new(self)
       end
