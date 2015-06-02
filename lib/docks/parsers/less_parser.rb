@@ -3,29 +3,7 @@ require_relative "scss_parser.rb"
 module Docks
   module Parsers
     class Less < SCSS
-
-      def initialize
-        super
-      end
-
-
-      # Public: Identifies the name and type of the parse result that is being parsed.
-      #
-      # first_code_line - The first line of actual code following a documentation
-      #                   comment block (should be the last matching group returned
-      #                   by #comment_extractor)
-      #
-      # Examples
-      #
-      #   Docks::Parsers::Less.instance.parse_result_details(".clearfix() {")
-      #   # => "clearfix", "mixin"
-      #
-      #   Docks::Parsers::Less.instance.parse_result_details("&--is-active {")
-      #   # => "--is-active", "state"
-      #
-      # Returns a tuple of the name and type, both as Strings.
-
-      def parse_result_details(first_code_line)
+      def symbol_details_from_first_line(first_code_line)
         first_code_line.strip!
 
         type = case first_code_line
@@ -37,7 +15,7 @@ module Docks
         end
 
         name = first_code_line.match(/^\s*&?[@\.#]?\s*([^\s\(\:]*)/).captures.first
-        return name, type
+        { name: name, symbol_type: type }
       end
     end
   end

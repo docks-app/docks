@@ -1,10 +1,9 @@
 /**
 
-A simple button. Nice.
+ * A simple button. Nice.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis.
- Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
+ * Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+ * Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis. Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
 
 */
 
@@ -25,7 +24,8 @@ Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omni
  * A button that is indicating the loading of content.
  *
  * @demo_type joint
- * @set_by :loading? */
+ * @set_by :loading?
+ */
 
 .button--is-loading {
 }

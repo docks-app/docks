@@ -2,7 +2,6 @@ require_relative "base_language.rb"
 require_relative "common_types/markup_language.rb"
 
 require_relative "../renderers/erb_renderer.rb"
-require_relative "../parsers/erb_parser.rb"
 
 module Docks
   module Languages
@@ -16,7 +15,6 @@ module Docks
         functionize_helper(helper_name, arguments, start_with: "<%= ", end_with: " %>")
       end
 
-      def parser; Docks::Parsers::ERB.instance end
       def renderer; Docks::Renderers::ERB.new end
     end
   end

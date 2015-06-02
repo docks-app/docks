@@ -9,6 +9,7 @@ describe Docks::Containers::Variation do
     expect(subject.precludes).to eq []
     expect(subject.set_by).to eq []
     expect(subject.include_with).to eq []
+    expect(subject.demo_type).to eq Docks::Types::Demo::SELECT
   end
 
   describe "#has_demo?" do

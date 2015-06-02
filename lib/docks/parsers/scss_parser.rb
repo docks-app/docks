@@ -5,33 +5,12 @@ module Docks
     class SCSS < Base
 
       def initialize
-        @comment_symbol = /\/\//
-        @pattern_comment_extractor = /(?:^\s*\/\/\*\n)((?:^\s*?\/\/[^\n]*\n)*(?:^\s*?\/\/[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?\/\/[^\n]*\n)*)/m
-        @comment_extractor = /(?:^\s*\/\/\*\n)(?<comments>(?:^\s*?\/\/[^\n]*\n)+)\s*(?<first_line>(?:@\w*\s*|\$|%|\.|#|\&[\.#(?:\-\-)])[\w\-_]*)/m
-        @comment_pattern = /^ *\/\/ ?/m
+        @comment_pattern = /(?:\/\/|\/\*|\*\/?)/
+        @first_non_code_line_pattern = /[\-\.#\w\[&@]/
+        setup_regexes
       end
 
-
-      # Public: Identifies the name and type of the parse result that is being parsed.
-      #
-      # first_code_line - The first line of actual code following a documentation
-      #                   comment block (should be the last matching group returned
-      #                   by #comment_extractor)
-      #
-      # Examples
-      #
-      #   Docks::Parsers::SCSS.instance.parse_result_details("@mixin clearfix() {")
-      #   # => "clearfix", "mixin"
-      #
-      #   Docks::Parsers::SCSS.instance.parse_result_details("&--is-active {")
-      #   # => "--is-active", "state"
-      #
-      #   Docks::Parsers::SCSS.instance.parse_result_details("%full-width { width: 100% }")
-      #   # => "full-width", "placeholder"
-      #
-      # Returns a tuple of the name and type, both as Strings.
-
-      def parse_result_details(first_code_line)
+      def symbol_details_from_first_line(first_code_line)
         first_code_line.strip!
 
         type = case first_code_line
@@ -45,7 +24,7 @@ module Docks
         end
 
         name = first_code_line.match(/^@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
-        return name, type
+        { name: name, symbol_type: type }
       end
     end
   end

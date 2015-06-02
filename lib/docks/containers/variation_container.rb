@@ -18,6 +18,7 @@ module Docks
 
       def set_defaults
         self[:active] = false if self[:active].nil?
+        self[:demo_type] ||= Types::Demo::SELECT
 
         [:activate_with, :preclude, :set_by, :include_with].each do |defaults_to_array|
           value = self[defaults_to_array]

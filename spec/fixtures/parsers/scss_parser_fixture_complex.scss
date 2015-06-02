@@ -3,17 +3,18 @@
 // @tagline Those sweet, sweet clicks.
 // @since 1.0
 
-//*
-// A simple button. Nice.
-//
-// Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis. Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
-//
-// @variant --primary           (demo type: joint, set by: :primary?)
-// @variant --destroy           (demo type: joint, set by: :destroy?) - This button indicates that you want to remove something.
-// @variant --destroy-no-hover  (demo type: joint)
-// @variant --icon              (demo type: hidden)
-// @variant --large             (demo type: select, set by: :size (SIZE_LARGE)) - A much larger button for special situations.
-// @variant --plain             (demo type: select, precludes: --is-disabled, set by: :plain?)
+/**
+ * A simple button. Nice.
+ *
+ * Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis. Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
+ *
+ * @variant --primary           (demo type: joint, set by: :primary?)
+ * @variant --destroy           (demo type: joint, set by: :destroy?) - This button indicates that you want to remove something.
+ * @variant --destroy-no-hover  (demo type: joint)
+ * @variant --icon              (demo type: hidden)
+ * @variant --large             (demo type: select, set by: :size (SIZE_LARGE)) - A much larger button for special situations.
+ * @variant --plain             (demo type: select, precludes: --is-disabled, set by: :plain?)
+ */
 
 .button {
   cursor: pointer;

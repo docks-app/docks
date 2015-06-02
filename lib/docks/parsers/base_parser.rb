@@ -3,38 +3,42 @@ module Docks
     class Base
       include Singleton
 
-      attr_reader :comment_symbol,
-                  :pattern_comment_extractor,
-                  :comment_extractor,
-                  :comment_pattern
+      attr_accessor :comment_pattern,
+                    :comment_line_pattern,
+                    :pattern_block_extractor,
+                    :symbol_block_extractor
 
       def initialize
-        @comment_symbol = "#"
-        @pattern_comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
-        @comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m
-        @comment_pattern = /^\s*#\s?\n?/m
+        @comment_pattern = /#/
+        setup_regexes
       end
 
       def parse(file)
         symbols = []
-        file_contents = File.exists?(file) ? File.read(file).gsub(/\r\n?/, "\n") : file
+        file_contents, file_given = if File.exists?(file)
+          [File.read(file).gsub(/\r\n?/, "\n"), true]
+        else
+          [file, false]
+        end
 
         # Get rid of the page block and, in the process, add the page block
         # to the set of parse results.
         lines_from_pattern_block = 0
-        file_contents.sub!(pattern_comment_extractor) do |page_comment_block|
-          start_line_number = $`.lines.count
-          lines_from_pattern_block = start_line_number + page_comment_block.lines.count
+        file_contents.sub!(@pattern_block_extractor) do |page_comment_block|
+          start_line_number = $`.lines.count + 1
+          lines_from_pattern_block = page_comment_block.lines.count
+          page_comment_block.sub!(/#{@comment_pattern}\*\s*/, '')
 
-          page_comment_block.sub!(/#{comment_symbol}\*\s*/, '')
-          index_of_other_comment = page_comment_block.index("#{comment_symbol}*")
-          replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
-          parseable_block = index_of_other_comment.nil? ? page_comment_block : page_comment_block[0..index_of_other_comment - 1]
-
-          lines_from_pattern_block -= replacement.lines.count
+          parseable_block, replacement = if page_comment_block.index(/#{@comment_pattern}\*$/)
+            lines_from_pattern_block -= 1
+            lines = page_comment_block.lines.to_a
+            [lines[0...-1].join("\n"), lines.last]
+          else
+            [page_comment_block, ""]
+          end
 
           symbol = parse_comment_block(parseable_block)
-          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: start_line_number)
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: start_line_number) if file_given
           symbols << symbol
 
           replacement
@@ -42,12 +46,12 @@ module Docks
 
         # Scan through each symbols comment block and add it to the list of parsed symbols.
         last_match_position = 0
-        while (match = file_contents.match(comment_extractor, last_match_position))
-          symbol_details = {}
-          symbol_details[:name], symbol_details[:symbol_type] = parse_result_details(match[:first_line])
+        while (match = file_contents.match(@symbol_block_extractor, last_match_position))
+          symbol_details = symbol_details_from_first_line(match[:first_line])
           symbol = Containers.container_for(symbol_details[:symbol_type]).new(symbol_details)
           parse_comment_block(match[:comments], symbol)
-          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: lines_from_pattern_block + match.pre_match.lines.count + match[0].lines.count)
+
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: lines_from_pattern_block + match.pre_match.lines.count + match[0].lines.count) if file_given
           symbols << symbol
 
           last_match_position = match.offset(0).last
@@ -65,7 +69,7 @@ module Docks
 
         last_tag = nil
 
-        comment_block.gsub(comment_pattern, "").strip.split("\n").each do |comment_line|
+        comment_block.gsub(@comment_line_pattern, "").strip.split("\n").each do |comment_line|
           line_details = comment_line.match(@tag_pattern)
           next if line_details.nil? || line_details[:text].nil?
 
@@ -106,6 +110,17 @@ module Docks
         end
 
         symbol
+      end
+
+      protected
+
+      def setup_regexes
+        return if @comment_pattern.nil?
+
+        @first_non_code_line_pattern ||= /\w/
+        @pattern_block_extractor ||= /^ *#{@comment_pattern}\*(.*@(?:page|pattern).*?)#{@comment_pattern}\*/m
+        @symbol_block_extractor ||= /^ *#{@comment_pattern}\*(?<comments>.*?)^[^#{@comment_pattern}]*?(?<first_line>#{@first_non_code_line_pattern}[^\n]*)/m
+        @comment_line_pattern ||= /^ *#{@comment_pattern} ?/m
       end
     end
   end

@@ -2,9 +2,9 @@ require_relative "base_parser.rb"
 
 module Docks
   module Parsers
-    class CoffeeScript < Base
+    class JavaScript < Base
       def initialize
-        @comment_pattern = /#/
+        @comment_pattern = /(?:\/\/|\/\*|\*\/?)/
         @first_non_code_line_pattern = /[\w\$]/
         setup_regexes
       end

@@ -5,30 +5,12 @@ module Docks
     class CSS < Base
 
       def initialize
-        @comment_symbol = /\/\*/
-        @pattern_comment_extractor = /\s*\/\*\*(.*@(?:page|pattern).*?)\*\//m
-        @comment_extractor = /\s*\/\*\*(?<comments>.*?)\*\/\s*(?<first_line>[^\n]*)/m
-        @comment_pattern = /(^ *\/?\*? ?|\s*\*\/$)/m
+        @comment_pattern = /(?:\/\*|\*\/?)/
+        @first_non_code_line_pattern = /[\-\.#\w\[]/
+        setup_regexes
       end
 
-
-      # Public: Identifies the name and type of the parse result that is being parsed.
-      #
-      # first_code_line - The first line of actual code following a documentation
-      #                   comment block (should be the last matching group returned
-      #                   by #comment_extractor)
-      #
-      # Examples
-      #
-      #   Docks::Parsers::CSS.instance.parse_result_details(".is-active {")
-      #   # => "is-active", "state"
-      #
-      #   Docks::Parsers::CSS.instance.parse_result_details(".tab-bar {")
-      #   # => "tab-bar", "component"
-      #
-      # Returns a tuple of the name and type, both as Strings.
-
-      def parse_result_details(first_code_line)
+      def symbol_details_from_first_line(first_code_line)
         first_code_line.strip!
 
         type = case first_code_line
@@ -38,7 +20,7 @@ module Docks
         end
 
         name = first_code_line.match(/^\s*[\.#]([^\s\:\.#]*)/).captures.first
-        return name, type
+        { name: name, symbol_type: type }
       end
     end
   end

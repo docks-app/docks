@@ -93,7 +93,8 @@
  * Two or more buttons that control the same function.
 
  * @title Segmented Button Group
- * @demo_type own */
+ * @demo_type own
+ */
 
 .button__segmented-group {
   display: flex;

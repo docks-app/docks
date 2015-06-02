@@ -31,28 +31,6 @@ describe Docks::Parsers::Base do
         end
       end
     end
-
-    it "adds the line number for the start of the pattern block" do
-      symbols = example_parser.parse(example_files.first)
-      pattern_symbol = symbols.find { |symbol| !symbol.pattern.nil?  }
-      expect(pattern_symbol.source.line_number).to be 0
-    end
-
-    it "adds line number for the first line following all other comment blocks" do
-      expected_positions = [
-        [18, 35, 56, 89, 107], # see complex fixture
-        [8, 25]
-      ]
-
-      example_files.each_with_index do |file, index|
-        expected_line_numbers = expected_positions[index]
-        symbols = example_parser.parse(file).select { |symbol| symbol.pattern.nil? }
-
-        symbols.each_with_index do |symbol, symbol_index|
-          expect(symbol.source.line_number).to be expected_line_numbers[symbol_index]
-        end
-      end
-    end
   end
 
   describe "#parse_comment_block" do

@@ -10,7 +10,7 @@ describe Docks::Parser do
 
   describe ".parse" do
     let(:style_file) { File.expand_path("../../fixtures/parsers/scss_parser_fixture_basic.scss", __FILE__) }
-    let(:script_file) { File.expand_path("../../fixtures/parsers/coffee_parser_fixture_basic.coffee", __FILE__) }
+    let(:script_file) { File.expand_path("../../fixtures/parsers/coffeescript_parser_fixture_basic.coffee", __FILE__) }
     let(:style_parser) { Docks::Parsers::SCSS.instance }
     let(:script_parser) { Docks::Parsers::CoffeeScript.instance }
 

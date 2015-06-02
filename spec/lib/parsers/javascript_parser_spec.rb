@@ -1,14 +1,14 @@
 require "spec_helper"
 
-describe Docks::Parsers::CoffeeScript do
-  subject { Docks::Parsers::CoffeeScript.instance }
+describe Docks::Parsers::JavaScript do
+  subject { Docks::Parsers::JavaScript.instance }
 
   before :each do
     Docks::Tags.register_bundled_tags
   end
 
-  let(:basic_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "coffeescript_parser_fixture_basic.coffee") }
-  let(:complex_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "coffeescript_parser_fixture_complex.coffee") }
+  let(:basic_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "javascript_parser_fixture_basic.js") }
+  let(:complex_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "javascript_parser_fixture_complex.js") }
 
   describe "#parse" do
     let(:basic_parsed_symbols) { subject.parse(basic_fixture) }
@@ -28,18 +28,6 @@ describe Docks::Parsers::CoffeeScript do
       complex_parsed_symbols = subject.parse(File.read(complex_fixture).sub("@pattern", "@page"))
       expect(complex_parsed_symbols.first[:page]).to_not be nil
     end
-
-    it "adds line number for the first line following all other comment blocks" do
-      expected_line_numbers = [10, 20]
-      basic_parsed_symbols.each_with_index do |symbol, index|
-        expect(symbol.source.line_number).to be expected_line_numbers[index]
-      end
-
-      expected_line_numbers = [3, 17, 38, 44, 52, 77]
-      complex_parsed_symbols.each_with_index do |symbol, index|
-        expect(symbol.source.line_number).to be expected_line_numbers[index]
-      end
-    end
   end
 
   describe "#symbol_block_extractor" do
@@ -53,21 +41,42 @@ describe Docks::Parsers::CoffeeScript do
     let(:basic_comment) { "This is a comment" }
     let(:complex_comment) { "# This comment has ##some extra comment-like symbols/characters #" }
 
-    it "strips line comments" do
-      expect("# #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
+    context "when using line comments" do
+      it "strips line comments" do
+        expect("// #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
+      end
+
+      it "strips line comments with leading whitespace" do
+        expect("    // #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
+      end
+
+      it "strips line complex comments" do
+        expect("// #{complex_comment}".gsub(subject.comment_line_pattern, "")).to eq complex_comment
+      end
+
+      it "leaves empty lines intact" do
+        content = "// Foo\n//\n// 1. Bar\n\n// 2. Baz"
+        expect(content.gsub(subject.comment_line_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
+      end
     end
 
-    it "strips line comments with leading whitespace" do
-      expect("    # #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
-    end
+    context "when using block commments" do
+      it "strips line comments" do
+        expect("* #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
+      end
 
-    it "strips line complex comments" do
-      expect("# #{complex_comment}".gsub(subject.comment_line_pattern, "")).to eq complex_comment
-    end
+      it "strips line comments with leading whitespace" do
+        expect("    * #{basic_comment}".gsub(subject.comment_line_pattern, "")).to eq basic_comment
+      end
 
-    it "leaves empty lines intact" do
-      content = "# Foo\n#\n# 1. Bar\n\n# 2. Baz"
-      expect(content.gsub(subject.comment_line_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
+      it "strips line complex comments" do
+        expect("* #{complex_comment}".gsub(subject.comment_line_pattern, "")).to eq complex_comment
+      end
+
+      it "leaves empty lines intact" do
+        content = "* Foo\n*\n* 1. Bar\n\n* 2. Baz"
+        expect(content.gsub(subject.comment_line_pattern, "")).to eq "Foo\n\n1. Bar\n\n2. Baz"
+      end
     end
   end
 

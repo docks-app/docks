@@ -2,7 +2,6 @@ require_relative "base_language.rb"
 require_relative "common_types/markup_language.rb"
 
 require_relative "../renderers/haml_renderer.rb"
-require_relative "../parsers/haml_parser.rb"
 
 module Docks
   module Languages
@@ -17,7 +16,6 @@ module Docks
       end
 
       def renderer; Docks::Renderers::Haml.new end
-      def parser; Docks::Parsers::Haml.instance end
     end
   end
 end
