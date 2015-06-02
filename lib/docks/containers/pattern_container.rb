@@ -9,7 +9,6 @@ module Docks
 
       SYMBOL_SOURCES = [
         Types::Languages::STYLE,
-        Types::Languages::MARKUP,
         Types::Languages::SCRIPT
       ]
 
@@ -61,13 +60,24 @@ module Docks
         @details[Tags::Group.instance.name] || Types::Symbol::COMPONENT.capitalize
       end
 
-      def has_markup?
-        @symbols[Types::Languages::MARKUP].length > 0 ||
-          @symbols[Types::Languages::STYLE].length > 0
+      def structure_symbols
+        @symbols[Types::Languages::STYLE]
       end
 
+      alias_method :style_symbols, :structure_symbols
+
+      def has_structure?
+        structure_symbols.length > 0
+      end
+
+      def behavior_symbols
+        @symbols[Types::Languages::SCRIPT]
+      end
+
+      alias_method :script_symbols, :behavior_symbols
+
       def has_behavior?
-        @symbols[Types::Languages::SCRIPT].length > 0
+        behavior_symbols.length > 0
       end
 
       Containers::TOP_LEVEL_SYMBOLS.each do |symbol|
@@ -78,12 +88,6 @@ module Docks
 
       def symbols
         @symbols.values.flatten
-      end
-
-      SYMBOL_SOURCES.each do |symbol_source|
-        define_method("#{symbol_source}_symbols".to_sym) do
-          @symbols[symbol_source]
-        end
       end
 
       def find(descriptor)

@@ -63,19 +63,44 @@ describe Docks::Containers::Pattern do
     end
   end
 
-  describe "#has_markup" do
-    it "has no markup when there are no markup or style results" do
-      expect(pattern.has_markup?).to be false
-    end
-
-    it "has markup when there are markup symbols" do
-      pattern.add(:markup, Docks::Containers::Component.new)
-      expect(pattern.has_markup?).to be true
-    end
-
-    it "has markup when there are style results" do
+  describe "#structure_symbols" do
+    before(:each) do
       pattern.add(:style, Docks::Containers::Component.new)
-      expect(pattern.has_markup?).to be true
+      pattern.add(:script, Docks::Containers::Component.new)
+    end
+
+    it "returns all symbols from style sources" do
+      expect(pattern.structure_symbols.length).to be 1
+    end
+
+    it "is aliased to #style_symbols" do
+      expect(pattern.style_symbols).to be pattern.structure_symbols
+    end
+  end
+
+  describe "#has_structure?" do
+    it "has no structure when there are no style results" do
+      expect(pattern.has_structure?).to be false
+    end
+
+    it "has structure when there are style results" do
+      pattern.add(:style, Docks::Containers::Component.new)
+      expect(pattern.has_structure?).to be true
+    end
+  end
+
+  describe "#behavior_symbols" do
+    before(:each) do
+      pattern.add(:style, Docks::Containers::Component.new)
+      pattern.add(:script, Docks::Containers::Component.new)
+    end
+
+    it "returns all symbols from style sources" do
+      expect(pattern.behavior_symbols.length).to be 1
+    end
+
+    it "is aliased to #script_symbols" do
+      expect(pattern.script_symbols).to be pattern.behavior_symbols
     end
   end
 
@@ -98,29 +123,29 @@ describe Docks::Containers::Pattern do
       pattern.add(:script, dummy_symbol_1)
       pattern.add(:style, dummy_symbol_2)
 
-      expect(pattern.script_symbols.length).to be 1
-      expect(pattern.script_symbols.first).to be dummy_symbol_1
-      expect(pattern.style_symbols.length).to be 1
-      expect(pattern.style_symbols.first).to be dummy_symbol_2
+      expect(pattern.behavior_symbols.length).to be 1
+      expect(pattern.behavior_symbols.first).to be dummy_symbol_1
+      expect(pattern.structure_symbols.length).to be 1
+      expect(pattern.structure_symbols.first).to be dummy_symbol_2
     end
 
     it "adds an array of symbols to the passed source" do
       pattern.add(:script, [dummy_symbol_1, dummy_symbol_2])
 
-      expect(pattern.script_symbols.length).to be 2
-      expect(pattern.script_symbols).to eq [dummy_symbol_1, dummy_symbol_2]
+      expect(pattern.behavior_symbols.length).to be 2
+      expect(pattern.behavior_symbols).to eq [dummy_symbol_1, dummy_symbol_2]
     end
 
     it "doesn't add a pattern symbol to the passed source" do
       pattern.add(:script, pattern_symbol)
-      expect(pattern.script_symbols).to be_empty
+      expect(pattern.behavior_symbols).to be_empty
     end
 
     it "still adds the other symbols in a passed array even if a pattern symbol is among them" do
       pattern.add(:script, [dummy_symbol_1, pattern_symbol, dummy_symbol_2])
 
-      expect(pattern.script_symbols.length).to be 2
-      expect(pattern.script_symbols).to eq [dummy_symbol_1, dummy_symbol_2]
+      expect(pattern.behavior_symbols.length).to be 2
+      expect(pattern.behavior_symbols).to eq [dummy_symbol_1, dummy_symbol_2]
     end
   end
 
@@ -128,9 +153,9 @@ describe Docks::Containers::Pattern do
     it "removes a symbol" do
       symbol = Docks::Containers::Symbol.new
       pattern.add(:style, symbol)
-      expect(pattern.style_symbols).to include symbol
+      expect(pattern.structure_symbols).to include symbol
       pattern.remove(symbol)
-      expect(pattern.style_symbols).not_to include symbol
+      expect(pattern.structure_symbols).not_to include symbol
     end
   end
 
@@ -194,26 +219,13 @@ describe Docks::Containers::Pattern do
       symbol_three = Docks::Containers::Symbol.new(name: "baz")
       pattern.add(:style, symbol_one)
       pattern.add(:script, symbol_two)
-      pattern.add(:markup, symbol_three)
+      pattern.add(:style, symbol_three)
 
       symbols = pattern.symbols
       expect(symbols.length).to be 3
       expect(symbols).to include symbol_one
       expect(symbols).to include symbol_two
       expect(symbols).to include symbol_three
-    end
-  end
-
-  describe "symbol source associations" do
-    it "includes a method to access all symbols from a given source" do
-      Docks::Containers::Pattern::SYMBOL_SOURCES.each do |source|
-        symbol = Docks::Containers::Symbol.new(name: source.to_s)
-        pattern.add(source, symbol)
-        symbols_from_source = pattern.send("#{source.to_s}_symbols".to_sym)
-
-        expect(symbols_from_source.length).to be 1
-        expect(symbols_from_source.first).to be symbol
-      end
     end
   end
 
