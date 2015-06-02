@@ -6,8 +6,8 @@ module Docks
 
       def initialize
         @comment_symbol = "\/\*"
-        @page_comment_extractor = /\s*\/\*\*(.*@(?:page|pattern).*?)\*\//m
-        @comment_extractor = /\s*\/\*\*(.*?)\*\/\s*([^\n]*)/m
+        @pattern_comment_extractor = /\s*\/\*\*(.*@(?:page|pattern).*?)\*\//m
+        @comment_extractor = /\s*\/\*\*(?<comments>.*?)\*\/\s*(?<first_line>[^\n]*)/m
         @comment_pattern = /(^ *\/?\*? ?|\s*\*\/$)/m
       end
 

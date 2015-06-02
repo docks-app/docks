@@ -1,3 +1,7 @@
+Dir[File.expand_path("../naming_conventions/*.rb", __FILE__)].each do |convention|
+  require convention
+end
+
 module Docks
   module Naming
     PATTERN = /^([^:]*)::/
@@ -32,6 +36,10 @@ module Docks
 
       result[:symbol] = str
       result
+    end
+
+    def self.convention
+      @@convention ||= Conventions::BEM.instance
     end
   end
 end

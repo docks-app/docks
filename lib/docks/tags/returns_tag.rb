@@ -19,42 +19,24 @@ module Docks
         @synonyms = [:return]
       end
 
+      def process(symbol)
+        symbol.update(@name) do |returns|
+          returns = multiline_description(returns) do |first_line|
+            first_line.strip!
+            if match = first_line.match(/nothing\s*\-?\s*(?<description>.*)/i)
+              { description: match[:description] }
 
-      # Public: The return type is denoted as it is for `param` — one or more
-      # types in curly braces immediately following the tag, separated by
-      # commas, pipes, or spaces. Since there can be many types, the types are
-      # always returned as an array. The (optional) description is also
-      # treated the same was as `param`: you can have a single or multiline
-      # description, starting on the line of the tag or the following line,
-      # and optionally separated from the type(s) by a hyphen.
-      #
-      # content - An Array of Strings showing the lines parsed from the
-      # documentation.
-      #
-      # Examples
-      #
-      #   Docks::Tags::Returns.process(["{String | Array}"])
-      #   # => { types: ["String", "Array"] }
-      #
-      #   Docks::Tags::Returns.process(["{ Object } - The tag", "details."])
-      #   # => { types: ["Object"], description: "The tag details." }
-      #
-      # Returns a Hash showing the type and description of the value this
-      # symbol returns.
+            else
+              match = first_line.match(/\{?(?<type>[^\}\-]*)\}?(?:\s*\-?\s*(?<description>.*))?/)
+              {
+                types: split_types(match[:type].strip),
+                description: match[:description]
+              }
+            end
+          end
 
-      def process(content)
-        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          first_line.strip!
-          return nil if first_line.length == 0 || first_line.downcase == "nothing"
-
-          match = first_line.match(/\s*\{?(?<type>[^\}]*)\}?(?:\s*\-?\s*(?<description>.*))?/)
-          return nil if match.nil?
-
-          description = match[:description]
-          {
-            types: Docks::Processors::BreakApartTypes.process(match[:type]),
-            description: description.nil? || description.length == 0 ? nil : match[:description]
-          }
+          returns[:types] = nil if Array(returns[:types]).empty?
+          OpenStruct.new(returns)
         end
       end
     end

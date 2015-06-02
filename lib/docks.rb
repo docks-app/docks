@@ -14,13 +14,11 @@ end
 
 require File.join(File.dirname(__FILE__), "docks", "types.rb")
 require File.join(File.dirname(__FILE__), "docks", "configuration.rb")
+require File.join(File.dirname(__FILE__), "docks", "naming.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "parsers/base_parser.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "parsers/*.rb")].each { |file| require file }
-
-require File.join(File.dirname(__FILE__), "docks", "processors/base_processor.rb")
-Dir[File.join(File.dirname(__FILE__), "docks", "processors/*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "post_processors/base_post_processor.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "post_processors/**/*.rb")].each { |file| require file }

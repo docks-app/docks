@@ -16,10 +16,18 @@ describe Docks::Tags::Public do
   end
 
   describe "#process" do
-    it "sets the private attribute to be true when it exists at all" do
-      expect(subject.process("")).to be true
-      expect(subject.process("true")).to be true
-      expect(subject.process("private")).to be true
+    let(:symbol) { Docks::Containers::Symbol.new(public: true) }
+
+    before :each do
+      subject.process(symbol)
+    end
+
+    it "sets the access attribute to be public" do
+      expect(symbol.access).to be Docks::Types::Access::PUBLIC
+    end
+
+    it "removes the public attribute" do
+      expect(symbol.public).to be nil
     end
   end
 end

@@ -17,13 +17,6 @@ module Docks
         @name = :method
         @multiline = false
       end
-
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `method` attribute will be marked as `true`.
-
-      def process(content)
-        true
-      end
     end
   end
 end

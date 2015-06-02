@@ -13,8 +13,10 @@ describe Docks::Tags::Helper do
 
   describe "#process" do
     it "connects multiline content with line breaks" do
-      content = ["foo", "bar"]
-      expect(subject.process(content)).to eq Docks::Processors::JoinWithLineBreaks.process(content)
+      helper = ["foo", "bar"]
+      symbol = Docks::Containers::Symbol.new(helper: helper.dup)
+      subject.process(symbol)
+      expect(symbol[subject.name]).to eq helper.join("\n")
     end
   end
 end

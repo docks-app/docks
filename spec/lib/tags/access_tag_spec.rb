@@ -12,15 +12,21 @@ describe Docks::Tags::Access do
   end
 
   describe "#process" do
+    let(:symbol) { Docks::Containers::Symbol.new }
+
     it "allows one of the included access types" do
       Docks::Types::Access.constants.each do |const|
         access_type = Docks::Types::Access.const_get(const)
-        expect(subject.process(access_type)).to eq access_type
+        symbol.access = access_type
+        subject.process(symbol)
+        expect(symbol.access).to eq access_type
       end
     end
 
-    it "returns nil when none of the included access types are provided" do
-      expect(subject.process("none of your business")).to be nil
+    it "sets the access to public for any non-recognized access type" do
+      symbol.access = "foo"
+      subject.process(symbol)
+      expect(symbol.access).to eq Docks::Types::Access::PUBLIC
     end
   end
 end

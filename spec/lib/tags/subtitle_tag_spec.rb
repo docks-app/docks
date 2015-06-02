@@ -14,11 +14,4 @@ describe Docks::Tags::Subtitle do
   it "only allows one tag per file" do
     expect(subject.only_one_per_file_allowed?).to be true
   end
-
-  describe "#process" do
-    it "does not perform any processing" do
-      content = "foo"
-      expect(subject.process(content)).to eq content
-    end
-  end
 end

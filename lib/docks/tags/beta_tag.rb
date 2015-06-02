@@ -18,36 +18,18 @@ module Docks
         @synonyms = [:experimental]
       end
 
-
-      # Public: The beta notice is very simple — include the version in
-      # which the beta was added on the first line, plus an (optional)
-      # single or multiline description (if multiline, you can start the
-      # description on the same line as the version by separating it from the
-      # version with a hyphen).
-      #
-      # content - An Array of Strings showing the lines parsed from the
-      # documentation.
-      #
-      # Examples
-      #
-      #   Docks::Tags::Beta.process(["v2.0 - Beta details."])
-      #   # => { version: "v2.0", description: "Beta details." }
-      #
-      #   Docks::Tags::Beta.process(["Version 2.3.3-b2 - The beta", "details."])
-      #   # => { version: "Version 2.3.3-b2", description: "The beta details." }
-      #
-      # Returns a Hash showing the version and description of the beta notice.
-
-      def process(content)
-        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          match = first_line.match(/\s*(?<version>.*?)(?:\s+\-\s+(?<description>.*))?$/)
-          return nil if match.nil?
-
-          description = match[:description]
-          {
-            version: match[:version],
-            description: description.nil? || description.length == 0 ? nil : match[:description]
-          }
+      def process(symbol)
+        symbol.update(@name) do |beta|
+          beta = multiline_description(beta) do |first_line|
+            if match = first_line.match(/\s*(?<version>.*?)(?:\s+\-\s+(?<description>.*))?$/)
+              description = match[:description]
+              {
+                version: match[:version],
+                description: description.nil? || description.length == 0 ? nil : match[:description]
+              }
+            end
+          end
+          OpenStruct.new(beta)
         end
       end
     end

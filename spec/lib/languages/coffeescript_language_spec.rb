@@ -1,7 +1,5 @@
 require "spec_helper"
 
-name = "foo"
-
 describe Docks::Languages::CoffeeScript do
   subject { Docks::Languages::CoffeeScript.instance }
 
@@ -17,36 +15,27 @@ describe Docks::Languages::CoffeeScript do
     end
   end
 
-  describe "#friendly_presentation" do
-    let(:function_no_params) do
-      { symbol_type: Docks::Types::Symbol::FUNCTION, name: name }
+  describe "#signature_for" do
+    let(:name) { "foo" }
+    let(:function_no_params) { Docks::Containers::Function.new(name: name) }
+    let(:function_with_params) { Docks::Containers::Function.new(name: name, params: [OpenStruct.new(name: "bar"), OpenStruct.new(name: "baz", default: "'qux'")]) }
+    let(:klass) { Docks::Containers::Klass.new(name: name.capitalize, params: function_with_params.params) }
+    let(:something_else) { Docks::Containers::Variable.new(name: "bar") }
+
+    it "gives a signature to functions with no params" do
+      expect(subject.signature_for(function_no_params)).to eq "#{function_no_params.name} = -> # ..."
     end
 
-    let(:function_with_params) do
-      {
-        symbol_type: Docks::Types::Symbol::FUNCTION,
-        name: name,
-        param: [
-          { name: "bar" },
-          { name: "baz", default: "qux" }
-        ]
-      }
+    it "gives a signature to functions with params, including default values" do
+      expect(subject.signature_for(function_with_params)).to eq "#{function_with_params.name} = (bar, baz = 'qux') -> # ..."
     end
 
-    let(:something_else) do
-      { symbol_type: Docks::Types::Symbol::COMPONENT, name: name }
+    it "gives a signature for classes with params, including default values" do
+      expect(subject.signature_for(klass)).to eq "class #{klass.name}\n  constructor: (bar, baz = 'qux') -> # ..."
     end
 
-    it "gives a friendly presentation for functions with no params" do
-      expect(subject.friendly_presentation(function_no_params)).to eq "#{name} = -> # ..."
-    end
-
-    it "gives a friendly presentation for functions with params, including default values" do
-      expect(subject.friendly_presentation(function_with_params)).to eq "#{name} = (bar, baz = qux) -> # ..."
-    end
-
-    it "defaults the friendly presentation to the name of the symbol" do
-      expect(subject.friendly_presentation(something_else)).to eq name
+    it "doesn't provide a signature for a non-function symbol" do
+      expect(subject.signature_for(something_else)).to be nil
     end
   end
 end

@@ -16,16 +16,10 @@ module Docks
       def initialize
         @name = :factory
         @multiline = false
-        @post_processors = [
-          Docks::PostProcessors::BuildClassesAndFactories
-        ]
       end
 
-      # Public: processes the parsed content. If any content was identified by
-      # the parser, the `factory` attribute will be marked as `true`.
-
-      def process(content)
-        true
+      def process(symbol)
+        symbol[@name] = true
       end
     end
   end

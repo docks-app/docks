@@ -16,7 +16,14 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.after :each do
+  config.around do |example|
+    Docks::Tags.register_bundled_tags
+
+    example.run
+
     Docks.config.send(:reset)
+    Docks::Languages.send(:clean)
+    Docks::Tags.send(:clean)
+    Docks::Process.send(:clean)
   end
 end

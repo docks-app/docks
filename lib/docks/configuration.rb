@@ -179,7 +179,6 @@ module Docks
 
   def self.pre_configuration
     Tags.register_bundled_tags
-    Process.register_bundled_post_processors
     Languages.register_bundled_languages
     SymbolSources.register_bundled_symbol_sources
   end

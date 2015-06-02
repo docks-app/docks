@@ -19,7 +19,7 @@ module Docks
         details[:has_dates?] = true
       end
 
-      unless symbol.modified.nil?
+      if symbol.respond_to?(:modified) && !symbol.modified.nil?
         details[:tags] << :modified
         details[:has_dates?] = true
       end

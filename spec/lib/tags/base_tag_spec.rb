@@ -15,8 +15,7 @@ describe Docks::Tags::Base do
     expect(subject.multiple_allowed?).to be false
   end
 
-  it "returns the passed content when processing by default" do
-    content = "foo"
-    expect(subject.process(content)).to eq content
+  it "can be included in parse results" do
+    expect(subject.parseable?).to be true
   end
 end

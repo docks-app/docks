@@ -17,35 +17,19 @@ module Docks
         @synonyms = [:introduced_in]
       end
 
+      def process(symbol)
+        symbol.update(@name) do |since|
+          since = multiline_description(since) do |first_line|
+            if match = first_line.match(/\s*(?<version>[0-9a-zA\.\-_]*)(?:\s+\-?\s*(?<description>.*))?/)
+              description = match[:description]
+              {
+                version: match[:version],
+                description: description.nil? || description.length == 0 ? nil : match[:description]
+              }
+            end
+          end
 
-      # Public: The `since` tag is composed of two parts: a version string
-      # (presented immediately after the tag) and, optionally, a description
-      # (which can be single or multiline).
-      #
-      # content - An Array of Strings showing the lines parsed from the
-      # documentation.
-      #
-      # Examples
-      #
-      #   Docks::Tags::Since.process(["1.0"])
-      #   # => { version: "1.0" }
-      #
-      #   Docks::Tags::Since.process(["1.0-b234 - The version", "details."])
-      #   # => { version: "1.0-b234", description: "The version details." }
-      #
-      # Returns a Hash showing the version and description of the version in
-      # which this symbol was introduced.
-
-      def process(content)
-        Docks::Processors::PossibleMultilineDescription.process(content) do |first_line|
-          match = first_line.match(/\s*(?<version>[0-9a-zA\.\-_]*)(?:\s+\-?\s*(?<description>.*))?/)
-          return nil if match.nil?
-
-          description = match[:description]
-          {
-            version: match[:version],
-            description: description.nil? || description.length == 0 ? nil : match[:description]
-          }
+          OpenStruct.new(since)
         end
       end
     end

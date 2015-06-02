@@ -26,11 +26,25 @@ module Docks
         end
       end
 
+      def signature_for(symbol)
+        return unless symbol.kind_of?(Containers::Mixin)
+
+        directive = clean_presentation(symbol.name, ".")
+        params = symbol.fetch(:param, []).map do |param|
+          name, default = param.name, param.default
+          param_string = clean_presentation(name)
+          param_string << ": #{default}" if default
+          param_string
+        end
+
+        "#{directive}(#{params.join(", ")}) { /* ... */ }"
+      end
+
       def parser; Docks::Parsers::Less.instance end
 
-      private
+      protected
 
-      def friendly_variable_presentation(symbol, prefix = "@")
+      def clean_presentation(symbol, prefix = "@")
         "#{prefix unless symbol.start_with?(prefix)}#{symbol}"
       end
     end

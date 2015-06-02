@@ -38,8 +38,10 @@ module Docks
       #
       # Returns an Array of Strings.
 
-      def process(content)
-        content = Docks::Processors::BreakApartOnCommasSpacesAndPipes.process(content)
+      def process(symbol)
+        symbol.update(@name) do |requires|
+          Array(requires).map { |a_require| split_on_commas_spaces_and_pipes(a_require) }.flatten
+        end
       end
     end
   end

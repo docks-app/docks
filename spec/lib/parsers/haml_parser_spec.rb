@@ -3,7 +3,7 @@ require "spec_helper"
 describe Docks::Parsers::Haml do
   subject { Docks::Parsers::Haml.instance }
 
-  before :all do
+  before :each do
     Docks::Tags.register_bundled_tags
   end
 

@@ -1,12 +1,11 @@
-require_relative "base_container.rb"
+require_relative "symbol_container.rb"
 
 module Docks
   module Containers
 
     # Public: a container for Class symbols.
 
-    class Klass < Base
-
+    class Klass < Symbol
       # Public: the type of symbols that should be encapsulated by this
       # container. This is compared against a symbol's `symbol_type` to
       # determine which container to use.
@@ -15,16 +14,16 @@ module Docks
 
       def self.type; Docks::Types::Symbol::CLASS end
 
-      def initialize(parse_result)
-        super(parse_result)
+      def initialize(klass_hash = {})
+        super
 
-        parse_result[:methods] ||= []
-        parse_result[:methods].map! { |method| Containers.container_for(method).new(method) }
-        parse_result[:properties] ||= []
-        parse_result[:properties].map! { |property| Containers.container_for(property).new(property) }
+        self[:methods] ||= []
+        self[:properties] ||= []
       end
 
-      def methods; @item[:methods] end
+      def methods; self[:methods] end
+      def properties; self[:properties] end
+
       def public_methods; methods.select { |meth| meth.public? } end
       def private_methods; methods.select { |meth| meth.private? } end
 
@@ -33,7 +32,9 @@ module Docks
 
       def public_properties; properties.select { |prop| prop.public? } end
       def private_properties; properties.select { |prop| prop.private? } end
+
       def static_properties; properties.select { |prop| prop.static? } end
+      def instance_properties; properties.reject { |prop| prop.static? } end
     end
   end
 end

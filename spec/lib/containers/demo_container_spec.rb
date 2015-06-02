@@ -14,11 +14,11 @@ describe Docks::Containers::Demo do
   end
 
   let(:basic_component) do
-    Docks::Containers::Component.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "flarb", state: [state_one])
+    Docks::Containers::Component.new(name: "flarb", state: [state_one])
   end
 
   let(:complex_component) do
-    Docks::Containers::Component.new(symbol_type: Docks::Types::Symbol::COMPONENT, name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two])
+    Docks::Containers::Component.new(name: "blarg", state: [state_one, state_two], variant: [variant_one, variant_two])
   end
 
   let(:basic_demo) { subject.new(basic_component) }

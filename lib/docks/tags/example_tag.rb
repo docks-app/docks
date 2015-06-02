@@ -18,29 +18,14 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
-
-      # Public: cleans up the examples parsed from documentation. The example
-      # tag is composed of two parts, the first of which is optional. On the
-      # same line as the tag, you can provide a language code that will be
-      # used to provide syntax highlighting for the example and, optionally, a
-      # one-line description separated from the language by a hyphen. If no
-      # language is provided, the language will be assumed to be the same as
-      # the language of the file currently being parsed. On subsequent lines,
-      # provide the code you want to be shown as an example. Make sure to
-      # indent the code one extra space (so that the first character of non-
-      # indented lines lines up with the first character of the example tag).
-      #
-      # See `Docks::Processors::CodeBlockWithLanguageAndDescription` for
-      # examples.
-      #
-      # content - An Array of Strings representing the lines of the tag.
-      #
-      # Returns a Hash with the code, language, and description of the example.
-
-      def process(content)
-        content = Docks::Processors::CodeBlockWithLanguageAndDescription.process(content)
-        content[:language] ||= Docks::Languages.extension_for_file(Docks::Parser.current_file)
-        content
+      def process(symbol)
+        symbol.update(@name) do |examples|
+          examples.map do |example|
+            example = code_block_with_language_and_description(example)
+            example[:language] ||= Docks::Languages.extension_for_file(Docks.current_file)
+            OpenStruct.new(example)
+          end
+        end
       end
     end
   end

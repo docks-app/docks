@@ -16,27 +16,15 @@ module Docks
 
       def initialize
         @name = :link
-        @synonyms = [:links, :see]
+        @synonyms = [:see]
+        @multiline = false
         @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
       end
 
-
-      # Public: Processes the parsed documentation into an Array of Hashes
-      # representing the link's details. The part of the tag before the first
-      # parentheses is assumed to be a URL. You can then optionally a set of
-      # key-value pairs in parentheses specifying additional details. The
-      # first item in the parentheses is assumed to be a caption if no key is
-      # provided.
-      #
-      # See `Docks::Processors::NameAndParenthetical` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns the Hash representing the link's details
-
-      def process(content)
-        # TODO: NameAndParenthetical only returns one
-        Docks::Processors::NameAndParenthetical.process(content, :url, :caption).first
+      def process(symbol)
+        symbol.update(@name) do |links|
+          Array(links).map { |link| OpenStruct.new name_and_parenthetical(link, :url, :caption) }
+        end
       end
     end
   end

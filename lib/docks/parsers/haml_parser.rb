@@ -6,8 +6,8 @@ module Docks
 
       def initialize
         @comment_symbol = "\-#"
-        @page_comment_extractor = /(?:^\s*\-#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
-        @comment_extractor = /(?:^\s*\-#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m
+        @pattern_comment_extractor = /(?:^\s*\-#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@(?:page|pattern)[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
+        @comment_extractor = /(?:^\s*\-#\*\n)(?<comments>(?:^\s*?\-#[^\n]*\n)+)\s*(?<first_line>[^\n]*)$/m
         @comment_pattern = /^ *\-# ?/m
       end
 

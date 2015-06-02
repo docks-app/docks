@@ -14,10 +14,24 @@ describe Docks::Tags::Example do
   end
 
   describe "#process" do
+    let(:symbol) { Docks::Containers::Symbol.new }
+    let(:code) { "foo = (bar) ->" }
+    let(:language) { "coffee" }
+
+    before(:each) { Docks::Languages.register_bundled_languages }
+
+    it "calls the code block processor" do
+      expect(subject).to receive(:code_block_with_language_and_description).and_call_original
+      symbol[subject.name] = [[language, code]]
+      subject.process(symbol)
+      expect(symbol[subject.name].first).to eq OpenStruct.new(language: language, code: code)
+    end
+
     it "uses the extension for the current file as the language when none is provided" do
-      allow(Docks::Parser).to receive(:current_file) { "foo_bar.coffee" }
-      result = subject.process(["foo = (bar) ->"])
-      expect(result[:language]).to eq "coffee"
+      expect(Docks).to receive(:current_file).and_return "foo_bar.#{language}"
+      symbol[subject.name] = [[code]]
+      subject.process(symbol)
+      expect(symbol[subject.name].first).to eq OpenStruct.new(language: language, code: code)
     end
   end
 end

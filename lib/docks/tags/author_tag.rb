@@ -21,29 +21,11 @@ module Docks
         @type = Docks::Types::Tags::MULTIPLE_PER_LINE
       end
 
-
-      # Public: Processes the parsed documentation into an Array of Hashes
-      # representing the authors' details. Regardless of whether you have one
-      # or multiple authors attached to a single tag, every author will be
-      # parsed such that the text before a set of parentheses will be treated
-      # as the author's name, and the contents of the parentheses will be
-      # treated as a set of key-value pairs. If no such pairs are found (that
-      # is, there is only a single value), the contents of the parentheses are
-      # assumed to be the author's email.
-      #
-      # See `Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes` and
-      # `Docks::Processors::NameAndParenthetical` for examples.
-      #
-      # content - The line parsed from the documentation.
-      #
-      # Returns an Array of Hashes where each Hash represents a single
-      # author's details.
-
-      def process(content)
-        content = Docks::Processors::SplitOnTopLevelParenthesesCommasAndPipes.process(content)
-
-        # TODO: this should be a mapping, NameAndParenthetical should not accept an array
-        Docks::Processors::NameAndParenthetical.process(content, :name, :email)
+      def process(symbol)
+        symbol.update(@name) do |authors|
+          authors = Array(authors).map { |author| split_on_top_level_parens_commas_and_pipes(author) }.flatten
+          authors.map { |author| OpenStruct.new name_and_parenthetical(author, :name, :email) }
+        end
       end
     end
   end

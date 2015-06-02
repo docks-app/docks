@@ -1,19 +1,15 @@
 require "spec_helper"
 
-example_file = "button"
-
 describe Docks::Cache do
   subject { described_class.new }
 
-  let(:result) do
-    parse_result = {
-      name: example_file,
-      now: Date.new.to_s,
-      pattern: { foo: "Bar", description: "foo" }
-    }
+  let(:name) { "button" }
 
-    described_class::PARSE_RESULT_TYPES.each { |type| parse_result[type] = Array.new }
-    parse_result
+  let(:pattern) do
+    pattern = Docks::Containers::Pattern.new(name)
+    pattern.add(:script, Docks::Containers::Symbol.new(pattern: name.upcase))
+    pattern.modified = Date.new
+    pattern
   end
 
   let(:root) {
@@ -21,28 +17,19 @@ describe Docks::Cache do
   }
 
   let(:cache_file) {
-    File.expand_path(example_file, Docks.config.cache_location)
+    File.expand_path(name, Docks.config.cache_location)
   }
 
   around do |example|
-
-    Docks.configure do |config|
-      config.root = root
-    end
-
+    Docks.configure { |config| config.root = root }
     example.run
-
     FileUtils.rm_rf(root)
   end
 
   describe ".pattern_for" do
-    it "sends the cached parse results back when it exists" do
-      subject << result
-
-      pattern = Hash.new
-      expect(Docks::Containers::Pattern).to receive(:new).with(result).and_return(pattern)
-      pattern_returned = described_class.pattern_for(example_file)
-      expect(pattern_returned).to be pattern
+    it "sends the cached parse patterns back when it exists" do
+      subject << pattern
+      expect(described_class.pattern_for(name)).to eq pattern
     end
 
     it "throws an error when no such pattern exists" do
@@ -52,17 +39,17 @@ describe Docks::Cache do
 
   describe "#initialize" do
     it "leaves the cache alone when the last cache was on the same version" do
-      subject << result
+      subject << pattern
       subject.dump
 
       expect_any_instance_of(described_class).to_not receive(:clear)
       second_instance = described_class.new
-      second_instance << result
+      second_instance << pattern
       second_instance.dump
     end
 
     it "clears the cache when a change of version happens" do
-      subject << result
+      subject << pattern
       subject.dump
 
       old_version = Docks.send(:remove_const, :VERSION)
@@ -70,7 +57,7 @@ describe Docks::Cache do
 
       expect_any_instance_of(described_class).to receive(:clear)
       second_instance = described_class.new
-      second_instance << result
+      second_instance << pattern
       second_instance.dump
     end
   end
@@ -87,36 +74,34 @@ describe Docks::Cache do
   end
 
   describe "#<<" do
-    it "writes the contents of a parse result to the corresponding cache file" do
-      subject << result
-      expect(Marshal::load(File.read(cache_file))).to eq result
+    it "writes the contents of a parse pattern to the corresponding cache file" do
+      subject << pattern
+      expect(Marshal::load(File.read(cache_file))).to eq pattern
     end
 
-    it "doesn't cache a file that has no parse results" do
-      FileUtils.rm(cache_file) if File.exists?(cache_file)
-      result[:pattern] = Hash.new
-      subject << result
+    it "doesn't cache a pattern that is invalid" do
+      expect(pattern).to receive(:valid?).and_return false
+      subject << pattern
       expect(File.exists?(cache_file)).to be false
       subject.dump
-      expect(described_class.pattern_library[example_file]).to be nil
+      expect(described_class.pattern_library[name]).to be nil
     end
   end
 
   describe "#dump" do
-    it "collects the sumarized symbol details for each result added to the cache" do
-      expect(Docks::Containers::Pattern).to receive(:summarize).with(result).and_call_original
-      subject << result
+    it "collects the sumarized details for each pattern added to the cache" do
+      expect_any_instance_of(Docks::Containers::PatternLibrary).to receive(:<<).with(pattern).and_call_original
+      subject << pattern
     end
 
-    it "dumps the parse result details" do
-      subject << result
+    it "adds the summarized details to the pattern library" do
+      subject << pattern
       subject.dump
-
-      expect(described_class.pattern_library[example_file]).to eq Docks::Containers::Pattern.summarize(result)
+      expect(described_class.pattern_library[name]).to eq pattern.summary
     end
 
-    it "removes any cache results that are no longer used" do
-      subject << result
+    it "removes any cache patterns that are no longer used" do
+      subject << pattern
       subject.dump
 
       second_instance = described_class.new
@@ -125,12 +110,12 @@ describe Docks::Cache do
       expect(File.exists?(cache_file)).to be false
     end
 
-    it "doesn't remove cache results that simply had no updates" do
-      subject << result
+    it "doesn't remove cache patterns that simply had no updates" do
+      subject << pattern
       subject.dump
 
       second_instance = described_class.new
-      second_instance.no_update(result[:name])
+      second_instance.no_update(pattern.name)
       second_instance.dump
 
       expect(File.exists?(cache_file)).to be true

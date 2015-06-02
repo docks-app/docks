@@ -3,77 +3,86 @@ require "spec_helper"
 describe Docks::Process do
   subject { Docks::Process }
 
-  before :all do
-    Docks::Tags.register_bundled_tags
-  end
+  before(:each) { Docks::Tags.register_bundled_tags }
 
   describe ".process" do
-    it "parses each tag individually" do
-      expect(subject).to receive(:process_tag).with(Docks::Tags::Pattern.instance, "Page")
-      expect(subject).to receive(:process_tag).with(Docks::Tags::Subtitle.instance, "Subtitle")
+    context "when the argument is a symbol" do
+      let(:symbol) { Docks::Containers::Symbol.new(name: "bar", private: "true") }
 
-      subject.process({ pattern: "Page", subtitle: "Subtitle" })
-    end
-  end
-
-  describe ".process_tag" do
-
-    it "calls all blocks on each element of a multiple_per_block tag (but not multiple_per_line) and returns the mapped result" do
-      param_one = "{String} name"
-      param_two = "{Number} count"
-
-      result = subject.process_tag(:param, [param_one, param_two])
-      expect(result.length).to eq 2
-      expect(result[0]).to eq subject.process_tag(:param, [param_one]).first
-      expect(result[1]).to eq subject.process_tag(:param, [param_two]).first
-    end
-
-    it "calls all blocks on each element of a multiple_per_line and concatenated each set of results together" do
-      set_by_one = ":active"
-      set_by_two = ":state (STATE::ACTIVE)"
-      set_by_three = ":is_active?"
-
-      result = subject.process_tag(:set_by, ["#{set_by_one}, #{set_by_two}", set_by_three])
-      expect(result.length).to eq 3
-      expect(result).to include(subject.process_tag(:set_by, [set_by_one]).first)
-      expect(result).to include(subject.process_tag(:set_by, [set_by_two]).first)
-      expect(result).to include(subject.process_tag(:set_by, [set_by_three]).first)
-    end
-  end
-
-  describe ".add_post_processors" do
-    before :each do
-      subject.clear_post_processors
-      subject.add_post_processors Docks::PostProcessors::MarkdownDescriptions,
-                                  Docks::PostProcessors::MirrorPrecludes
-    end
-
-    it "adds all post-processors passed in" do
-      post_processors = subject.post_processors
-      expect(post_processors).to include(Docks::PostProcessors::MarkdownDescriptions)
-      expect(post_processors).to include(Docks::PostProcessors::MirrorPrecludes)
-    end
-
-    it "does not re-add a previously-added post-processor" do
-      expect {
-        subject.add_post_processors Docks::PostProcessors::MarkdownDescriptions,
-                                    Docks::PostProcessors::MirrorPrecludes
-      }.to_not change { subject.post_processors.length }
-    end
-  end
-
-  describe ".post_process" do
-    it "Runs post_process with each registered post-processor on the passed content" do
-      content = [{ foo: :bar }]
-      post_processors = [Docks::PostProcessors::MarkdownDescriptions, Docks::PostProcessors::MirrorPrecludes]
-      subject.clear_post_processors
-      subject.add_post_processors(*post_processors)
-
-      post_processors.each do |post_processor|
-        expect(post_processor).to receive(:post_process).with(content)
+      it "returns the processed symbol" do
+        expect(subject.process(symbol)).to be symbol
       end
 
-      subject.post_process(content)
+      it "runs the process method for every tag in the symbol" do
+        expect(symbol).to receive(:tags).and_call_original
+        expect(Docks::Tags::Name.instance).to receive(:process).with(symbol)
+        expect(Docks::Tags::Private.instance).to receive(:process).with(symbol)
+        subject.process(symbol)
+      end
+    end
+
+    context "when the argument is a pattern" do
+      let(:pattern) { Docks::Containers::Pattern.new("foo") }
+
+      it "returns the processed pattern" do
+        expect(subject.process(pattern)).to be pattern
+      end
+
+      it "calls a registered pattern processor with the pattern as the only argument" do
+        arg = nil
+        subject.register_pattern_processor { |pattern| arg = pattern }
+        subject.process(pattern)
+        expect(arg).to be pattern
+      end
+
+      it "calls processors for a given hook in the order they were registered" do
+        positions = []
+        subject.register_pattern_processor { positions << 1 }
+        subject.register_pattern_processor { positions << 2 }
+        subject.process(pattern)
+        expect(positions).to eq [1, 2]
+      end
+
+      it "calls processors in the early hook, then the middle hook, then the late hook" do
+        positions = []
+        subject.register_pattern_processor(:late) { positions << 1 }
+        subject.register_pattern_processor(:middle) { positions << 2 }
+        subject.register_pattern_processor(:early) { positions << 3 }
+        subject.process(pattern)
+        expect(positions).to eq [3, 2, 1]
+      end
+    end
+
+    context "when the argument is a pattern library" do
+      let(:pattern_library) { Docks::Containers::PatternLibrary.new }
+
+      it "returns the processed pattern_library" do
+        expect(subject.process(pattern_library)).to be pattern_library
+      end
+
+      it "calls a registered pattern_library processor with the pattern_library as the only argument" do
+        arg = nil
+        subject.register_pattern_library_processor { |pattern_library| arg = pattern_library }
+        subject.process(pattern_library)
+        expect(arg).to be pattern_library
+      end
+
+      it "calls processors for a given hook in the order they were registered" do
+        positions = []
+        subject.register_pattern_library_processor { positions << 1 }
+        subject.register_pattern_library_processor { positions << 2 }
+        subject.process(pattern_library)
+        expect(positions).to eq [1, 2]
+      end
+
+      it "calls processors in the early hook, then the middle hook, then the late hook" do
+        positions = []
+        subject.register_pattern_library_processor(:late) { positions << 1 }
+        subject.register_pattern_library_processor(:middle) { positions << 2 }
+        subject.register_pattern_library_processor(:early) { positions << 3 }
+        subject.process(pattern_library)
+        expect(positions).to eq [3, 2, 1]
+      end
     end
   end
 end

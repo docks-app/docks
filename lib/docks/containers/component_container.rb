@@ -1,11 +1,11 @@
-require_relative "base_container.rb"
+require_relative "symbol_container.rb"
 
 module Docks
   module Containers
 
     # Public: a container for Component symbols.
 
-    class Component < Base
+    class Component < Symbol
 
       # Public: the type of symbols that should be encapsulated by this
       # container. This is compared against a symbol's `symbol_type` to
@@ -15,32 +15,48 @@ module Docks
 
       def self.type; Docks::Types::Symbol::COMPONENT end
 
-      # Public: whether or not this component requires a demo. A demo is assumed
-      # necessary when there is markup, helper or standard, that was included
-      # with the encapsulated component.
-      #
-      # Returns a Boolean.
+      def initialize(component_hash = {})
+        super
+
+        self[:states] ||= []
+        self[:variants] ||= []
+        self[:subcomponents] ||= []
+        self[:included_symbols] ||= []
+      end
+
+      def subcomponents(options = {}, &block)
+        subcomponents = if options.fetch(:recursive, false)
+          recursive_subcomponents
+        else
+          self[:subcomponents]
+        end
+
+        block_given? ? subcomponents.each(&block) : subcomponents
+      end
+
+      alias_method :subcomponent, :subcomponents
 
       def has_demo?
-        the_markup, the_helper = markup, helper
-        (!the_markup.nil? && the_markup.length > 0) || (!the_helper.nil? && the_helper.length > 0)
+        !((markup || "") + (helper || "")).empty?
       end
 
-      # Public: collects all variations (states and variants) for this symbol.
-      # Returns an Array of state/ variant symbols.
-
-      def variations
-        (states || []) + (variants || [])
+      def variations(&block)
+        variations = states + variants
+        block_given? ? variations.each(&block) : variations
       end
 
-      # Public: returns an array of subcomponents for this component.
-
-      def subcomponents
-        (@item[:subcomponents] || [])
+      def find(descriptor)
+        descriptor = Naming.parse_descriptor(descriptor)
+        return self if descriptor[:symbol] == self[:name]
+        recursive_subcomponents.find { |subcomponent| subcomponent.name == descriptor[:symbol] }
       end
 
-      def included_symbols
-        (@item[:included_symbols] || [])
+      protected
+
+      def recursive_subcomponents
+        self[:subcomponents].inject(self[:subcomponents]) do |all_subcomponents, subcomponent|
+          all_subcomponents.concat(subcomponent.recursive_subcomponents)
+        end
       end
     end
   end

@@ -24,19 +24,8 @@ module Docks
         @name = :helper
       end
 
-
-      # Public: Processes the parse results for this tag into the (near-)final
-      # representation for use in the pattern library. This is done by joining
-      # lines with a line break.
-      #
-      # See `Docks::Processors::JoinWithLineBreaks` for examples.
-      #
-      # content - An array of lines included as the helper markup.
-      #
-      # Returns a String with the joined together helper markup.
-
-      def process(content)
-        Docks::Processors::JoinWithLineBreaks.process(content)
+      def process(symbol)
+        symbol.update(@name) { |helper| helper.join("\n") }
       end
     end
   end

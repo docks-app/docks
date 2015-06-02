@@ -4,66 +4,62 @@ module Docks
       include Singleton
 
       attr_reader :comment_symbol,
-                  :page_comment_extractor,
+                  :pattern_comment_extractor,
                   :comment_extractor,
                   :comment_pattern
 
       def initialize
         @comment_symbol = "#"
-        @page_comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
+        @pattern_comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)*(?:^\s*?\-#[^\n]*@page[^\n]*\n)(?:^\s*?\-#[^\n]*\n)*)/m
         @comment_extractor = /(?:^\s*#\*\n)((?:^\s*?\-#[^\n]*\n)+)\s*([^\n]*)$/m
         @comment_pattern = /^\s*#\s?\n?/m
       end
 
-
-      # Public: Parses out all blocks from the passed file contents.
-      #
-      # file_contents - A String of the text to be parsed.
-      #
-      # Returns a an Array of Hashes that each represent the parsed result for
-      # each comment block.
-
-      def parse(file_contents)
-        docs = []
+      def parse(file)
+        symbols = []
+        file_contents = File.exists?(file) ? File.read(file).gsub(/\r\n?/, "\n") : file
 
         # Get rid of the page block and, in the process, add the page block
         # to the set of parse results.
-        file_contents.sub!(page_comment_extractor) do |page_comment_block|
+        lines_from_pattern_block = 0
+        file_contents.sub!(pattern_comment_extractor) do |page_comment_block|
+          start_line_number = $`.lines.count
+          lines_from_pattern_block = start_line_number + page_comment_block.lines.count
+
           page_comment_block.sub!(/#{comment_symbol}\*\s*/, '')
           index_of_other_comment = page_comment_block.index("#{comment_symbol}*")
           replacement = index_of_other_comment.nil? ? '' : page_comment_block[index_of_other_comment..-1]
           parseable_block = index_of_other_comment.nil? ? page_comment_block : page_comment_block[0..index_of_other_comment - 1]
 
-          page_parse_result = { symbol_type: Docks::Types::Symbol::PATTERN }
-          docs << parse_comment_block(parseable_block, page_parse_result)
+          lines_from_pattern_block -= replacement.lines.count
+
+          symbol = parse_comment_block(parseable_block)
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: start_line_number)
+          symbols << symbol
 
           replacement
         end
 
-        # Scan through each docs comment block and add it to the list of parsed docs.
-        file_contents.scan(comment_extractor).each do |m|
-          parse_result = {}
-          parse_result[:name], parse_result[:symbol_type] = parse_result_details(m[1])
-          docs << parse_comment_block(m[0], parse_result)
+        # Scan through each symbols comment block and add it to the list of parsed symbols.
+        last_match_position = 0
+        while (match = file_contents.match(comment_extractor, last_match_position))
+          symbol_details = {}
+          symbol_details[:name], symbol_details[:symbol_type] = parse_result_details(match[:first_line])
+          symbol = Containers.container_for(symbol_details[:symbol_type]).new(symbol_details)
+          parse_comment_block(match[:comments], symbol)
+          symbol.source = OpenStruct.new(file: file, language_code: Languages.extension_for_file(file), line_number: lines_from_pattern_block + match.pre_match.lines.count + match[0].lines.count)
+          symbols << symbol
+
+          last_match_position = match.offset(0).last
         end
 
-        docs
+        symbols
       end
 
-
-      # Public: Parses the tags and associated content out of a comment block.
-      #
-      # comment_block - A String representing a single comment block. All comment
-      #                 symbols should be stripped out before being passed here.
-      # docs          - A Hash in which to place the tags (keys) and content (values).
-      #                 Defaults to a new Hash.
-      #
-      # Returns a Hash with the tags and their associated content for the block.
-
-      def parse_comment_block(comment_block, docs = {})
+      def parse_comment_block(comment_block, symbol = Containers::Symbol.new)
         # TODO: ensure that pluralized tags are handled first
         if @tag_pattern.nil?
-          supported_tags = Docks::Tags.supported_tags.sort! { |a, b| b.length <=> a.length }
+          supported_tags = Tags.supported_tags.sort! { |a, b| b.length <=> a.length }
           @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")}) ?)?(?<text>.*)/
         end
 
@@ -78,19 +74,19 @@ module Docks
           if tag.nil?
             if last_tag.nil?
               # No tag and no previous tag — must be description
-              docs[:description] ||= []
-              docs[:description] << text
+              symbol[Tags::Description] ||= []
+              symbol[Tags::Description] << text
             else
               # No tag, but has a previous tag — bundle with last tag. As discussed below,
               # multiple_allowed tags will be represented by an array of arrays, so append
               # this line to the last array within the main array. Otherwise, just append
               # the text to the main array.
-              (docs[last_tag].first.kind_of?(Array) ? docs[last_tag].last : docs[last_tag]) << text
+              (symbol[last_tag].first.kind_of?(Array) ? symbol[last_tag].last : symbol[last_tag]) << text
             end
           else
             # New tag declaration
             tag = tag.to_sym
-            tag_handler = Docks::Tags.tag_for(tag)
+            tag_handler = Tags.tag_for(tag)
             multiline = tag_handler.multiline?
             last_tag = multiline ? tag : nil
 
@@ -101,15 +97,15 @@ module Docks
             # as possible (if only one is allowed per file, the tag value will be the line. Otherwise,
             # it is added to a single-dimensional array).
             if tag_handler.multiple_allowed?
-              docs[tag] ||= []
-              docs[tag] << (multiline ? [text] : text)
+              symbol[tag] ||= []
+              symbol[tag] << (multiline ? [text] : text)
             else
-              docs[tag] = multiline ? [text] : text
+              symbol[tag] = multiline ? [text] : text
             end
           end
         end
 
-        docs
+        symbol
       end
     end
   end
