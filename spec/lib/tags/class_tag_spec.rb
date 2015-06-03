@@ -16,16 +16,11 @@ describe Docks::Tags::Klass do
   end
 
   describe "#process" do
-    it "sets the class to be true when it exists at all" do
-      symbol = Docks::Containers::Symbol.new
+    it "converts the symbol to be a class container" do
+      symbol = Docks::Containers::Function.new(class: "", name: "foo")
+      symbol = Docks::Process.process(symbol)
 
-      symbol[subject.name] = ""
-      subject.process(symbol)
-      expect(symbol[subject.name]).to be true
-
-      symbol[subject.name] = "MyClass"
-      subject.process(symbol)
-      expect(symbol[subject.name]).to be true
+      expect(symbol).to be_a Docks::Containers::Klass
     end
   end
 
@@ -40,28 +35,6 @@ describe Docks::Tags::Klass do
     let(:klass) { Docks::Containers::Klass.new }
     let(:method) { Docks::Containers::Function.new(method: true) }
     let(:property) { Docks::Containers::Variable.new(property: true) }
-
-    it "converts classes to class containers" do
-      backing = { class: true, name: "foo" }
-      pattern.add(:script, [Docks::Containers::Function.new(backing), Docks::Containers::Function.new])
-      Docks::Process.process(pattern)
-
-      expect(pattern.classes.length).to be 1
-      expect(pattern.script_symbols.length).to be 2
-      expect(pattern.script_symbols.first).to be_a Docks::Containers::Klass
-      expect(pattern.script_symbols.first.name).to eq backing[:name]
-    end
-
-    it "converts factories to factory containers" do
-      backing = { factory: true, name: "foo" }
-      pattern.add(:script, [Docks::Containers::Function.new, Docks::Containers::Function.new(backing)])
-      Docks::Process.process(pattern)
-
-      expect(pattern.factories.length).to be 1
-      expect(pattern.script_symbols.length).to be 2
-      expect(pattern.script_symbols.last).to be_a Docks::Containers::Factory
-      expect(pattern.script_symbols.last.name).to eq backing[:name]
-    end
 
     it "adds methods following the class to its array of methods" do
       pattern.add(:script, [klass, method])

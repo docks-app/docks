@@ -18,27 +18,11 @@ module Docks
       end
 
       def process(symbol)
-        symbol[@name] = true
+        Containers::Klass.new(symbol.to_h)
       end
 
 
       def setup_post_processors
-        # Since factories/ classes in JS are just functions, convert them early
-        # to their rightful classes.
-        after_each_pattern(:early) do |pattern|
-          pattern.script_symbols.map! do |symbol|
-            if symbol[Tags::Klass]
-              symbol.delete(:class)
-              Containers::Klass.new(symbol.to_h)
-            elsif symbol[Tags::Factory]
-              symbol.delete(:factory)
-              Containers::Factory.new(symbol.to_h)
-            else
-              symbol
-            end
-          end
-        end
-
         # Move classes/ properties to the preceeding class-like object
         after_each_pattern(:middle) do |pattern|
           last_classlike = nil

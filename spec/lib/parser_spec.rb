@@ -9,7 +9,7 @@ describe Docks::Parser do
   end
 
   describe ".parse" do
-    let(:style_file) { File.expand_path("../../fixtures/parsers/scss_parser_fixture_basic.scss", __FILE__) }
+    let(:style_file) { File.expand_path("../../fixtures/parsers/sass_parser_fixture_basic.scss", __FILE__) }
     let(:script_file) { File.expand_path("../../fixtures/parsers/coffeescript_parser_fixture_basic.coffee", __FILE__) }
     let(:style_parser) { Docks::Parsers::Sass.instance }
     let(:script_parser) { Docks::Parsers::CoffeeScript.instance }
@@ -26,13 +26,13 @@ describe Docks::Parser do
 
     it "processes all parsed symbols and the final pattern" do
       symbols = style_parser.parse(style_file) + script_parser.parse(script_file)
-      symbols.each { |symbol| expect(Docks::Process).to receive(:process).with(symbol) }
+      symbols.each { |symbol| expect(Docks::Process).to receive(:process).with(symbol) { |arg| arg } }
       expect(Docks::Process).to receive(:process).with(an_instance_of(Docks::Containers::Pattern))
       subject.parse([style_file, script_file])
     end
 
     it "includes the parse result of a file in the appropriate group" do
-      expect(Docks::Process).to receive(:process).at_least(:once).and_return nil
+      expect(Docks::Process).to receive(:process).at_least(:once) { |arg| arg }
       expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:style, style_parser.parse(style_file))
       expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:script, script_parser.parse(script_file))
       subject.parse([style_file, script_file])

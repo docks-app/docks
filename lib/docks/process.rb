@@ -34,8 +34,12 @@ module Docks
         symbol = Containers.container_for(symbol.symbol_type).new(symbol.to_h)
       end
 
-      symbol.tags.each do |tag|
-        tag.process(symbol) if tag.respond_to?(:process)
+      # Allow tags to change the symbol's type
+      tags = symbol.tags
+      tags.each do |tag|
+        next unless tag.respond_to?(:process)
+        new_symbol = tag.process(symbol)
+        symbol = new_symbol if new_symbol.kind_of?(Containers::Symbol)
       end
 
       symbol

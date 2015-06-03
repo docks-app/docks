@@ -19,7 +19,7 @@ module Docks
       end
 
       def process(symbol)
-        symbol[@name] = true
+        Containers::Factory.new(symbol.to_h)
       end
     end
   end
