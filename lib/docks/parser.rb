@@ -28,8 +28,7 @@ module Docks
     def self.parse_file(file)
       store_current_details(file) do
         symbols = Docks.current_parser.parse(file)
-        symbols.each { |symbol| Process.process(symbol) }
-        symbols
+        symbols.map { |symbol| Process.process(symbol) }
       end
     end
 

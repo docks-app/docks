@@ -45,8 +45,10 @@ module Docks
 
           if block_given?
             @content_blocks[name] = capture(&block)
+            nil
           elsif !value.nil?
             @content_blocks[name] = value
+            nil
           else
             @content_blocks[name]
           end

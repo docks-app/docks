@@ -19,6 +19,14 @@ describe Docks::Process do
         expect(Docks::Tags::Private.instance).to receive(:process).with(symbol)
         subject.process(symbol)
       end
+
+      it "updates the symbol type if it was overwritten in the comment block" do
+        symbol.symbol_type = Docks::Types::Symbol::COMPONENT
+        expect(Docks::Tags::Name.instance).to receive(:process).with instance_of(Docks::Containers::Component)
+        expect(Docks::Tags::Private.instance).to receive(:process).with instance_of(Docks::Containers::Component)
+        result = subject.process(symbol)
+        expect(result).to be_a Docks::Containers::Component
+      end
     end
 
     context "when the argument is a pattern" do

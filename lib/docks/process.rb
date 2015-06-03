@@ -5,7 +5,7 @@ module Docks
 
     def self.process(item)
       case item
-      when Containers::Symbol then process_symbol(item)
+      when Containers::Symbol then item = process_symbol(item)
       when Containers::Pattern then process_pattern(item)
       when Containers::PatternLibrary then process_pattern_library(item)
       end
@@ -29,9 +29,16 @@ module Docks
     end
 
     def self.process_symbol(symbol)
+      # For when the initial symbol type was overwritten
+      if symbol.symbol_type != symbol.class.type
+        symbol = Containers.container_for(symbol.symbol_type).new(symbol.to_h)
+      end
+
       symbol.tags.each do |tag|
         tag.process(symbol) if tag.respond_to?(:process)
       end
+
+      symbol
     end
 
     def self.process_pattern(pattern)

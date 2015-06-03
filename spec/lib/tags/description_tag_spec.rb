@@ -54,7 +54,7 @@ describe Docks::Tags::Description do
       end
 
       context "when there are other symbols" do
-        let(:description_file) { File.expand_path("../../../fixtures/post_processors/associate_external_description_files/button.md", __FILE__) }
+        let(:description_file) { File.expand_path("../../../fixtures/tags/description/button.md", __FILE__) }
         let(:description_file_contents) { File.read(description_file) }
 
         before(:each) do
@@ -82,7 +82,7 @@ describe Docks::Tags::Description do
       end
 
       context "when there are components" do
-        let(:description_file) { File.expand_path("../../../fixtures/post_processors/associate_external_description_files/component.md", __FILE__) }
+        let(:description_file) { File.expand_path("../../../fixtures/tags/description/component.md", __FILE__) }
         let(:description_file_contents) { File.read(description_file) }
 
         before(:each) do
@@ -120,7 +120,7 @@ describe Docks::Tags::Description do
       end
 
       context "when there are classes and factories" do
-        let(:description_file) { File.expand_path("../../../fixtures/post_processors/associate_external_description_files/class.md", __FILE__) }
+        let(:description_file) { File.expand_path("../../../fixtures/tags/description/class.md", __FILE__) }
         let(:description_file_contents) { File.read(description_file) }
 
         let(:method) { Docks::Containers::Function.new(name: "toggle") }
@@ -156,7 +156,7 @@ describe Docks::Tags::Description do
       end
 
       context "when there are functions" do
-        let(:description_file) { File.expand_path("../../../fixtures/post_processors/associate_external_description_files/function.md", __FILE__) }
+        let(:description_file) { File.expand_path("../../../fixtures/tags/description/function.md", __FILE__) }
         let(:description_file_contents) { File.read(description_file) }
 
         let(:param) { OpenStruct.new(name: "options") }

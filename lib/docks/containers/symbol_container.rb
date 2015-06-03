@@ -5,12 +5,10 @@ module Docks
     class Symbol < Base
       def self.type; "symbol" end
 
-      attr_reader :symbol_type
-
       def initialize(symbol_hash = {})
         super
 
-        @symbol_type = self[:symbol_type] = self.class.type
+        self[:symbol_type] ||= self.class.type
       end
 
       def private?; fetch(:access, nil) == Docks::Types::Access::PRIVATE end
