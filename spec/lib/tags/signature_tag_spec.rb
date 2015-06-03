@@ -39,7 +39,7 @@ describe Docks::Tags::Signature do
 
     it "asks the language for a mixin to update the signature" do
       pattern.add(:script, mixin)
-      expect(Docks::Languages::SCSS.instance).to receive(:signature_for).with(mixin).and_return("foo")
+      expect(Docks::Languages::Sass.instance).to receive(:signature_for).with(mixin).and_return("foo")
       post_process
       expect(mixin.signature).to eq "foo"
     end

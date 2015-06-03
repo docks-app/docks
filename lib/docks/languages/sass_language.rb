@@ -1,11 +1,11 @@
 require_relative "base_language.rb"
-require_relative "../parsers/scss_parser.rb"
+require_relative "../parsers/sass_parser.rb"
 
 module Docks
   module Languages
-    class SCSS < Base
+    class Sass < Base
       def self.type; Docks::Types::Languages::STYLE end
-      def self.extensions; "scss" end
+      def self.extensions; %w(scss sass) end
 
       def signature_for(symbol)
         return unless [Types::Symbol::FUNCTION, Types::Symbol::MIXIN].include?(symbol.symbol_type)
@@ -21,7 +21,7 @@ module Docks
         "#{directive}(#{params.join(", ")}) { /* ... */ }"
       end
 
-      def parser; Docks::Parsers::SCSS.instance end
+      def parser; Docks::Parsers::Sass.instance end
 
       protected
 

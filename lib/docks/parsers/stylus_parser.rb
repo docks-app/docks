@@ -2,11 +2,10 @@ require_relative "base_parser.rb"
 
 module Docks
   module Parsers
-    class CSS < Base
-
+    class Stylus < Sass
       def initialize
-        @comment_pattern = /(?:\/\*|\*\/?)/
-        @first_non_code_line_pattern = /[\.#\w\[@]/
+        @comment_pattern = /(?:\/\/|\/\*!?|\*\/?)/
+        @first_non_code_line_pattern = /[=+\.#\w\[&@]/
         setup_regexes
       end
 
@@ -14,12 +13,14 @@ module Docks
         first_code_line.strip!
 
         type = case first_code_line
+          when /^[^:\(]*\([^\)]*\)$/ then Docks::Types::Symbol::MIXIN
+          when /\=/ then Docks::Types::Symbol::VARIABLE
           when /(\.|\-\-)?(?:is|js)\-/ then Docks::Types::Symbol::STATE
           when /\-\-(?:[a-zA-Z][\-_]?)*/ then Docks::Types::Symbol::VARIANT
           else Docks::Types::Symbol::COMPONENT
         end
 
-        name = first_code_line.match(/^\s*[\.#]([^\s\:\.#]*)/).captures.first
+        name = first_code_line.match(/^\s*&?[@\.#]?\s*([^\s\(\:]*)/).captures.first
         { name: name, symbol_type: type }
       end
     end

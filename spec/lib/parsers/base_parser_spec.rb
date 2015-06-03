@@ -8,11 +8,11 @@ describe Docks::Parsers::Base do
   end
 
   describe "#parse" do
-    let(:example_parser) { Docks::Parsers::SCSS.instance }
+    let(:example_parser) { Docks::Parsers::Sass.instance }
     let(:example_files) do
       [
-        File.expand_path("../../../fixtures/parsers/scss_parser_fixture_complex.scss", __FILE__),
-        File.expand_path("../../../fixtures/parsers/scss_parser_fixture_basic.scss", __FILE__)
+        File.expand_path("../../../fixtures/parsers/sass_parser_fixture_complex.scss", __FILE__),
+        File.expand_path("../../../fixtures/parsers/sass_parser_fixture_basic.scss", __FILE__)
       ]
     end
 

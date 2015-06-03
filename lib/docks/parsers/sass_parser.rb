@@ -2,20 +2,20 @@ require_relative "base_parser.rb"
 
 module Docks
   module Parsers
-    class SCSS < Base
+    class Sass < Base
 
       def initialize
         @comment_pattern = /(?:\/\/|\/\*|\*\/?)/
-        @first_non_code_line_pattern = /[\-\.#\w\[&@]/
+        @first_non_code_line_pattern = /[=+\.#\w\[&@]/
         setup_regexes
       end
 
       def symbol_details_from_first_line(first_code_line)
-        first_code_line.strip!
+        first_code_line = first_code_line.strip
 
         type = case first_code_line
           when /^@function/ then Docks::Types::Symbol::FUNCTION
-          when /^@mixin/ then Docks::Types::Symbol::MIXIN
+          when /^@mixin/, /^=/ then Docks::Types::Symbol::MIXIN
           when /^%/ then Docks::Types::Symbol::PLACEHOLDER
           when /^\$/ then Docks::Types::Symbol::VARIABLE
           when /(\.|\-\-)?(?:is|js)\-/ then Docks::Types::Symbol::STATE
@@ -23,7 +23,7 @@ module Docks
           else Docks::Types::Symbol::COMPONENT
         end
 
-        name = first_code_line.match(/^@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
+        name = first_code_line.match(/^=?@?(?:(?:function|mixin)\s*)?&?[\$%\.#]?\s*([^\s\(\:]*)/).captures.first
         { name: name, symbol_type: type }
       end
     end

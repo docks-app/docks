@@ -4,7 +4,7 @@ module Docks
   module Languages
     class JSON < Base
       def self.type; Docks::Types::Languages::STUB end
-      def self.extensions; "json" end
+      def self.extensions; %w(json) end
 
       def initialize
         require "json"

@@ -9,7 +9,7 @@ module Docks
       include Common::Markup
 
       def self.type; Docks::Types::Languages::MARKUP end
-      def self.extensions; "haml" end
+      def self.extensions; %w(haml) end
 
       def helper_markup_for(helper_name, arguments)
         functionize_helper(helper_name, arguments, start_with: "= ")

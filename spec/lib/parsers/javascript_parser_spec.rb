@@ -28,12 +28,30 @@ describe Docks::Parsers::JavaScript do
       complex_parsed_symbols = subject.parse(File.read(complex_fixture).sub("@pattern", "@page"))
       expect(complex_parsed_symbols.first[:page]).to_not be nil
     end
+
+    it "adds line number for the first line following all other comment blocks" do
+      expected_line_numbers = [10, 26]
+      basic_parsed_symbols.each_with_index do |symbol, index|
+        expect(symbol.source.line_number).to be expected_line_numbers[index]
+      end
+
+      expected_line_numbers = [2, 16, 39, 45, 54, 77]
+      complex_parsed_symbols.each_with_index do |symbol, index|
+        expect(symbol.source.line_number).to be expected_line_numbers[index]
+      end
+    end
   end
 
   describe "#symbol_block_extractor" do
     it "provides the first non-comment line as the second capture group" do
-      captures = File.read(basic_fixture).match(subject.symbol_block_extractor).captures
-      captures.each { |capture| expect(captures[1].strip.start_with?("#")).to be false }
+      [
+        "_foo = 'bar'",
+        "$node = $(this)",
+        "bar = 'baz'"
+      ].each do |non_comment|
+        match = "  //*\n  // Description\n\n  #{non_comment}".match(subject.symbol_block_extractor)
+        expect(match[:first_line]).to eq non_comment
+      end
     end
   end
 

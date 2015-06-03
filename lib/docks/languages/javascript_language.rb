@@ -5,7 +5,7 @@ module Docks
   module Languages
     class JavaScript < Base
       def self.type; Docks::Types::Languages::SCRIPT end
-      def self.extensions; ["js"] end
+      def self.extensions; %w(js) end
 
       def parser; Docks::Parsers::JavaScript.instance end
 

@@ -1,0 +1,113 @@
+//*
+// @pattern Buttons
+// @tagline Those sweet, sweet clicks.
+// @since 1.0
+
+/**
+ * A simple button. Nice.
+ *
+ * Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam expedita repellendus magnam similique eum assumenda velit doloribus omnis labore debitis. Molestiae debitis soluta earum minima maxime inventore aperiam, et omnis.
+ *
+ * @variant --primary           (demo type: joint, set by: :primary?)
+ * @variant --destroy           (demo type: joint, set by: :destroy?) - This button indicates that you want to remove something.
+ * @variant --destroy-no-hover  (demo type: joint)
+ * @variant --icon              (demo type: hidden)
+ * @variant --large             (demo type: select, set by: :size (SIZE_LARGE)) - A much larger button for special situations.
+ * @variant --plain             (demo type: select, precludes: --is-disabled, set by: :plain?)
+ */
+
+.button
+  cursor: pointer
+  display: inline-block
+  height: 32px
+  line-height: 30px
+  &:hover,
+  &:focus
+    background: #efefef // slightly different on hover/ focus
+
+  /*!*
+   * A button that is indicating the loading of content.
+   *
+   * @demo_type joint
+   * @set_by :loading?
+   */
+  &.button--is-loading
+    // Don't do this for disabled buttons
+    &:not(.button--is-disabled)
+      color: transparent
+      cursor: default
+      background-repeat: no-repeat
+      background-position: center center
+      &:hover,
+      &:focus
+        background-color: #fcfcfc
+
+//*
+// @precludes .button--large
+// @demo_type select
+// @set_by NextButton#resize, :size (SIZE_SLIM)
+
+.button--slim
+  height: 28px
+  line-height: 26px
+
+.button--plain
+  background: transparent
+  border: none
+
+//*
+// A button that can't be activated. In order for this button to
+// function correctly, both the class and the disabled attribute
+// must be placed on the button.
+// For example, the following will produce a button that *looks* disabled,
+// but that is still clickable:
+// ```html
+// <button class="button button--is-disabled">Not really disabled button</button>
+// ```
+// But this one creates an appropriately unclickable button:
+// ```html_demo
+// <button class="button button--is-disabled" disabled="disabled">Really disabled!</button>
+// ```
+// @demo_type select
+// @javascript_action $(this).addClass('button--is-disabled').attr('disabled', true)
+// @set_by :disabled?
+// @precludes button--is-loading
+
+.button--is-disabled
+  &,
+  &:hover,
+  &:focus
+    color: #999
+    border-color: #e3e3e3
+    background: #fcfcfc
+
+//*
+// Two or more buttons that control the same function.
+// @title Segmented Button Group
+// @demo_type own
+
+.button__segmented-group
+  display: flex
+
+  .button
+    display: block
+    flex: 0 1 auto
+    margin: 0
+    // Adjusts details for buttons that are part of the
+    // button group.
+    &:not(:first-of-type)
+      margin-left: -1px
+    &:first-of-type
+      border-top-right-radius: 0
+      border-bottom-right-radius: 0
+    &:last-of-type
+      border-top-left-radius: 0
+      border-bottom-left-radius: 0
+    &:not(:last-of-type):not(:first-of-type)
+      border-radius: 0
+
+// A segmented group that spans the entire container.
+// @demo_type select
+.button__segmented-group--full-width
+  .button
+    flex: 1 1 auto

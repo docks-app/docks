@@ -3,11 +3,11 @@ require_relative "base_naming_convention.rb"
 module Docks
   module Naming
     module Conventions
-      class BEM < Base
+      class SUIT < Base
         STATEFUL_WORDS = %w(is)
 
         def base_component(component_name)
-          component_name.split("--").first.split("__").first
+          component_name.split("-").first
         end
 
         def base_component?(component_name)
@@ -15,12 +15,12 @@ module Docks
         end
 
         def component(component_name)
-          component_name.gsub(/--[^_]*/, "")
+          component_name.gsub(/--[^\-]*/, "")
         end
 
         def parent_component(component_name)
           component_name = component(component_name)
-          component_name.sub(/__[^_]*$/, "")
+          component_name.sub(/-[^\-]*$/, "")
         end
 
         def clean_variation_name(variation_name, component_name)

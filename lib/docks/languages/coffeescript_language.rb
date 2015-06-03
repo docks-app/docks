@@ -5,7 +5,7 @@ module Docks
   module Languages
     class CoffeeScript < Base
       def self.type; Docks::Types::Languages::SCRIPT end
-      def self.extensions; ["coffee", "coffeescript"] end
+      def self.extensions; %w(coffee coffeescript) end
 
       def parser; Docks::Parsers::CoffeeScript.instance end
 

@@ -1,10 +1,10 @@
 require "spec_helper"
 
-describe Docks::Parsers::SCSS do
-  subject { Docks::Parsers::SCSS.instance }
+describe Docks::Parsers::Stylus do
+  subject { Docks::Parsers::Stylus.instance }
 
-  let(:basic_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "scss_parser_fixture_basic.scss") }
-  let(:complex_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "scss_parser_fixture_complex.scss") }
+  let(:basic_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "stylus_parser_fixture_basic.styl") }
+  let(:complex_fixture) { File.join(File.dirname(__FILE__), "..", "..", "fixtures", "parsers", "stylus_parser_fixture_complex.styl") }
 
   describe "#parse" do
     let(:basic_parsed_symbols) { subject.parse(basic_fixture) }
@@ -26,12 +26,12 @@ describe Docks::Parsers::SCSS do
     end
 
     it "adds line number for the first line following all other comment blocks" do
-      expected_line_numbers = [8, 25]
+      expected_line_numbers = [8, 24]
       basic_parsed_symbols.each_with_index do |symbol, index|
         expect(symbol.source.line_number).to be expected_line_numbers[index]
       end
 
-      expected_line_numbers = [1, 19, 36, 57, 90, 108]
+      expected_line_numbers = [1, 19, 34, 50, 76, 89]
       complex_parsed_symbols.each_with_index do |symbol, index|
         expect(symbol.source.line_number).to be expected_line_numbers[index]
       end
@@ -40,8 +40,18 @@ describe Docks::Parsers::SCSS do
 
   describe "#symbol_block_extractor" do
     it "provides the first non-comment line as the second capture group" do
-      captures = File.read(basic_fixture).match(subject.symbol_block_extractor).captures
-      captures.each { |capture| expect(captures[1].strip.start_with?("#")).to be false }
+      [
+        ".button",
+        "#button",
+        "&--is-active",
+        "[button]",
+        "body",
+        "@media large",
+        "+button-style()"
+      ].each do |non_comment|
+        match = "  //*\n  // Description\n\n  #{non_comment}".match(subject.symbol_block_extractor)
+        expect(match[:first_line]).to eq non_comment
+      end
     end
   end
 
@@ -89,30 +99,22 @@ describe Docks::Parsers::SCSS do
   end
 
   describe "#symbol_details_from_first_line" do
-    it "identifies a placeholder" do
-      target_name = "clearfix"
-      name, type = subject.symbol_details_from_first_line("%#{target_name} {").values
-      expect(type).to eq Docks::Types::Symbol::PLACEHOLDER
-      expect(name).to eq target_name
-    end
-
-    it "identifies a mixin" do
+    it "identifies a mixin/ function without params" do
       target_name = "full-size"
-      name, type = subject.symbol_details_from_first_line("@mixin #{target_name}($height, $width) {").values
+      name, type = subject.symbol_details_from_first_line("#{target_name}()").values
       expect(type).to eq Docks::Types::Symbol::MIXIN
       expect(name).to eq target_name
     end
-
-    it "identifies a function" do
+    it "identifies a mixin/ function with params" do
       target_name = "strip-units"
-      name, type = subject.symbol_details_from_first_line("@function #{target_name}($num) {").values
-      expect(type).to eq Docks::Types::Symbol::FUNCTION
+      name, type = subject.symbol_details_from_first_line("#{target_name}(num)").values
+      expect(type).to eq Docks::Types::Symbol::MIXIN
       expect(name).to eq target_name
     end
 
     it "identifies a variable" do
       target_name = "message-width"
-      name, type = subject.symbol_details_from_first_line("$#{target_name}: 40rem;").values
+      name, type = subject.symbol_details_from_first_line("#{target_name} = 40rem").values
       expect(type).to eq Docks::Types::Symbol::VARIABLE
       expect(name).to eq target_name
     end
@@ -120,56 +122,56 @@ describe Docks::Parsers::SCSS do
     describe "states" do
       it "identifies a state as a class starting with `is-`" do
         target_name = "is-active"
-        name, type = subject.symbol_details_from_first_line("#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class starting with `&.is-`" do
         target_name = "is-active"
-        name, type = subject.symbol_details_from_first_line("&.#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("&.#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class containing `--is-`" do
         target_name = "tab-list__tab--is-active"
-        name, type = subject.symbol_details_from_first_line(".#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line(".#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class starting with `&--is-`" do
         target_name = "--is-active"
-        name, type = subject.symbol_details_from_first_line("&#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("&#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class starting with `js-`" do
         target_name = "js-active"
-        name, type = subject.symbol_details_from_first_line(".#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line(".#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class starting with `&.js-`" do
         target_name = "js-active"
-        name, type = subject.symbol_details_from_first_line("&.#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("&.#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class containing `--js-`" do
         target_name = "tab-list__tab--js-active"
-        name, type = subject.symbol_details_from_first_line(".#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line(".#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
 
       it "identifies a state as a class starting with `&--js-`" do
         target_name = "--js-active"
-        name, type = subject.symbol_details_from_first_line("&#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("&#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::STATE
         expect(name).to eq target_name
       end
@@ -178,14 +180,14 @@ describe Docks::Parsers::SCSS do
     describe "variants" do
       it "identifies a variant as a class containing `--`" do
         target_name = "tab-list__tab--large"
-        name, type = subject.symbol_details_from_first_line(".#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line(".#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::VARIANT
         expect(name).to eq target_name
       end
 
       it "identifies a variant as a class starting with `&--`" do
         target_name = "--large"
-        name, type = subject.symbol_details_from_first_line("&#{target_name} {").values
+        name, type = subject.symbol_details_from_first_line("&#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::VARIANT
         expect(name).to eq target_name
       end
@@ -194,14 +196,14 @@ describe Docks::Parsers::SCSS do
     describe "component" do
       it "identifies a component as any class not matching state/ variant" do
         target_name = "tab-list__tab"
-        name, type = subject.symbol_details_from_first_line(".#{target_name} { flex: 1 1 0; }").values
+        name, type = subject.symbol_details_from_first_line(".#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::COMPONENT
         expect(name).to eq target_name
       end
 
       it "identifies a component as a class starting with `&__`" do
         target_name = "__tab"
-        name, type = subject.symbol_details_from_first_line("&#{target_name} { flex: 1 1 0; }").values
+        name, type = subject.symbol_details_from_first_line("&#{target_name}").values
         expect(type).to eq Docks::Types::Symbol::COMPONENT
         expect(name).to eq target_name
       end

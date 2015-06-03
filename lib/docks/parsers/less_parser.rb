@@ -1,8 +1,8 @@
-require_relative "scss_parser.rb"
+require_relative "sass_parser.rb"
 
 module Docks
   module Parsers
-    class Less < SCSS
+    class Less < Sass
       def symbol_details_from_first_line(first_code_line)
         first_code_line.strip!
 

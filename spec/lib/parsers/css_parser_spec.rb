@@ -44,9 +44,16 @@ describe Docks::Parsers::CSS do
 
   describe "#symbol_block_extractor" do
     it "provides the first non-comment line as the second capture group" do
-      captures = File.read(basic_fixture).match(subject.symbol_block_extractor).captures
-
-      captures.each { |capture| expect(captures[1].strip.start_with?("#")).to be false }
+      [
+        ".button {",
+        "#button {",
+        "[button] {",
+        "body {",
+        "@media(print) {"
+      ].each do |non_comment|
+        match = "  /**\n   * Description\n   */\n\n  #{non_comment}".match(subject.symbol_block_extractor)
+        expect(match[:first_line]).to eq non_comment
+      end
     end
   end
 

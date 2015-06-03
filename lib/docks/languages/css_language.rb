@@ -5,7 +5,7 @@ module Docks
   module Languages
     class CSS < Base
       def self.type; Docks::Types::Languages::STYLE end
-      def self.extensions; "css" end
+      def self.extensions; %w(css) end
 
       def parser; Docks::Parsers::CSS.instance end
     end

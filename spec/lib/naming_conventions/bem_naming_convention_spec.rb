@@ -53,6 +53,35 @@ describe Docks::Naming::Conventions::BEM do
     end
   end
 
+  describe "state?" do
+    it "identifies disconnected states" do
+      expect(subject.state?("is-active")).to be true
+    end
+
+    it "identifies states connected to component names" do
+      expect(subject.state?("foo--is-active")).to be true
+    end
+
+    it "doesn't identify states when the component has is- in the name" do
+      expect(subject.state?("foois-bar")).to be false
+    end
+  end
+
+  describe "variant?" do
+    it "identifies variants" do
+      expect(subject.variant?("foo--bar")).to be true
+    end
+
+    it "doesn't identify a component" do
+      expect(subject.variant?("foo")).to be false
+      expect(subject.variant?("foo__bar")).to be false
+    end
+
+    it "doesn't identify variants when it is actually a connected state" do
+      expect(subject.variant?("foo--is-bar")).to be false
+    end
+  end
+
   describe "#disconnected_state?" do
     it "checks whether a state is not connected to the base class name" do
       expect(subject.disconnected_state?("is-active")).to be true

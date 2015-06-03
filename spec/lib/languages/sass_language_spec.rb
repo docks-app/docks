@@ -1,13 +1,17 @@
 require "spec_helper"
 
-describe Docks::Languages::SCSS do
-  subject { Docks::Languages::SCSS.instance }
+describe Docks::Languages::Sass do
+  subject { Docks::Languages::Sass.instance }
 
   describe ".extensions" do
     let(:extensions) { [subject.class.extensions].flatten }
 
     it "includes .scss as an extension" do
       expect(extensions).to include "scss"
+    end
+
+    it "includes .sass as an extension" do
+      expect(extensions).to include "sass"
     end
   end
 
