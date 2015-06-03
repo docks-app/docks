@@ -21,6 +21,7 @@ describe Docks::Tags::Klass do
       symbol = Docks::Process.process(symbol)
 
       expect(symbol).to be_a Docks::Containers::Klass
+      expect(symbol.symbol_type).to eq Docks::Types::Symbol::CLASS
     end
   end
 

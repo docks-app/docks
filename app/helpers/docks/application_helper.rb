@@ -31,9 +31,8 @@ module Docks
     def render_everything_for(pattern)
       render_everything(pattern)
 
-      pattern.style_symbols.each { |symbol| render_everything(symbol) }
-      pattern.markup_symbols.each { |symbol| render_everything(symbol) }
-      pattern.script_symbols.each { |symbol| render_everything(symbol) }
+      pattern.structure_symbols.each { |symbol| render_everything(symbol) }
+      pattern.behavior_symbols.each { |symbol| render_everything(symbol) }
 
       return
     end

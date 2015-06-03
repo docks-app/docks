@@ -92,14 +92,14 @@ module Docks
 
       def find(descriptor)
         descriptor = Naming.parse_descriptor(descriptor)
-        return unless symbol = descriptor[:symbol]
+        return unless symbol_name = descriptor[:symbol]
 
         SYMBOL_SOURCES.each do |source|
           @symbols[source].each do |symbol|
             find_result = nil
             find_result = symbol.find(descriptor) if symbol.respond_to?(:find)
             return find_result unless find_result.nil?
-            return symbol if symbol.name == symbol
+            return symbol if symbol.name == symbol_name
           end
         end
 

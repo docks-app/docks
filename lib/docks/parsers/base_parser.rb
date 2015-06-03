@@ -32,7 +32,7 @@ module Docks
           parseable_block, replacement = if page_comment_block.index(/#{@comment_pattern}\*$/)
             lines_from_pattern_block -= 1
             lines = page_comment_block.lines.to_a
-            [lines[0...-1].join("\n"), lines.last]
+            [lines[0...-1].join, lines.last]
           else
             [page_comment_block, ""]
           end

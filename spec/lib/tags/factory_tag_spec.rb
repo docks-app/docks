@@ -21,6 +21,7 @@ describe Docks::Tags::Factory do
       symbol = Docks::Process.process(symbol)
 
       expect(symbol).to be_a Docks::Containers::Factory
+      expect(symbol.symbol_type).to eq Docks::Types::Symbol::FACTORY
     end
   end
 end

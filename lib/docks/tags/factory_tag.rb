@@ -19,6 +19,7 @@ module Docks
       end
 
       def process(symbol)
+        symbol.symbol_type = Types::Symbol::FACTORY
         Containers::Factory.new(symbol.to_h)
       end
     end
