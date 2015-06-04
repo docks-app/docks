@@ -8,6 +8,11 @@ module Docks
     META_FILE = "docks_meta"
     PATTERN_LIBRARY_FILE = "docks_pattern_library"
 
+    def self.pattern_for?(pattern)
+      cache_file = File.join(Docks.config.cache_location, pattern.to_s)
+      File.exist?(cache_file)
+    end
+
     def self.pattern_for(pattern)
       pattern = pattern.to_s
       cache_file = File.join(Docks.config.cache_location, pattern)
@@ -27,7 +32,26 @@ module Docks
       end
     end
 
+    def self.cached?(group)
+      group = Array(group)
+      cache_modified = last_modified(Group.group_identifier(group.first))
+      !cache_modified.nil? && cache_modified > most_recent_modified_date(group)
+    end
+
     private
+
+    def self.last_modified(pattern)
+      cache_file = Docks.config.cache_location + pattern.to_s
+      return nil unless File.exist?(cache_file)
+      File.mtime(cache_file)
+    end
+
+    def self.most_recent_modified_date(files)
+      Array(files).select { |file| File.exist?(file) }
+                  .map { |file| File.mtime(file) }
+                  .sort
+                  .last
+    end
 
     def self.pattern_library_cache_file
       Docks.config.cache_location + PATTERN_LIBRARY_FILE

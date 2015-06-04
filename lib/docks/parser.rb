@@ -4,10 +4,12 @@ module Docks
       files = Array(files)
       pattern = Containers::Pattern.new(Group.group_identifier(files.first).to_s)
       pattern.files = files
+      pattern.modified = Time.new(0)
 
       files.each do |file|
-        next unless is_parseable?(file)
+        next unless parseable?(file)
         pattern.add(Languages.file_type(file), parse_file(file))
+        pattern.modified = [pattern.modified, File.mtime(file)].max
       end
 
       Process.process(pattern)
@@ -16,7 +18,7 @@ module Docks
 
     private
 
-    def self.is_parseable?(file)
+    def self.parseable?(file)
       File.exists?(file) && Languages.supported_file?(file) && !parser_for(file).nil?
     end
 

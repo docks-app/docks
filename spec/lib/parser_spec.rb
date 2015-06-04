@@ -56,5 +56,12 @@ describe Docks::Parser do
       subject.parse("foo.bar")
       FileUtils.rm("foo.bar")
     end
+
+    it "sets the most recently modified file's time to be the pattern's modified attribute" do
+      FileUtils.touch(script_file)
+      expected_modified = File.mtime(script_file)
+      pattern = subject.parse([style_file, script_file])
+      expect(pattern.modified).to eq expected_modified
+    end
   end
 end

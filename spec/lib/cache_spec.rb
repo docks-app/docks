@@ -37,6 +37,50 @@ describe Docks::Cache do
     end
   end
 
+  describe ".cached?" do
+    let(:file) { "#{name}.scss" }
+
+    around do |example|
+      File.open(file, "w") { |file| file.write("") }
+      example.run
+      FileUtils.rm(file)
+    end
+
+    it "is false when there is no cached pattern" do
+      expect(described_class.cached?(name)).to be false
+    end
+
+    it "is false when there is a more-recently modified cache file than the newest source file" do
+      subject << pattern
+      subject.dump
+      expect(File).to receive(:mtime).with(Docks.config.cache_location + name).and_return Time.now + 1000
+      expect(File).to receive(:mtime).with(file).and_return Time.now
+      expect(described_class.cached?(file)).to be true
+    end
+
+    it "is false when there is a more-recently modified source file than the cache" do
+      subject << pattern
+      subject.dump
+      expect(File).to receive(:mtime).with(Docks.config.cache_location + name).and_return Time.now
+      expect(File).to receive(:mtime).with(file).and_return Time.now + 1000
+      expect(described_class.cached?(file)).to be false
+    end
+
+    it "uses the most recently modified file" do
+      file_two ="#{name}-2.scss"
+      File.open(file_two, "w") { |file| file.write("") }
+      subject << pattern
+      subject.dump
+
+      expect(File).to receive(:mtime).with(Docks.config.cache_location + name).and_return Time.now
+      expect(File).to receive(:mtime).with(file).and_return Time.now + 1000
+      expect(File).to receive(:mtime).with(file_two).and_return Time.now - 1000
+      expect(described_class.cached?([file, file_two])).to be false
+
+      FileUtils.rm(file_two)
+    end
+  end
+
   describe "#initialize" do
     it "leaves the cache alone when the last cache was on the same version" do
       subject << pattern

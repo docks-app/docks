@@ -149,7 +149,7 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(groups)
 
       groups.each do |id, group|
-        expect(subject).to receive(:should_parse?).with(group).and_return(true)
+        expect(Docks::Cache).to receive(:cached?).with(group).and_return(false)
         expect(Docks::Parser).to receive(:parse).with(group).and_return(Docks::Containers::Pattern.new("foo"))
         expect_any_instance_of(Docks::Cache).to receive(:<<)
       end
@@ -224,6 +224,7 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
         renderer = double()
@@ -247,6 +248,7 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
         renderer = double()
@@ -264,6 +266,7 @@ describe Docks::Builder do
       expect(Docks::Group).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
         renderer = double()
@@ -294,6 +297,7 @@ describe Docks::Builder do
         default_template = Docks::Templates.default_template
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
         expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
 
         renderer = double()
