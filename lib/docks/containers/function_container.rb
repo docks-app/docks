@@ -14,8 +14,9 @@ module Docks
 
       def self.type; Docks::Types::Symbol::FUNCTION end
 
-      def static?; !!@details[:static] end
+      def static?; !!self[:static] end
       def instance?; !static? end
+      def method?; !!self[:for] end
     end
   end
 end

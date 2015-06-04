@@ -28,4 +28,11 @@ describe Docks::Containers::Function do
       expect(described_class.new(instance_function).instance?).to be true
     end
   end
+
+  describe "#method?" do
+    it "is a method when it has a for attribute" do
+      expect(described_class.new(name: "foo", for: "Foo").method?).to be true
+      expect(described_class.new(name: "foo").method?).to be false
+    end
+  end
 end
