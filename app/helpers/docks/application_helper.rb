@@ -41,7 +41,7 @@ module Docks
       if symbol.kind_of?(Docks::Containers::Base)
         symbol.each do |k, v|
           if k == :description && v.present?
-            symbol[k] = special_description_render(v)
+            symbol[k] = special_description_render(v, language: symbol.source.language_code)
           else
             symbol[k] = render_everything(v)
           end
@@ -49,16 +49,16 @@ module Docks
       elsif symbol.kind_of?(Array)
         symbol.map! { |each_symbol| render_everything(each_symbol) }
       elsif symbol.kind_of?(OpenStruct) && symbol.description.present?
-        symbol.description = special_description_render(symbol.description)
+        symbol.description = special_description_render(symbol.description, language: symbol.source.language_code)
       end
 
       symbol
     end
 
-    def special_description_render(description)
+    def special_description_render(description, options = {})
       @example_count ||= 0
       description.gsub! /href\s*=\s*['"]@link\s([^'"]*)/ do |match|
-        "href='#{docks_path_to($1)}'"
+        "href='#{docks_path_to($1, options)}'"
       end
 
       render(inline: description.gsub(/<fenced_code_block[^>]*>(.*?)<\/fenced_code_block>/m) { |match|
@@ -81,7 +81,7 @@ module Docks
       }).html_safe
     end
 
-    def docks_path_to(symbol)
+    def docks_path_to(symbol, options = {})
       @path_cache ||= {}
 
       return @path_cache[symbol] unless @path_cache[symbol].nil?
@@ -91,15 +91,11 @@ module Docks
       elsif search_result = @pattern_library.find(symbol)
         puts search_result
         @path_cache[symbol] = docks.pattern_path(search_result.pattern.name, anchor: search_result.symbol.try(:symbol_id))
-      elsif path = Docks::SymbolSources.path_for(symbol)
+      elsif path = Docks::SymbolSources.path_for(symbol, options)
         @path_cache[symbol] = path
       end
 
-      if path = @path_cache[symbol]
-        path
-      else
-        raise ArgumentError, "No valid symbol sources were found for '#{symbol}'"
-      end
+      @path_cache[symbol]
     end
 
     def docks_icons

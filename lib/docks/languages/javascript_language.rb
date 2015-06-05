@@ -1,11 +1,14 @@
 require_relative "base_language.rb"
 require_relative "../parsers/javascript_parser.rb"
+require_relative "../symbol_sources/jquery_symbol_source.rb"
+require_relative "../symbol_sources/mdn_symbol_source.rb"
 
 module Docks
   module Languages
     class JavaScript < Base
       def self.type; Docks::Types::Languages::SCRIPT end
       def self.extensions; %w(js) end
+      def self.symbol_sources; [SymbolSources::JQuery, SymbolSources::MDN] end
 
       def parser; Docks::Parsers::JavaScript.instance end
 

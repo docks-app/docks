@@ -7,6 +7,7 @@ module Docks
 
       def self.type; nil end
       def self.extensions; nil end
+      def self.symbol_sources; nil end
 
       def load_stub(file); nil end
       def parser; nil end

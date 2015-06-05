@@ -1,11 +1,13 @@
 require_relative "base_language.rb"
 require_relative "../parsers/sass_parser.rb"
+require_relative "../symbol_sources/sass_symbol_source.rb"
 
 module Docks
   module Languages
     class Sass < Base
       def self.type; Docks::Types::Languages::STYLE end
       def self.extensions; %w(scss sass) end
+      def self.symbol_sources; SymbolSources::Sass end
 
       def signature_for(symbol)
         return unless [Types::Symbol::FUNCTION, Types::Symbol::MIXIN].include?(symbol.symbol_type)

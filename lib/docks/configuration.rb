@@ -180,7 +180,6 @@ module Docks
   def self.pre_configuration
     Tags.register_bundled_tags
     Languages.register_bundled_languages
-    SymbolSources.register_bundled_symbol_sources
   end
 
   def self.post_configuration

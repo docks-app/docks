@@ -38,9 +38,13 @@ module Docks
     # Returns a Boolean indicating whether or not the language was registered.
 
     def self.register(language)
-      [language.extensions].flatten.each do |extension|
+      Array(language.extensions).each do |extension|
         @@extensions[language.type].add(extension)
         @@languages[extension] = language
+      end
+
+      Array(language.symbol_sources).each do |source|
+        SymbolSources.register(source)
       end
     end
 

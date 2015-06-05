@@ -109,4 +109,14 @@ describe Docks::Languages do
       expect(subject.supported_file?("foo/bar/baz.coffee")).to be false
     end
   end
+
+  describe ".register" do
+    it "registers all symbols sources for the language" do
+      Array(Docks::Languages::Sass.symbol_sources).each do |source|
+        expect(Docks::SymbolSources).to receive(:register).with source
+      end
+
+      subject.register(Docks::Languages::Sass)
+    end
+  end
 end
