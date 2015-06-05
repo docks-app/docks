@@ -15,7 +15,7 @@ module Docks
       private
 
       def join_subcomponents_to_parent(pattern)
-        @components = pattern.components
+        @components = pattern.components.dup
         @new_components = []
 
         @components.each do |component|
@@ -33,7 +33,7 @@ module Docks
 
       def find_parent_component(component)
         parent_component_name = Naming.convention.parent_component(component.name)
-        return nil if parent_component_name == component.name
+        return if parent_component_name == component.name
 
         created_component = false
         parent_component = nil
@@ -60,7 +60,6 @@ module Docks
           grandparent.subcomponents << last_parent
           grandparent = find_parent_component(grandparent)
         end
-
         parent_component
       end
     end

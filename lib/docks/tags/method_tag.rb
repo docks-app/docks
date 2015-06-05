@@ -17,6 +17,10 @@ module Docks
         @name = :method
         @multiline = false
       end
+
+      def process(symbol)
+        symbol[@name] = true
+      end
     end
   end
 end

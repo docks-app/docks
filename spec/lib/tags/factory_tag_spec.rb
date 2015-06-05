@@ -16,6 +16,12 @@ describe Docks::Tags::Factory do
   end
 
   describe "#process" do
+    it "marks the attribute as true" do
+      symbol = Docks::Containers::Symbol.new(name: "foo", factory: "")
+      Docks::Process.process(symbol)
+      expect(symbol[subject.name]).to be true
+    end
+
     it "converts the symbol to be a class container" do
       symbol = Docks::Containers::Function.new(factory: "", name: "foo")
       symbol = Docks::Process.process(symbol)

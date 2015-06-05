@@ -27,6 +27,46 @@ describe Docks::Containers::Klass do
     Docks::Containers::Variable.new(name: "baz", static: true, access: Docks::Types::Access::PRIVATE)
   end
 
+  describe "#find" do
+    it "returns nil if the descriptor symbol doesn't match" do
+      expect(subject.find("baz")).to be nil
+    end
+
+    it "returns the symbol when the symbol name matches and there are no other parts to the descriptor" do
+      expect(subject.find(subject.name)).to be subject
+    end
+
+    it "returns nothing when the symbol name matches but the member does not" do
+      expect(subject.find("#{subject.name}.bar")).to be nil
+      expect(subject.find("#{subject.name}#bar")).to be nil
+      expect(subject.find("#{subject.name}~bar")).to be nil
+    end
+
+    it "returns an instance method" do
+      static_method.name = method.name
+      subject.methods.concat [static_method, method]
+      expect(subject.find("#{subject.name}##{method.name}")).to be method
+    end
+
+    it "returns a static method" do
+      static_method.name = method.name
+      subject.methods.concat [method, static_method]
+      expect(subject.find("#{subject.name}.#{static_method.name}")).to be static_method
+    end
+
+    it "returns an instance property" do
+      static_property.name = property.name
+      subject.properties.concat [static_property, property]
+      expect(subject.find("#{subject.name}##{property.name}")).to be property
+    end
+
+    it "returns a static property" do
+      static_property.name = property.name
+      subject.properties.concat [property, static_property]
+      expect(subject.find("#{subject.name}.#{static_property.name}")).to be static_property
+    end
+  end
+
   describe "#methods" do
     it "returns an empty array when there are no methods" do
       expect(subject.methods).to be_empty
@@ -166,6 +206,106 @@ describe Docks::Containers::Klass do
       expect(instance_properties.length).to be 2
       expect(instance_properties).to include property
       expect(instance_properties).to include private_property
+    end
+  end
+
+  describe "#instance_members" do
+    it "includes all instance methods and properties" do
+      subject.methods.concat [method, private_method, static_method]
+      subject.properties.concat [property, private_property, static_property]
+
+      members = subject.instance_members
+      expect(members.length).to be 4
+      expect(members).to include method
+      expect(members).to include property
+      expect(members).to include private_method
+      expect(members).to include private_property
+    end
+  end
+
+  describe "#static_members" do
+    it "includes all static methods and properties" do
+      subject.methods.concat [method, private_method, static_method]
+      subject.properties.concat [property, private_property, static_property]
+
+      members = subject.static_members
+      expect(members.length).to be 2
+      expect(members).to include static_method
+      expect(members).to include static_property
+    end
+  end
+
+  describe "summary" do
+    before(:each) do
+      subject.methods.concat [method, private_method, static_method]
+      subject.properties.concat [property, private_property, static_property]
+    end
+
+    describe "#instance_members" do
+      it "has summarized instance members of the original " do
+        members = subject.summary.instance_members
+        expect(members.length).to be 4
+        expect(members).to include method.summary
+        expect(members).to include property.summary
+        expect(members).to include private_method.summary
+        expect(members).to include private_property.summary
+      end
+    end
+
+    describe "#static_members" do
+      it "has summarized static members of the original" do
+        members = subject.summary.static_members
+        expect(members.length).to be 2
+        expect(members).to include static_method.summary
+        expect(members).to include static_property.summary
+      end
+    end
+
+    describe "#find" do
+      before(:each) do
+        subject[:methods] = []
+        subject[:properties] = []
+      end
+
+      let(:summary) { subject.summary }
+
+      it "returns nil if the descriptor symbol doesn't match" do
+        expect(summary.find("baz")).to be nil
+      end
+
+      it "returns the symbol when the symbol name matches and there are no other parts to the descriptor" do
+        expect(summary.find(summary.name)).to be summary
+      end
+
+      it "returns nothing when the symbol name matches but the member does not" do
+        expect(summary.find("#{summary.name}.bar")).to be nil
+        expect(summary.find("#{summary.name}#bar")).to be nil
+        expect(summary.find("#{summary.name}~bar")).to be nil
+      end
+
+      it "returns an instance method" do
+        static_method.name = method.name
+        subject.methods.concat [static_method, method]
+        expect(subject.summary.find("#{subject.name}##{method.name}")).to eq method.summary
+      end
+
+      it "returns a static method" do
+        static_method.name = method.name
+        subject.methods.concat [method, static_method]
+        expect(subject.summary.find("#{subject.name}.#{static_method.name}")).to eq static_method.summary
+      end
+
+      it "returns an instance property" do
+        static_property.name = property.name
+        subject.properties.concat [static_property, property]
+        expect(subject.summary.find("#{subject.name}##{property.name}")).to eq property.summary
+      end
+
+      it "returns a static property" do
+        static_property.name = property.name
+        subject.properties.concat [property, static_property]
+        expect(subject.summary.find("#{subject.name}.#{static_property.name}")).to eq static_property.summary
+      end
     end
   end
 end

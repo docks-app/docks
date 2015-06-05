@@ -54,7 +54,8 @@ module Docks
       protected
 
       def recursive_subcomponents
-        self[:subcomponents].inject(self[:subcomponents]) do |all_subcomponents, subcomponent|
+        self[:subcomponents].inject([]) do |all_subcomponents, subcomponent|
+          all_subcomponents << subcomponent
           all_subcomponents.concat(subcomponent.recursive_subcomponents)
         end
       end

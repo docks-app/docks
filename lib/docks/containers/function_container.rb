@@ -17,6 +17,11 @@ module Docks
       def static?; !!self[:static] end
       def instance?; !static? end
       def method?; !!self[:for] end
+
+      def symbol_id
+        return super unless method?
+        "method-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
+      end
     end
   end
 end

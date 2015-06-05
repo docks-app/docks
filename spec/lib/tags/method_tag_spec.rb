@@ -14,4 +14,12 @@ describe Docks::Tags::Method do
   it "only allows one tag per file" do
     expect(subject.only_one_per_file_allowed?).to be false
   end
+
+  describe "#process" do
+    it "marks the attribute as true" do
+      symbol = Docks::Containers::Symbol.new(name: "foo", method: "")
+      Docks::Process.process(symbol)
+      expect(symbol[subject.name]).to be true
+    end
+  end
 end

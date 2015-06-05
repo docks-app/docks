@@ -35,4 +35,23 @@ describe Docks::Containers::Function do
       expect(described_class.new(name: "foo").method?).to be false
     end
   end
+
+  describe "#symbol_id" do
+    let(:function) { described_class.new(name: "foo") }
+
+    it "returns the default if the function is not a method" do
+      expect(function.symbol_id).to eq "function-#{function.name}"
+    end
+
+    it "indicates it's a method and adds the classlike's name if it is a method" do
+      function.for = "Foo"
+      expect(function.symbol_id).to eq "method-#{function.for}-#{function.name}"
+    end
+
+    it "indicates that it's static if appropriate" do
+      function.for = "Foo"
+      function.static = true
+      expect(function.symbol_id).to eq "method-static-#{function.for}-#{function.name}"
+    end
+  end
 end

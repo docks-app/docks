@@ -16,6 +16,12 @@ module Docks
 
       def static?; !!@details[:static] end
       def instance?; !static? end
+      def property?; !!@details[:for] end
+
+      def symbol_id
+        return super unless property?
+        "property-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
+      end
     end
   end
 end

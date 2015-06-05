@@ -1,5 +1,7 @@
 require "docks"
 require "awesome_print"
+require "pry"
+require "pry-debugger"
 require "rspec-html-matchers"
 
 Docks::Messenger.quiet

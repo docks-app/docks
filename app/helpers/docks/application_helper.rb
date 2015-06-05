@@ -89,6 +89,7 @@ module Docks
       if search_result = @pattern.find(symbol)
         @path_cache[symbol] = "##{search_result.symbol_id}"
       elsif search_result = @pattern_library.find(symbol)
+        puts search_result
         @path_cache[symbol] = docks.pattern_path(search_result.pattern.name, anchor: search_result.symbol.try(:symbol_id))
       elsif path = Docks::SymbolSources.path_for(symbol)
         @path_cache[symbol] = path

@@ -56,6 +56,11 @@ describe Docks::Containers::Component do
         expect(subcomponents).to include subcomponent
         expect(subcomponents).to include sub_subcomponent
       end
+
+      it "doesn't duplicate the subcomponents" do
+        component.subcomponents(recursive: true)
+        expect(component.subcomponents.length).to be 1
+      end
     end
   end
 

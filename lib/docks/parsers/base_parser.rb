@@ -29,12 +29,14 @@ module Docks
           lines_from_pattern_block = page_comment_block.lines.count
           page_comment_block.sub!(/#{@comment_pattern}\*\s*/, '')
 
-          parseable_block, replacement = if page_comment_block.index(/#{@comment_pattern}\*$/)
-            lines_from_pattern_block -= 1
-            lines = page_comment_block.lines.to_a
-            [lines[0...-1].join, lines.last]
-          else
-            [page_comment_block, ""]
+          index = page_comment_block.index(/^\s*(?:#{@first_non_code_line_pattern}|#{@comment_pattern}\*$)/m)
+          parseable_block, replacement = page_comment_block, ""
+
+          if index
+            index -= 1
+            parseable_block = page_comment_block[0...index]
+            replacement = page_comment_block[index..-1]
+            lines_from_pattern_block -= replacement.lines.count
           end
 
           symbol = parse_comment_block(parseable_block)
@@ -61,7 +63,6 @@ module Docks
       end
 
       def parse_comment_block(comment_block, symbol = Containers::Symbol.new)
-        # TODO: ensure that pluralized tags are handled first
         if @tag_pattern.nil?
           supported_tags = Tags.supported_tags.sort! { |a, b| b.length <=> a.length }
           @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")}) ?)?(?<text>.*)/
@@ -118,7 +119,7 @@ module Docks
         return if @comment_pattern.nil?
 
         @first_non_code_line_pattern ||= /\w/
-        @pattern_block_extractor ||= /^ *#{@comment_pattern}\*(.*@(?:page|pattern).*?)#{@comment_pattern}\*/m
+        @pattern_block_extractor ||= /^ *#{@comment_pattern}\*(.*?@(?:page|pattern).*?)#{@comment_pattern}\*/m
         @symbol_block_extractor ||= /^ *#{@comment_pattern}\*(?<comments>.*?)^[^#{@comment_pattern}]*?(?<first_line>#{@first_non_code_line_pattern}[^\n]*)/m
         @comment_line_pattern ||= /^ *#{@comment_pattern} ?/m
       end

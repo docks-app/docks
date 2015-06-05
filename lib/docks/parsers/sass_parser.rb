@@ -6,7 +6,7 @@ module Docks
 
       def initialize
         @comment_pattern = /(?:\/\/|\/\*|\*\/?)/
-        @first_non_code_line_pattern = /[=+\.#\w\[&@]/
+        @first_non_code_line_pattern = /[\$=+\.#\w\[&@]/
         setup_regexes
       end
 

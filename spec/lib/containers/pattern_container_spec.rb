@@ -179,6 +179,16 @@ describe Docks::Containers::Pattern do
       pattern.add(:style, symbol)
       expect(pattern.find(symbol.name)).to be symbol
     end
+
+    it "asks the contained symbol to find the descriptor and returns if successful" do
+      method = Docks::Containers::Function.new(name: "toggle")
+      factory = Docks::Containers::Factory.new(name: "Foo", methods: [method])
+      pattern.add(:script, factory)
+
+      search = Docks::Naming.parse_descriptor("Foo#toggle")
+      expect(factory).to receive(:find).with(search).and_call_original
+      expect(pattern.find(search)).to be method
+    end
   end
 
   describe "container associations" do
@@ -269,6 +279,15 @@ describe Docks::Containers::Pattern do
       expect(component).to receive(:summary)
       expect(function).to receive(:summary)
       pattern.summary
+    end
+
+    it "asks the contained symbol to find the descriptor and returns if successful" do
+      method = Docks::Containers::Function.new(name: "toggle")
+      factory = Docks::Containers::Factory.new(name: "Foo", methods: [method])
+      pattern.add(:script, factory)
+
+      search = Docks::Naming.parse_descriptor("Foo#toggle")
+      expect(pattern.summary.find(search)).to eq method.summary
     end
   end
 end

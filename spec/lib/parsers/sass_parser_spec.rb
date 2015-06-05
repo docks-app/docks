@@ -15,6 +15,10 @@ describe Docks::Parsers::Sass do
       expect(complex_parsed_symbols.length).to eq 6
     end
 
+    it "doesn't add text in between the pattern block and the following documentation block to the pattern block" do
+      expect(complex_parsed_symbols.first.description).to be nil
+    end
+
     it 'captures the pattern comment block when one exists' do
       expect(basic_parsed_symbols.first[:pattern]).to be nil
       expect(complex_parsed_symbols.first[:pattern]).to_not be nil
@@ -31,7 +35,7 @@ describe Docks::Parsers::Sass do
         expect(symbol.source.line_number).to be expected_line_numbers[index]
       end
 
-      expected_line_numbers = [1, 19, 36, 57, 90, 108]
+      expected_line_numbers = [1, 21, 38, 59, 92, 110]
       complex_parsed_symbols.each_with_index do |symbol, index|
         expect(symbol.source.line_number).to be expected_line_numbers[index]
       end
@@ -46,6 +50,7 @@ describe Docks::Parsers::Sass do
         "&--is-active {",
         "[button] {",
         "body {",
+        "$variable",
         "@function() {",
         "+button-style()",
         "=button-style {"
