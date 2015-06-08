@@ -31,25 +31,26 @@ describe Docks::Containers::Function do
 
   describe "#method?" do
     it "is a method when it has a for attribute" do
-      expect(described_class.new(name: "foo", for: "Foo").method?).to be true
+      expect(described_class.new(name: "foo", method: true).method?).to be true
       expect(described_class.new(name: "foo").method?).to be false
     end
   end
 
   describe "#symbol_id" do
     let(:function) { described_class.new(name: "foo") }
+    let(:factory) { Docks::Containers::Factory.new(name: "Foo") }
 
     it "returns the default if the function is not a method" do
       expect(function.symbol_id).to eq "function-#{function.name}"
     end
 
     it "indicates it's a method and adds the classlike's name if it is a method" do
-      function.for = "Foo"
+      factory.add_member(function)
       expect(function.symbol_id).to eq "method-#{function.for}-#{function.name}"
     end
 
     it "indicates that it's static if appropriate" do
-      function.for = "Foo"
+      factory.add_member(function)
       function.static = true
       expect(function.symbol_id).to eq "method-static-#{function.for}-#{function.name}"
     end

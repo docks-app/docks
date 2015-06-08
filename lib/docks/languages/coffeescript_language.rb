@@ -14,7 +14,14 @@ module Docks
         return unless is_class || [Types::Symbol::MIXIN, Types::Symbol::FUNCTION, Types::Symbol::FACTORY].include?(symbol.symbol_type)
         params = symbol.fetch(:params, [])
 
-        presentation = is_class ? "class #{symbol.name}\n  constructor: " : "#{symbol.name} = "
+        presentation = if is_class
+          "class #{symbol.name}\n  constructor: "
+        elsif symbol.respond_to?(:method?) && symbol.method?
+          symbol.static? ? "#{symbol.for}.#{symbol.name} = " : "#{symbol.name}: "
+        else
+          "#{symbol.name} = "
+        end
+
         presentation << "(#{params.map { |param| "#{param.name}#{" = #{param.default}" if param.default}" }.join(", ")}) " unless params.empty?
         "#{presentation}-> # ..."
       end

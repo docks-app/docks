@@ -15,6 +15,11 @@ module Docks
       def_delegators :@details, :to_s, :inspect, :to_json, :each
 
       def initialize(details = {})
+        if details.kind_of?(Base)
+          details.delete(:symbol_type)
+          details = details.to_h
+        end
+
         details = Tags.join_synonymous_tags(details)
         @details = details
       end

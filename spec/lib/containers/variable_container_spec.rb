@@ -29,29 +29,30 @@ describe Docks::Containers::Variable do
     end
   end
 
-  describe "#method?" do
-    it "is a method when it has a for attribute" do
-      expect(described_class.new(name: "foo", for: "Foo").property?).to be true
+  describe "#property?" do
+    it "is a method when it has a method attribute" do
+      expect(described_class.new(name: "foo", property: true).property?).to be true
       expect(described_class.new(name: "foo").property?).to be false
     end
   end
 
   describe "#symbol_id" do
     let(:property) { described_class.new(name: "foo") }
+    let(:factory) { Docks::Containers::Factory.new(name: "Foo") }
 
     it "returns the default if the property is not a property" do
       expect(property.symbol_id).to eq "variable-#{property.name}"
     end
 
     it "indicates it's a property and adds the classlike's name if it is a property" do
-      property.for = "Foo"
-      expect(property.symbol_id).to eq "property-#{property.for}-#{property.name}"
+      factory.add_member(property)
+      expect(property.symbol_id).to eq "property-#{factory.name}-#{property.name}"
     end
 
     it "indicates that it's static if appropriate" do
-      property.for = "Foo"
       property.static = true
-      expect(property.symbol_id).to eq "property-static-#{property.for}-#{property.name}"
+      factory.add_member(property)
+      expect(property.symbol_id).to eq "property-static-#{factory.name}-#{property.name}"
     end
   end
 end

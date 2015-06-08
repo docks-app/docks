@@ -37,19 +37,26 @@ module Docks
       return
     end
 
-    def render_everything(symbol)
+    def render_everything(symbol, options = {})
       if symbol.kind_of?(Docks::Containers::Base)
+        options[:language] = symbol.source.try(:language_code)
         symbol.each do |k, v|
           if k == :description && v.present?
-            symbol[k] = special_description_render(v, language: symbol.source.language_code)
+            symbol[k] = special_description_render(v, options)
           else
-            symbol[k] = render_everything(v)
+            symbol[k] = render_everything(v, options)
           end
         end
       elsif symbol.kind_of?(Array)
-        symbol.map! { |each_symbol| render_everything(each_symbol) }
-      elsif symbol.kind_of?(OpenStruct) && symbol.description.present?
-        symbol.description = special_description_render(symbol.description, language: symbol.source.language_code)
+        symbol.map! { |each_symbol| render_everything(each_symbol, options) }
+      elsif symbol.kind_of?(OpenStruct)
+        symbol.each do |k, v|
+          if k == :description && v.present?
+            symbol.description = special_description_render(v, options)
+          else
+            symbol.send("#{k.to_s}=".to_sym, render_everything(v, options))
+          end
+        end
       end
 
       symbol

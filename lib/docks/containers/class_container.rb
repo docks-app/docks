@@ -53,6 +53,23 @@ module Docks
         end
       end
 
+      def add_member(symbol)
+        symbol.for = self[:name]
+        symbol.belongs_to = self
+
+        if symbol.kind_of?(Variable)
+          symbol.property = true
+          properties << symbol
+        else
+          symbol.method = true
+          methods << symbol
+        end
+      end
+
+      def add_members(*symbols)
+        symbols.each { |symbol| add_member(symbol) }
+      end
+
       def summary
         Summary.new(self)
       end

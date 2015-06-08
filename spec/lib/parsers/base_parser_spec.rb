@@ -33,6 +33,13 @@ describe Docks::Parsers::Base do
     end
   end
 
+  describe "#pattern_block_extractor" do
+    it "doesn't break within the block when a sequence of characters matches the possible closing symbol" do
+      match = "  //*\n  // @pattern Foo\n\n  // Don't **break** me here!\n\n\n//*\nBreak here".match(Docks::Parsers::Sass.instance.pattern_block_extractor)
+      expect(match[0]).to include "**break**"
+    end
+  end
+
   describe "#parse_comment_block" do
     it "adds a description when it is leading without a tag name" do
       description = "This is\na description"

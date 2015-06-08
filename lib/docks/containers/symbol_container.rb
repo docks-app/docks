@@ -3,6 +3,8 @@ require_relative "base_container.rb"
 module Docks
   module Containers
     class Symbol < Base
+      attr_accessor :belongs_to
+
       def self.type; "symbol" end
 
       def initialize(symbol_hash = {})

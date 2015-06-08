@@ -36,8 +36,7 @@ module Docks
             end
 
             next if last_classlike.nil?
-            last_classlike.methods << symbol if symbol[:method]
-            last_classlike.properties << symbol if symbol[:property]
+            last_classlike.add_member(symbol) if symbol[:method] || symbol[:property]
           end
 
           pattern.script_symbols.delete_if { |symbol| ![Containers::Klass, Containers::Factory].include?(symbol.class) && (symbol[:method] || symbol[:property]) }

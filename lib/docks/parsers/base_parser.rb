@@ -119,7 +119,7 @@ module Docks
         return if @comment_pattern.nil?
 
         @first_non_code_line_pattern ||= /\w/
-        @pattern_block_extractor ||= /^ *#{@comment_pattern}\*(.*?@(?:page|pattern).*?)#{@comment_pattern}\*/m
+        @pattern_block_extractor ||= /^ *#{@comment_pattern}\*(.*?@(?:page|pattern).*?)^\s*#{@comment_pattern}\*/m
         @symbol_block_extractor ||= /^ *#{@comment_pattern}\*(?<comments>.*?)^[^#{@comment_pattern}]*?(?<first_line>#{@first_non_code_line_pattern}[^\n]*)/m
         @comment_line_pattern ||= /^ *#{@comment_pattern} ?/m
       end

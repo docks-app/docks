@@ -9,5 +9,9 @@ module Docks
     def as_json(options = nil)
       @table.as_json(options)
     end
+
+    def each(&block)
+      @table.each(&block)
+    end
   end
 end

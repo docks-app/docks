@@ -30,6 +30,23 @@ describe Docks::Languages::JavaScript do
       expect(subject.signature_for(klass)).to eq "function #{klass.name}(bar, [baz = 'qux']) { /* ... */ }"
     end
 
+    it "gives a signature to instance methods with classes" do
+      klass.add_member(function_with_params)
+      expect(subject.signature_for(function_with_params)).to eq "#{klass.name}.prototype.#{function_with_params.name} = function(bar, [baz = 'qux']) { /* ... */ }"
+    end
+
+    it "gives a signature to instance methods with factories" do
+      factory = Docks::Containers::Factory.new(klass)
+      factory.add_member(function_with_params)
+      expect(subject.signature_for(function_with_params)).to eq "#{function_with_params.name}: function(bar, [baz = 'qux']) { /* ... */ }"
+    end
+
+    it "gives a signature to static methods" do
+      function_with_params.static = true
+      klass.add_member(function_with_params)
+      expect(subject.signature_for(function_with_params)).to eq "#{klass.name}.#{function_with_params.name} = function(bar, [baz = 'qux']) { /* ... */ }"
+    end
+
     it "doesn't provide a signature for a non-function symbol" do
       expect(subject.signature_for(something_else)).to be nil
     end

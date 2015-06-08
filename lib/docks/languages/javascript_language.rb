@@ -23,7 +23,19 @@ module Docks
           text
         end
 
-        "function #{symbol.name}(#{params.join(", ")}) { /* ... */ }"
+        presentation = if symbol.respond_to?(:method?) && symbol.method?
+          if symbol.static?
+            "#{symbol.for}.#{symbol.name} = function"
+          elsif symbol.belongs_to.instance_of?(Containers::Klass)
+            "#{symbol.for}.prototype.#{symbol.name} = function"
+          else
+            "#{symbol.name}: function"
+          end
+        else
+          "function #{symbol.name}"
+        end
+
+        "#{presentation}(#{params.join(", ")}) { /* ... */ }"
       end
     end
   end
