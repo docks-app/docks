@@ -116,7 +116,7 @@ module Docks
       klass << " icon--#{size}" unless size.nil?
 
       color = options.delete(:color)
-      klass << " icon--#{color}" unless color.nil?
+      klass << " icon--#{color.to_s.gsub("_", "-")}" unless color.nil?
 
       content_tag(:svg, content_tag(:use, nil, "xlink:href" => "#icon--#{name}"), class: klass)
     end

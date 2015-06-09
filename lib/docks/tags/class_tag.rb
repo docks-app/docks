@@ -20,7 +20,7 @@ module Docks
       def process(symbol)
         symbol.symbol_type = Types::Symbol::CLASS
         symbol[@name] = true
-        Containers::Klass.new(symbol.to_h)
+        Containers::Klass.from_symbol(symbol)
       end
 
 

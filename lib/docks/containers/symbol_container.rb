@@ -7,6 +7,11 @@ module Docks
 
       def self.type; "symbol" end
 
+      def self.from_symbol(symbol)
+        return if self == symbol.class
+        new(symbol.to_h)
+      end
+
       def initialize(symbol_hash = {})
         super
 

@@ -20,6 +20,7 @@ module Docks
 
       def process(symbol)
         symbol[@name] = true
+        Containers::Function.from_symbol(symbol)
       end
     end
   end

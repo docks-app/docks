@@ -21,7 +21,7 @@ module Docks
       def process(symbol)
         symbol[@name] = true
         symbol.symbol_type = Types::Symbol::FACTORY
-        Containers::Factory.new(symbol.to_h)
+        Containers::Factory.from_symbol(symbol)
       end
     end
   end

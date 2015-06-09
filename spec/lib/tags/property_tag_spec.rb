@@ -21,5 +21,11 @@ describe Docks::Tags::Property do
       Docks::Process.process(symbol)
       expect(symbol[subject.name]).to be true
     end
+
+    it "forces the symbol to be a variable type" do
+      symbol = Docks::Containers::Symbol.new(name: "foo", property: "")
+      symbol = Docks::Process.process(symbol)
+      expect(symbol).to be_a Docks::Containers::Variable
+    end
   end
 end
