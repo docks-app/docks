@@ -12,7 +12,7 @@
     <div class="resizable__size-buttons">
       <% %w(small medium large full).each_with_index do |size, index| %>
         <div class="resizable__size-button resizable__size-button--<%= size %>" role="button" tabindex="<%= index == 0 ? '0' : '-1' %>" data-resizable-size-button-size="<%= size %>">
-          <span class="helper--visually-hidden">Set the component demo window to size <%= size %>.</span>
+          <span class="helper--visually-hidden">Set the component demo window to size: <%= size %>.</span>
           <%= docks_icon(size) %>
         </div>
       <% end %>
