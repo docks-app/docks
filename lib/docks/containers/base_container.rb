@@ -33,6 +33,7 @@ module Docks
 
       def update(tag)
         self[tag] = yield(self[tag])
+        self
       end
 
       def [](tag)

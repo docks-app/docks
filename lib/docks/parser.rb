@@ -4,12 +4,11 @@ module Docks
       files = Array(files)
       pattern = Containers::Pattern.new(Group.group_identifier(files.first).to_s)
       pattern.files = files
-      pattern.modified = Time.new(0)
+      pattern.modified = files.map { |file| File.mtime(file) }.max
 
       files.each do |file|
         next unless parseable?(file)
         pattern.add(Languages.file_type(file), parse_file(file))
-        pattern.modified = [pattern.modified, File.mtime(file)].max
       end
 
       Process.process(pattern)

@@ -37,10 +37,9 @@ module Docks
               symbol.send("#{k.to_s}=".to_sym, render_everything_for(v, options))
             end
           end
-
-        else
-          symbol
         end
+
+        symbol
       end
 
       def render_markup(symbol)

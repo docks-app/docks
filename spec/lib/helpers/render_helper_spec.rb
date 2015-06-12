@@ -85,6 +85,15 @@ describe Docks::Helpers::Render do
         expect(param.description).to eq output
       end
 
+      it "doesn't kill the kind of object a nested object originally was" do
+        param = Docks::OpenStruct.new(description: description)
+        component.params = [param]
+        pattern.add(:style, component)
+        expect(subject).to receive(:render).with(inline: description, layout: false).and_return(output)
+        subject.render_everything
+        expect(component.params.first).to be param
+      end
+
       it "renders @link declarations" do
         allow(subject).to receive(:render) { |opts| opts[:inline] }
         pattern.description = "foo bar <a href='@link Baz'>baz</a>"
