@@ -51,7 +51,10 @@ module Docks
       end
 
       def method_missing(meth, *arguments, &block)
-        @locals.last[meth.to_sym] unless @locals.empty?
+        super if @locals.empty?
+        @locals.first.fetch(meth)
+      rescue KeyError
+        super
       end
 
       private

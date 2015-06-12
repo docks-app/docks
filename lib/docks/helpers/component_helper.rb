@@ -29,6 +29,7 @@ module Docks
         select
         code_block
         button
+        demo
         tablist
         tab
         tab_panel

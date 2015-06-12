@@ -37,6 +37,11 @@ describe Docks::Renderers::ERB do
       expect(subject.render(inline: "<%= foo %>", locals: { foo: "bar" }).strip).to eq "bar"
     end
 
+    it "throws an error when a method is not available" do
+      expect { subject.render(inline: "<%= foo_bar_baz %>") }.to raise_error(NameError)
+      expect { subject.render(inline: "<%= foo_bar_baz %>", locals: { foo: "bar" }) }.to raise_error(NameError)
+    end
+
     it "renders a template with access to the same helpers as the base template" do
       subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
       expect(subject.render(inline: "<%= helper %>\n<%= helper3 %>").strip).to eq "foo bar baz\nBAR"
