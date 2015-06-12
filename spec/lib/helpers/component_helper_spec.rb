@@ -5,6 +5,13 @@ describe Docks::Helpers::Component do
     Class.new { include Docks::Helpers::Component }.new
   end
 
+  describe "#unique_iframe_id" do
+    it "generates a unique id each time" do
+      ids = (1..100).map { includer.unique_iframe_id }
+      expect(ids).to eq ids.uniq
+    end
+  end
+
   describe "#docks_icons" do
     it "returns the contents of the icon file" do
       expect(File).to receive(:read).with(Docks.config.destination + "images/icons.svg").and_return("foo")

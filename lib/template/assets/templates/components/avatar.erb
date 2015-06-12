@@ -1,6 +1,6 @@
 <%
-  component.config do |config|
-    config.defaults author: OpenStruct.new(name: "", github: "", twitter: "", email: "")
+  component.configure do |config|
+    config.defaults(author: OpenStruct.new(name: "", github: "", twitter: "", email: ""))
   end
 
   service, profile_name, url = if component.author.github

@@ -1,6 +1,12 @@
 module Docks
   module Helpers
     module Component
+      def unique_iframe_id
+        @iframe_id ||= 0
+        @iframe_id += 1
+        "iframe--#{@iframe_id}"
+      end
+
       def docks_icons
         # html safe
         File.read(Docks.config.destination + File.join("images", "icons.svg"))
