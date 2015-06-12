@@ -33,6 +33,11 @@ describe Docks::Renderers::ERB do
       expect(subject.render(inline: erb_template).strip).to eq "foo bar!"
     end
 
+    it "captures ERB with arguments" do
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
+      expect(subject.render(inline: "<% helper6('bar') do |val| %>\n  foo <%= val %>\n<% end %>").strip).to eq "foo bar"
+    end
+
     it "renders a template with the passed locals" do
       expect(subject.render(inline: "<%= foo %>", locals: { foo: "bar" }).strip).to eq "bar"
     end

@@ -29,8 +29,8 @@ module Docks
         @haml_buffer = old_buffer
       end
 
-      def capture(&block)
-        capture_haml(&block)
+      def capture(*args, &block)
+        capture_haml(*args, &block)
       end
     end
   end

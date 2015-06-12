@@ -25,8 +25,8 @@ module Docks
         end
       end
 
-      def capture(&block)
-        yield
+      def capture(*args, &block)
+        yield *args
       end
     end
   end

@@ -19,6 +19,11 @@ describe Docks::Renderers::Haml do
       expect(subject.render(inline: "= helper4 do\n  bar").strip).to eq "foo bar!"
     end
 
+    it "captures Haml with arguments" do
+      subject.helpers File.expand_path("../../../fixtures/renderers/helpers.rb", __FILE__)
+      expect(subject.render(inline: "= helper6('bar') do |val|\n  foo \#{val}").strip).to eq "foo bar"
+    end
+
     it "renders a template with the passed locals" do
       expect(subject.render(inline: "= foo", locals: { foo: "bar" }).strip).to eq "bar"
     end

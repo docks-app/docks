@@ -24,6 +24,10 @@ module Helpers2
   def helper5
     Thing.new.one
   end
+
+  def helper6(spit_back, &block)
+    concat capture(spit_back, &block)
+  end
 end
 
 module Helpers

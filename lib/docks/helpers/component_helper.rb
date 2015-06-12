@@ -34,14 +34,14 @@ module Docks
         tab
         tab_panel
         resizable
-        class_changer
-        class_changer_container
+        toggle
+        toggle_container
         details_sheet
-        notice
         exploded
         popover
         xray
         iframe
+        table
       ).each do |component_name|
         define_method "docks_#{component_name}".to_sym do |opts = {}, &block|
           if block.nil?
@@ -146,6 +146,10 @@ module Docks
             end
           end
         end
+      end
+
+      class Tablist
+        def tab(*args); docks_tab(*args) end
       end
 
       private

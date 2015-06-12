@@ -38,9 +38,9 @@ module Docks
         binding
       end
 
-      def capture(&block)
+      def capture(*args, &block)
         old_output, @output = @output, ""
-        yield
+        yield *args
         content = @output
         @output = old_output
         content
