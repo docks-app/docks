@@ -41,6 +41,7 @@ module Docks
         exploded
         popover
         xray
+        iframe
       ).each do |component_name|
         define_method "docks_#{component_name}".to_sym do |opts = {}, &block|
           docks_component component_name, opts, &block

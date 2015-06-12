@@ -52,7 +52,7 @@ module Docks
 
       def method_missing(meth, *arguments, &block)
         super if @locals.empty?
-        @locals.first.fetch(meth)
+        @locals.last.fetch(meth)
       rescue KeyError
         super
       end
