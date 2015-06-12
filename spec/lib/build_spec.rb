@@ -227,10 +227,9 @@ describe Docks::Builder do
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
-        renderer = double()
+        renderer = double(render: group, :ivars= => nil)
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
 
@@ -251,10 +250,9 @@ describe Docks::Builder do
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
-        renderer = double()
+        renderer = double(render: group, :ivars= => nil)
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
 
@@ -269,10 +267,9 @@ describe Docks::Builder do
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
-        renderer = double()
+        renderer = double(render: group, :ivars= => nil)
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
 
@@ -286,7 +283,7 @@ describe Docks::Builder do
       expect(File.exists?(File.join(dest_dir, Docks.config.mount_at, excluded_pattern.to_s, "index.html"))).to be false
     end
 
-    it "provides the pattern and pattern library to every render call" do
+    it "provides the pattern and pattern library to every render call as locals and ivars" do
       pattern_library = Docks::Containers::PatternLibrary.new
 
       expect(Docks::Group).to receive(:group).and_return(patterns)
@@ -303,6 +300,7 @@ describe Docks::Builder do
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+        expect(renderer).to receive(:ivars=).with pattern_library: pattern_library, pattern: pattern
         expect(renderer).to receive(:render).with hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
       end
 

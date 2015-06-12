@@ -88,6 +88,12 @@ describe Docks::Templates do
       expect(subject.demo_template.layout).to eq demo_layout
     end
   end
+
+  describe ".search_for_template" do
+    it "does nothing when a non-string argument is passed" do
+      expect(subject.search_for_template(false)).to be nil
+    end
+  end
 end
 
 describe Docks::Templates::Template do

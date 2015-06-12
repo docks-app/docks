@@ -96,5 +96,20 @@ describe Docks::Renderers::Base do
     it "throws an error when no matching layout is found" do
       expect { subject.send(:normalize_content_and_locals, template: "template", layout: "foo") }.to raise_error(Docks::NoTemplateError)
     end
+
+    it "uses no layout when the layout argument is false" do
+      expect(subject.send(:normalize_content_and_locals, template: "template", layout: false)[1]).to be nil
+    end
+  end
+
+  describe "#ivars=" do
+    it "creates an instance variable for each of the passed hash keys" do
+      ivars = { foo: "bar", baz: "qux" }
+      subject.ivars = ivars
+
+      ivars.each do |ivar, value|
+        expect(subject.instance_variable_get("@#{ivar}".to_sym)).to eq value
+      end
+    end
   end
 end

@@ -83,7 +83,8 @@ describe Docks::Helpers::Component do
         %w(avatar tablist code_block).each do |example_component|
           hash = { foo: "bar" }
           block = -> { true }
-          expect(includer).to receive(:render).with partial: example_component, locals: { component: subject.new(hash, &block) }
+          partial = Docks.component_template_path + example_component
+          expect(includer).to receive(:render).with partial, locals: { component: subject.new(hash, &block) }
           includer.send("docks_#{example_component}".to_sym, hash, &block)
         end
       end

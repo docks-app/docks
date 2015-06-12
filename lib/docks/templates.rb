@@ -50,6 +50,7 @@ module Docks
     end
 
     def self.search_for_template(template, options = {})
+      return unless template.kind_of?(String) || template.kind_of?(Pathname)
       return template if File.exists?(template)
 
       if options[:must_be].nil?

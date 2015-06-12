@@ -86,11 +86,12 @@ module Docks
 
       template, layout, renderer = template_details(pattern)
       Helpers.add_helpers_to(renderer)
+      renderer.ivars = { pattern: pattern, pattern_library: pattern_library }
 
       directory = Docks.config.destination + "#{Docks.config.mount_at}/#{pattern.name}"
       html_file = directory + "index.html"
       update = File.exist?(html_file)
-      Docks.current_render_destination = html_file
+      Docks.current_render_destination = html_file.dirname
       FileUtils.mkdir_p(directory)
 
       File.open(html_file, "w") do |file|
