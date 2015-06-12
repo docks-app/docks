@@ -66,7 +66,7 @@ describe Docks::Builder do
 
     it "copies the core stylesheet to the pattern library folder" do
       subject.setup(default_options)
-      copied_stylesheets = Dir[File.join(assets_dir, "styles", "*.css")].map { |file| File.basename(file) }
+      copied_stylesheets = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "*.css")].map { |file| File.basename(file) }
       original_stylesheets = Dir[File.join(template_dir, "assets", "styles", "*.css")].map { |file| File.basename(file) }
 
       original_stylesheets.each do |stylesheet|
@@ -79,7 +79,7 @@ describe Docks::Builder do
         default_options[:style_preprocessor] = preprocessor
         subject.setup(default_options)
 
-        copied_style_helpers = Dir[File.join(assets_dir, "styles", "**/*.#{preprocessor}")].map { |file| File.basename(file) }
+        copied_style_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "**/*.#{preprocessor}")].map { |file| File.basename(file) }
         original_style_helpers = Dir[File.join(template_dir, "assets", "styles", preprocessor, "**/*")].map { |file| File.basename(file) }
 
         original_style_helpers.each do |style_helper|
@@ -93,7 +93,7 @@ describe Docks::Builder do
         default_options[:template_language] = template_language
         subject.setup(default_options)
 
-        copied_templates = Dir[File.join(assets_dir, "templates", "**/*")].map { |file| File.basename(file) }
+        copied_templates = Dir[File.join(assets_dir, Docks.config.asset_folders.templates, "**/*")].map { |file| File.basename(file) }
         original_templates = Dir[File.join(template_dir, "assets", "templates", template_language, "**/*")].map { |file| File.basename(file) }
 
         expect(copied_templates).to eq original_templates
@@ -102,7 +102,7 @@ describe Docks::Builder do
 
     it "copies the core scripts to the pattern library folder" do
       subject.setup(default_options)
-      copied_scripts = Dir[File.join(assets_dir, "scripts", "*.js")].map { |file| File.basename(file) }
+      copied_scripts = Dir[File.join(assets_dir, Docks.config.asset_folders.scripts, "*.js")].map { |file| File.basename(file) }
       original_scripts = Dir[File.join(template_dir, "assets", "scripts", "*.js")].map { |file| File.basename(file) }
 
       original_scripts.each do |script|
@@ -115,7 +115,7 @@ describe Docks::Builder do
         default_options[:script_language] = script_language
         subject.setup(default_options)
 
-        copied_script_helpers = Dir[File.join(assets_dir, "scripts", "**/*")].map { |file| File.basename(file) }
+        copied_script_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.scripts, "**/*")].map { |file| File.basename(file) }
         original_script_helpers = Dir[File.join(template_dir, "assets", "scripts", script_language, "**/*")].map { |file| File.basename(file) }
 
         original_script_helpers.each do |script_helper|
@@ -229,7 +229,7 @@ describe Docks::Builder do
 
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(renderer).to receive(:helpers).and_return(group)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
         expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
@@ -253,7 +253,7 @@ describe Docks::Builder do
 
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(renderer).to receive(:helpers).and_return(group)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
         expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
@@ -271,7 +271,7 @@ describe Docks::Builder do
 
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(renderer).to receive(:helpers).and_return(group)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
         expect(renderer).to receive(:render).and_return(group)
         files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
       end
@@ -295,14 +295,14 @@ describe Docks::Builder do
         pattern = OpenStruct.new(name: id)
 
         default_template = Docks::Templates.default_template
-        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
-        expect(Docks::Renderers).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
+        expect(Docks::Templates).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
+        expect(Docks::Templates).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
         expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
 
         renderer = double()
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(renderer).to receive(:helpers).and_return(group)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
         expect(renderer).to receive(:render).with hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
       end
 

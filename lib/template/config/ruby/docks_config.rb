@@ -11,6 +11,13 @@ Docks.configure do |config|
     templates.demo = "demo.erb"
   end
 
+  config.asset_folders = {
+    scripts:   "scripts",
+    styles:    "styles",
+    templates: "templates",
+    images:    "images"
+  }
+
   config.custom_tags do |tags|
   end
 

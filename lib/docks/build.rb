@@ -85,11 +85,12 @@ module Docks
       pattern = Cache.pattern_for(pattern)
 
       template, layout, renderer = template_details(pattern)
-      renderer.helpers(File.expand_path("../../template/helpers.rb", __FILE__))
+      Helpers.add_helpers_to(renderer)
 
       directory = Docks.config.destination + "#{Docks.config.mount_at}/#{pattern.name}"
       html_file = directory + "index.html"
       update = File.exist?(html_file)
+      Docks.current_render_destination = html_file
       FileUtils.mkdir_p(directory)
 
       File.open(html_file, "w") do |file|
@@ -104,11 +105,9 @@ module Docks
 
     def self.template_details(pattern)
       template = Templates.template_for(pattern)
-      layout = Renderers.search_for_template(template.layout, must_be: :layout)
-      template = Renderers.search_for_template(template.path)
+      layout = Templates.search_for_template(template.layout, must_be: :layout)
+      template = Templates.search_for_template(template.path)
       renderer = Languages.language_for(template).renderer
-
-      Docks.current_template = Pathname.new(template)
 
       [template, layout, renderer]
     end
@@ -123,7 +122,9 @@ module Docks
     end
 
     def self.setup_images
-      FileUtils.cp_r(File.join(@template_dir, "assets", "images"), @assets_dir)
+      images_dir = File.join(@assets_dir, Docks.config.asset_folders.images)
+      FileUtils.mkdir_p(images_dir)
+      FileUtils.cp_r(Dir[File.join(@template_dir, "assets/images/*")], images_dir)
     end
 
     def self.setup_config(config_type)
@@ -131,7 +132,7 @@ module Docks
     end
 
     def self.setup_styles(style_ext)
-      styles_dir = File.join(@assets_dir, "styles")
+      styles_dir = File.join(@assets_dir, Docks.config.asset_folders.styles)
       FileUtils.mkdir_p(styles_dir)
 
       FileUtils.cp_r(Dir[File.join(@template_dir, "assets/styles/*.css")], styles_dir)
@@ -140,7 +141,7 @@ module Docks
     end
 
     def self.setup_scripts(script_language)
-      script_dir = File.join(@assets_dir, "scripts")
+      script_dir = File.join(@assets_dir, Docks.config.asset_folders.scripts)
       FileUtils.mkdir_p(script_dir)
 
       FileUtils.cp_r(
@@ -152,7 +153,7 @@ module Docks
     end
 
     def self.setup_templates(template_language)
-      markup_dir = File.join(@assets_dir, "templates")
+      markup_dir = File.join(@assets_dir, Docks.config.asset_folders.templates)
       FileUtils.mkdir_p(markup_dir)
       FileUtils.cp_r Dir[File.join(@template_dir, "assets", "templates", template_language, "*")],
                      markup_dir

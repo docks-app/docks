@@ -1,10 +1,10 @@
 require "spec_helper"
 
 describe Docks::Renderers::Base do
-  fixture_dir = File.expand_path("../../../fixtures/renderers", __FILE__)
-  template_dir = File.join(fixture_dir, "templates")
-  partials_dir = File.join(template_dir, "partials")
-  layouts_dir = File.join(template_dir, "layouts")
+  let(:fixture_dir) { File.expand_path("../../../fixtures/renderers", __FILE__) }
+  let(:template_dir) { File.join(fixture_dir, Docks.config.asset_folders.templates) }
+  let(:partials_dir) { File.join(template_dir, "partials") }
+  let(:layouts_dir) { File.join(template_dir, "layouts") }
 
   subject { Docks::Renderers::Base.new }
 

@@ -100,6 +100,18 @@ describe Docks::Configuration do
     end
   end
 
+  describe "#asset_folders=" do
+    it "merges the default asset folders" do
+      defaults = subject.asset_folders
+      subject.asset_folders = { scripts: "javascripts" }
+      [:styles, :templates, :images].each do |asset|
+        expect(subject.asset_folders.send(asset)).to eq defaults.send(asset)
+      end
+
+      expect(subject.asset_folders.scripts).to eq "javascripts"
+    end
+  end
+
   describe "#custom_languages" do
     it "yields the language manager" do
       yielded = nil

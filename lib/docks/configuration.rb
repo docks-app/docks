@@ -8,16 +8,16 @@ module Docks
   class Configuration
     include Singleton
 
-    ROOT_DEPENDENT_PATHS = [:sources, :destination, :include_assets, :cache_location, :library_assets]
+    ROOT_DEPENDENT_PATHS = [:sources, :destination, :include_assets, :cache_location, :library_assets, :helpers]
 
     # Key details — these are required
     attr_accessor :sources, :destination, :include_assets
 
     # Locations
-    attr_accessor :root, :cache_location, :library_assets
+    attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
-    attr_accessor :github_repo, :mount_at
+    attr_accessor :github_repo, :mount_at, :helpers
 
     # Stateful stuff
     attr_reader :configured
@@ -61,39 +61,34 @@ module Docks
       end
     end
 
-    # Finalizes the configuration. Run this after a block that configured this
-    # singleton. Returns nothing.
+    def asset_folders=(new_asset_folders)
+      new_asset_folders.each do |type, dir|
+        @asset_folders.send("#{type}=".to_sym, dir)
+      end
+
+      @asset_folders
+    end
 
     def finalize
       @configured = true
     end
 
-    # Yields Docks::Languages for registering custom languages.
-    # Returns nothing.
-
     def custom_languages
       yield Languages
     end
-
-    # Yields Docks::Tags for registering custom tags.
-    # Returns nothing.
 
     def custom_tags
       yield Tags
     end
 
-    # Yields Docks::Templates for registering custom templates.
-    # Returns nothing.
-
     def custom_templates
       yield Templates
     end
 
-
-
     ROOT_DEPENDENT_PATHS.each do |path|
       define_method(path) do
         paths = instance_variable_get("@#{path.to_s}".to_sym)
+        return if paths.nil?
 
         if paths.kind_of?(Array)
           paths.map { |a_path| make_path_absolute(a_path) }
@@ -120,6 +115,7 @@ module Docks
       # these details when it's being used
       @library_assets = Docks::ASSETS_DIR
       @destination = "public"
+      @asset_folders = OpenStruct.new Hash[%w(scripts styles templates images).map { |asset| [asset, asset] }]
 
       @mount_at = "pattern-library"
     end
@@ -135,10 +131,10 @@ module Docks
   end
 
 
-  @@configuration = Configuration.instance
+  @configuration = Configuration.instance
 
   def self.config
-    @@configuration
+    @configuration
   end
 
   def self.configure_with(configurer)
@@ -170,8 +166,8 @@ module Docks
   end
 
   def self.configure
-    pre_configuration unless @@configuration.configured
-    yield @@configuration if block_given?
+    pre_configuration unless @configuration.configured
+    yield @configuration if block_given?
     post_configuration
   end
 
@@ -183,6 +179,6 @@ module Docks
   end
 
   def self.post_configuration
-    @@configuration.finalize
+    @configuration.finalize
   end
 end

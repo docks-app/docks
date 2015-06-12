@@ -52,7 +52,7 @@ describe Docks::Renderers::Haml do
     context "when there's a layout" do
       it "allows setting a layout file that is rendered around the main file" do
         layout = "Foo \#{yield.strip} baz"
-        expect(Docks::Renderers).to receive(:search_for_template).with(layout, anything).and_return(layout)
+        expect(Docks::Templates).to receive(:search_for_template).with(layout, anything).and_return(layout)
         expect(File).to receive(:read).with(layout).and_return(layout)
 
         expect(subject.render(inline: "bar", layout: layout).strip).to eq "Foo bar baz"
@@ -61,7 +61,7 @@ describe Docks::Renderers::Haml do
       describe "#content_for" do
         it "allows setting the content for multiple yielded blocks using #content_for" do
           layout = "Foo \#{yield(:first).strip} \#{yield(:second).strip}."
-          expect(Docks::Renderers).to receive(:search_for_template).with(layout, anything).and_return(layout)
+          expect(Docks::Templates).to receive(:search_for_template).with(layout, anything).and_return(layout)
           expect(File).to receive(:read).with(layout).and_return(layout)
 
           expect(subject.render(inline: "- content_for(:first) do\n  bar\n\n- content_for(:second) do\n  baz", layout: layout).strip).to eq "Foo bar baz."
@@ -69,7 +69,7 @@ describe Docks::Renderers::Haml do
 
         it "allows both named and a default content block" do
           layout = "Foo \#{yield(:first).strip} \#{yield.strip}."
-          expect(Docks::Renderers).to receive(:search_for_template).with(layout, anything).and_return(layout)
+          expect(Docks::Templates).to receive(:search_for_template).with(layout, anything).and_return(layout)
           expect(File).to receive(:read).with(layout).and_return(layout)
 
           expect(subject.render(inline: "- content_for(:first) do\n  bar\n\nbaz", layout: layout).strip).to eq "Foo bar baz."
@@ -77,7 +77,7 @@ describe Docks::Renderers::Haml do
 
         it "yields do a given content block when no block is given" do
           layout = "Foo \#{content_for(:first).strip} \#{yield.strip}."
-          expect(Docks::Renderers).to receive(:search_for_template).with(layout, anything).and_return(layout)
+          expect(Docks::Templates).to receive(:search_for_template).with(layout, anything).and_return(layout)
           expect(File).to receive(:read).with(layout).and_return(layout)
 
           expect(subject.render(inline: "- content_for(:first) do\n  bar\n\nbaz", layout: layout).strip).to eq "Foo bar baz."
@@ -87,7 +87,7 @@ describe Docks::Renderers::Haml do
       describe "#content_for?" do
         it "identifies whether a block has been given" do
           layout = "first? \#{content_for?(:first).to_s}, second? \#{content_for?(:second).to_s}"
-          expect(Docks::Renderers).to receive(:search_for_template).with(layout, anything).and_return(layout)
+          expect(Docks::Templates).to receive(:search_for_template).with(layout, anything).and_return(layout)
           expect(File).to receive(:read).with(layout).and_return(layout)
 
           expect(subject.render(inline: "- content_for(:first) do\n  bar", layout: layout).strip).to eq "first? true, second? false"

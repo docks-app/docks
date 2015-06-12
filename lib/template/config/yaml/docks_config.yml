@@ -9,7 +9,11 @@ include_assets:
   - public/styles/style.css
   - public/scripts/script.js
 
-
+asset_folders:
+  scripts: scripts
+  styles: styles
+  templates: templates
+  images: images
 
 library_assets: pattern_library_assets
 

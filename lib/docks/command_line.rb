@@ -45,7 +45,7 @@ module Docks
       }
 
       OptionParser.new do |opt|
-        opt.on("--config FILE", "Path to the configuration file. If no such file is provided, it will default to 'docks_config.yml'.") { |config_file| config = config_file }
+        opt.on("--config FILE", "Path to the configuration file. If no such file is provided, it will default to a file named 'docks_config' in your current directory.") { |config_file| config = config_file }
         opt.on("--clear-cache", "Discard the cache of previous parse results before running.") { |clear_cache| options[:clear_cache] = clear_cache }
         opt.on_tail("-h", "--help", "Show this message again.") { puts opt; exit }
         opt.on_tail("-v", "--version", "Show the version of docks that's running.") { puts "docks #{Docks::VERSION}"; exit }

@@ -9,30 +9,14 @@ module Docks
         @layout = options[:layout]
       end
 
-      # Public: returns the layout for this template (or the default layout,
-      # if no :layout key was provided in the constructor).
-
       def layout
         @layout.nil? ? Templates.default_layout : @layout
       end
-
-      # Public: returns a boolean indicating whether or not this template should
-      # be used for a group with the passed ID.
-      #
-      # id - The group ID to compare against this template.
-      #
-      # Returns a boolean.
 
       def matches?(id)
         !(@matcher =~ id).nil?
       end
     end
-
-
-    # Public: accessors for demo_template (the template to use specifically for
-    # demos), default_layout (the layout to use when none is specified for a
-    # particular template), and fallback_template (aliased to default_template,
-    # the template to use when none match the passed ID).
 
     def self.demo_template; @@demo_template end
     def self.default_layout; @@default_layout end
@@ -45,43 +29,17 @@ module Docks
 
     def self.demo_template=(template); self.set_demo_template(template) end
 
-    # An additional setter for @@demo_template — this one allows setting the
-    # layout option for the template.
-    #
-    # template - The template path to use for demos.
-    # options  - The options to use in constructing the template (most
-    #            importantly, use the `layout` key to specify a layout).
-    #
-    # Returns nothing.
-
     def self.set_demo_template(template, options = {})
       options[:layout] ||= "demo"
       @@demo_template = Template.new(template, options)
     end
 
-
-    # Registers a custom template.
-    #
-    # template - The template path.
-    # options  - The options to use in constructing the template, including
-    #            one of the `matches` or `for` keys (for the Regexp to use to
-    #            identify when to use this template) and, optionally, a layout
-    #            path to use for this template.
-    #
-    # Returns nothing.
-
     def self.register(template, options = {})
       @@templates << Template.new(template, options)
     end
 
-
-    # Finds the Template instance for the passed ID.
-    #
-    # id - The id to compare against the `matches?` method for each template.
-    #
-    # Returns a Template object.
-
     def self.template_for(id)
+      id = id.name if id.kind_of?(Containers::Pattern)
       return demo_template if id.to_sym == :demo_template
 
       @@templates.reverse_each do |template|
@@ -91,7 +49,27 @@ module Docks
       fallback_template
     end
 
+    def self.search_for_template(template, options = {})
+      return template if File.exists?(template)
+
+      if options[:must_be].nil?
+        in_root = loose_search_for(template)
+        return in_root unless in_root.nil?
+      end
+
+      in_specific = loose_search_for(File.join("#{(options[:must_be] || :partial).to_s.sub(/s$/, '')}{s,}", template))
+      return in_specific unless in_specific.nil?
+    end
+
     private
+
+    def self.loose_search_for(path)
+      return if path.nil?
+      path = Docks.config.library_assets + Docks.config.asset_folders.templates + path
+      path_pieces = path.to_s.sub(File.extname(path), "").split("/")
+      path_pieces[path_pieces.length - 1] = "{_,}#{path_pieces.last}"
+      Dir.glob("#{path_pieces.join("/")}.*").first
+    end
 
     def self.clean
       @@demo_template = Template.new("demo", layout: "demo")
@@ -104,7 +82,7 @@ module Docks
   end
 
   def self.template_for(id); Templates.template_for(id) end
-  def self.current_template; @@current_template end
-  def self.current_template=(template); @@current_template = template end
+  def self.current_render_destination; @current_render_destination end
+  def self.current_render_destination=(destination); @current_render_destination = destination end
   def self.component_template_path; Pathname.new(File.expand_path("../../template/assets/templates/components", __FILE__)) end
 end
