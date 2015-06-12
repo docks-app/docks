@@ -89,11 +89,18 @@ describe Docks::Helpers::Component do
       it "creates a component method that renders the associated partial with a component instance" do
         %w(avatar tablist code_block).each do |example_component|
           hash = { foo: "bar" }
-          block = -> { true }
           partial = Docks.component_template_path + example_component
-          expect(includer).to receive(:render).with partial, component: subject.new(hash, &block)
-          includer.send("docks_#{example_component}".to_sym, hash, &block)
+          expect(includer).not_to receive(:concat)
+          expect(includer).to receive(:render).with partial, component: subject.new(hash)
+          includer.send("docks_#{example_component}".to_sym, hash)
         end
+      end
+
+      it "calls concat for components that accept a block" do
+        block = -> { true }
+        expect(includer).to receive(:render).and_return("foo")
+        expect(includer).to receive(:concat).with("foo")
+        includer.docks_popover(&block)
       end
     end
 
