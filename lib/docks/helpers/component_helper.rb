@@ -139,7 +139,7 @@ module Docks
       private
 
       def docks_component(name, opts = {}, &block)
-        render Docks.component_template_path + name, locals: { component: Component.new(opts, &block) }
+        render Docks.component_template_path + name, component: Component.new(opts, &block)
       end
     end
   end

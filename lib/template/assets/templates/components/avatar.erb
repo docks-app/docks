@@ -1,4 +1,4 @@
-:ruby
+<%
   component.config do |config|
     config.defaults author: OpenStruct.new(name: "", github: "", twitter: "", email: "")
   end
@@ -10,9 +10,11 @@
   elsif component.author.email
     ["email", component.author.email, "mailto:#{component.author.email}"]
   else
-    [nil, nil, "javascript:;"]
+    []
   end
+%>
 
-%a.avatar{href: url, data: { service: service, "profile-name" => profile_name }}
-  %span.avatar__initials= component.author.name.split(" ").map { |name| name[0] }.join("")
-  %div.avatar__image
+<a class="avatar" data-service="<%= service %>" data-profile-name="<%= profile_name %>" href="<%= url.nil? ? "javascript:;" : url %>">
+  <span class="avatar__initials"><%= component.author.name.split(" ").map { |name| name[0] }.join("") %></span>
+  <div class="avatar__image"></div>
+</a>

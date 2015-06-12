@@ -84,7 +84,7 @@ describe Docks::Helpers::Component do
           hash = { foo: "bar" }
           block = -> { true }
           partial = Docks.component_template_path + example_component
-          expect(includer).to receive(:render).with partial, locals: { component: subject.new(hash, &block) }
+          expect(includer).to receive(:render).with partial, component: subject.new(hash, &block)
           includer.send("docks_#{example_component}".to_sym, hash, &block)
         end
       end
