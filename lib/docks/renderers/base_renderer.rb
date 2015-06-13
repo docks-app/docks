@@ -59,4 +59,7 @@ module Docks
       def clean; @cache = {} end
     end
   end
+
+  def self.current_renderer; @current_renderer end
+  def self.current_renderer=(renderer); @current_renderer = renderer end
 end

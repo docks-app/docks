@@ -87,6 +87,7 @@ module Docks
       template, layout, renderer = template_details(pattern)
       Helpers.add_helpers_to(renderer)
       renderer.ivars = { pattern: pattern, pattern_library: pattern_library }
+      Docks.current_renderer = renderer
 
       directory = Docks.config.destination + "#{Docks.config.mount_at}/#{pattern.name}"
       html_file = directory + "index.html"

@@ -9,5 +9,5 @@
 %>
 
 <div class="<%= component.classes_for(:base) %>" role="tablist">
-  <%= capture(Tablist.new, &component.block) %>
+  <%= capture(Docks::Helpers::Component::Tablist.new, &component.block) %>
 </div>

@@ -31,8 +31,8 @@ module Docks
         button
         demo
         tablist
-        tab
-        tab_panel
+        tablist_tab
+        tablist_panel
         resizable
         toggle
         toggle_container
@@ -148,8 +148,9 @@ module Docks
         end
       end
 
+      # NOT WORKING
       class Tablist
-        def tab(*args); docks_tab(*args) end
+        def tab(*args); Docks.current_renderer.docks_tablist_tab(*args) end
       end
 
       private
