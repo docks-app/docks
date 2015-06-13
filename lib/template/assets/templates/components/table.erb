@@ -9,7 +9,7 @@
   <div class="table__backdrop">
     <div class="table__scroller">
       <table class="table">
-        <%= capture(&component.block) %>
+        <%= capture(Docks::Helpers::Component::Table.new, &component.block) %>
       </table>
     </div>
   </div>

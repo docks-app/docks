@@ -148,9 +148,62 @@ module Docks
         end
       end
 
-      # NOT WORKING
-      class Tablist
-        def tab(*args); Docks.current_renderer.docks_tablist_tab(*args) end
+      class Base
+        attr_reader :renderer
+
+        def initialize
+          @renderer = Docks.current_renderer
+        end
+
+        def concat(content); renderer.concat(content) end
+        def capture(*args, &block); renderer.capture(*args, &block) end
+
+        def method_missing(meth, *args, &block)
+          if renderer.respond_to?(meth)
+            renderer.send(meth, *args, &block)
+          else
+            super
+          end
+        end
+      end
+
+      class Tablist < Base
+        def tab(*args); docks_tablist_tab(*args) end
+      end
+
+      class Popover < Base
+        def pane(options = {}, &block)
+          klass = "popover__pane"
+          klass << " popover__pane--fixed" if options.fetch(:fixed?, false)
+          concat "<div class='#{klass}'>#{capture(&block)}</div>"
+        end
+      end
+
+      class Table < Base
+        def initialize
+          @cell_element = "td"
+          super
+        end
+
+        def header(&block)
+          old_cell_element, @cell_element = @cell_element, "th"
+          concat "<thead class='table__header'>#{capture(&block)}</thead>"
+          @cell_element = old_cell_element
+        end
+
+        def body(&block)
+          concat "<tbody class='table__body'>#{capture(&block)}</tbody>"
+        end
+
+        def row(&block)
+          concat "<tr class='table__row'>#{capture(&block)}</tr>"
+        end
+
+        def cell(content, options = {})
+          klass = "table__cell"
+          klass << " table__cell--centered" if options.fetch(:centered?, false)
+          "<#{@cell_element} class='#{klass}'>#{content}</#{@cell_element}>"
+        end
       end
 
       private

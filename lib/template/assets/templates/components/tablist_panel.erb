@@ -10,5 +10,5 @@
 %>
 
 <div class="<%= component.classes_for(:base) %>" role="tab-panel" id="<%= component.id %>" aria-hidden="<%= !component.active? %>" aria-labelledby="<%= component.tab_id %>">
-  <%= capture(&component.block) %>
+  <%= capture(Docks::Helpers::Component::Popover.new, &component.block) %>
 </div>

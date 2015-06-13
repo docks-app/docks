@@ -13,11 +13,9 @@
   <div class="popover__tooltip"></div>
   <div class="popover__content-wrapper">
     <div class="popover__content">
-      <div class="popover__pane">
-        <% if component.block %>
-          <%= capture(&component.block) %>
-        <% end %>
-      </div>
+      <% if component.block %>
+        <%= capture(Docks::Helpers::Component::Popover.new, &component.block) %>
+      <% end %>
     </div>
   </div>
 </div>
