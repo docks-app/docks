@@ -16,6 +16,26 @@ module Docks
         return super unless property?
         "property-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
       end
+
+      def summary
+        summary = super
+        summary.static = fetch(:static, nil)
+        summary.property = fetch(:property, nil)
+        summary
+      end
+
+      protected
+
+      def matches_exactly?(descriptor)
+        name = fetch(:name, nil)
+        is_property = property?
+
+        matches = (!is_property && super) ||
+          (is_property && instance? && descriptor.instance_member == name) ||
+          (is_property && static? && descriptor.static_member == name)
+
+        matches && self
+      end
     end
   end
 end

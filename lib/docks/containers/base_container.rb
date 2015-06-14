@@ -1,5 +1,6 @@
 require "forwardable"
 require_relative "../tags.rb"
+require_relative "../descriptor.rb"
 
 module Docks
   module Containers
@@ -11,7 +12,6 @@ module Docks
 
     class Base
       extend Forwardable
-
       def_delegators :@details, :to_s, :inspect, :to_json, :each
 
       def initialize(details = {})
@@ -22,6 +22,7 @@ module Docks
 
         details = Tags.join_synonymous_tags(details)
         @details = details
+        @summary = false
       end
 
       def to_h; @details end
@@ -74,22 +75,28 @@ module Docks
         Tags.has_tag?(meth.to_s.sub("=", "")) || super
       end
 
+      def summarized?; @summary end
+      alias_method :summary?, :summarized?
+
       def summary
-        Summary.new(self)
+        summary = self.class.new(name: self.name)
+        summary.instance_variable_set(:@summary, true)
+        summary
+      end
+
+      def find(descriptor)
+        descriptor = Descriptor.new(descriptor)
+        matches_exactly?(descriptor) && self
       end
 
       protected
 
-      class Summary
-        attr_reader :name
+      def matches?(descriptor)
+        fetch(:name, nil) == descriptor.symbol
+      end
 
-        def initialize(item)
-          @name = item.name
-        end
-
-        def ==(other_summary)
-          self.class == other_summary.class && name == other_summary.name
-        end
+      def matches_exactly?(descriptor)
+        !descriptor.member? && matches?(descriptor)
       end
     end
   end

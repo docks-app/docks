@@ -39,7 +39,7 @@ describe Docks::Tags::IncludeWith do
       let(:included_component) { Docks::Containers::Component.new(name: "bar", include_with: [component.name]) }
       let(:included_variation) { Docks::Containers::State.new(name: "baz--qux", include_with: [component.name]) }
       let(:containing_component) { Docks::Containers::Component.new(name: "bar", states: [included_variation]) }
-      let(:pattern) { Docks::Containers::Pattern.new("foo") }
+      let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
 
       it "joins included components" do
         pattern.add(:style, [component, included_component])

@@ -15,7 +15,7 @@ describe Docks::Tags::Description do
     it "connects multiline content with smart line breaks" do
       description = ["foo", "bar"]
       symbol = Docks::Containers::Symbol.new(description: description.dup)
-      expect(subject.process(symbol)).to eq Docks::Processors.join_with_smart_line_breaks(description)
+      expect(subject.process(symbol).description).to eq Docks::Processors.join_with_smart_line_breaks(description)
     end
   end
 
@@ -26,7 +26,7 @@ describe Docks::Tags::Description do
 
     describe "associating external description files" do
       let(:name) { "button" }
-      let(:pattern) { Docks::Containers::Pattern.new(name) }
+      let(:pattern) { Docks::Containers::Pattern.new(name: name) }
       let(:component) { Docks::Containers::Component.new(name: name) }
       let(:second_component) { Docks::Containers::Component.new(name: "segmented-button") }
 
@@ -195,7 +195,7 @@ describe Docks::Tags::Description do
       let(:method) { Docks::Containers::Function.new(name: "toggle", static: true, params: [param]) }
       let(:factory) { Docks::Containers::Factory.new(name: "Foo", methods: [method]) }
       let(:pattern) do
-        pattern = Docks::Containers::Pattern.new("foo")
+        pattern = Docks::Containers::Pattern.new(name: "foo")
         pattern.add(:script, factory)
         pattern
       end

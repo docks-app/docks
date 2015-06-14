@@ -15,9 +15,9 @@ module Docks
       attr_accessor :modified, :files, :name
       def_delegators :@symbols, :to_s, :inspect, :to_json
 
-      def initialize(name)
-        super()
-        @name = name
+      def initialize(pattern_details = {})
+        super
+        @name = @details.delete(:name)
         @symbols = {}
         @files = []
 
@@ -53,11 +53,11 @@ module Docks
       end
 
       def title
-        @details[Tags::Title.instance.name] || name.capitalize
+        fetch(Tags::Title.instance.name, name.capitalize)
       end
 
       def group
-        @details[Tags::Group.instance.name] || Types::Symbol::COMPONENT.capitalize
+        fetch(Tags::Group.instance.name, Types::Symbol::COMPONENT.capitalize)
       end
 
       def structure_symbols
@@ -91,18 +91,7 @@ module Docks
       end
 
       def find(descriptor)
-        descriptor = Naming.parse_descriptor(descriptor)
-        return unless symbol_name = descriptor[:symbol]
-
-        SYMBOL_SOURCES.each do |source|
-          @symbols[source].each do |symbol|
-            find_result = nil
-            find_result = symbol.find(descriptor)
-            return find_result unless find_result.nil?
-          end
-        end
-
-        nil
+        super || find_in_symbols(descriptor)
       end
 
       def demos
@@ -123,7 +112,11 @@ module Docks
       alias_method :demo, :demos
 
       def summary
-        Summary.new(self)
+        summary = super
+        summary.group = group
+        summary.title = title
+        summary.instance_variable_set(:@symbols, Hash[@symbols.map { |type, symbols| [type, symbols.map(&:summary)] }])
+        summary
       end
 
       def symbols_of_type(type, options = {})
@@ -146,39 +139,22 @@ module Docks
 
       protected
 
-      class Summary < Base::Summary
-        attr_reader :group, :title
+      def matches_exactly?(descriptor)
+        descriptor.symbol.nil? && descriptor.pattern == name
+      end
 
-        def initialize(pattern)
-          super
+      def find_in_symbols(descriptor)
+        descriptor = Descriptor.new(descriptor)
+        find_result = false
 
-          @title = pattern.title
-          @group = pattern.group
-
-          @symbols = SYMBOL_SOURCES.inject(Hash.new) do |summarized_symbols, symbol_source|
-            pattern.instance_variable_get(:@symbols)[symbol_source].each do |symbol|
-              summarized_symbols[symbol.name] ||= symbol.summary
-            end
-
-            summarized_symbols
-          end
-        end
-
-        def find(descriptor)
-          descriptor = Naming.parse_descriptor(descriptor)
-          return if descriptor[:symbol].nil?
-
-          @symbols.each do |_name, symbol|
+        SYMBOL_SOURCES.each do |source|
+          @symbols[source].each do |symbol|
             find_result = symbol.find(descriptor)
-            return find_result unless find_result.nil?
+            break if find_result
           end
-
-          nil
         end
 
-        def ==(other_summary)
-          self.class == other_summary.class && @symbols == other_summary.instance_variable_get(:@symbols)
-        end
+        find_result
       end
     end
   end

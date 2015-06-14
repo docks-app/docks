@@ -21,24 +21,6 @@ describe Docks::Containers::Symbol do
     end
   end
 
-  describe "#summary" do
-    it "creates a symbol_id that's the same as the symbol's" do
-      expect(subject.summary.symbol_id).to eq subject.symbol_id
-    end
-
-    it "creates a symbol_id that is unique between two symbol types with the same name" do
-      descendants = ObjectSpace.each_object(Class).select { |klass| klass < described_class }.sample(2)
-      descendants.map! { |descendant| descendant.new(name: "foo").summary }
-      expect(descendants.first.symbol_id).to_not eq descendants.last.symbol_id
-    end
-
-    it "adds a find method that checks for a matching name" do
-      summary = subject.summary
-      expect(summary.find("bar")).to be nil
-      expect(summary.find(summary.name)).to be summary
-    end
-  end
-
   describe "#private?" do
     it "identifies a private symbol based on its access type" do
       expect(subject.private?).to be false

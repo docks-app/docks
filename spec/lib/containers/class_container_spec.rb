@@ -28,18 +28,18 @@ describe Docks::Containers::Klass do
   end
 
   describe "#find" do
-    it "returns nil if the descriptor symbol doesn't match" do
-      expect(subject.find("baz")).to be nil
+    it "returns false if the descriptor symbol doesn't match" do
+      expect(subject.find("baz")).to be false
     end
 
     it "returns the symbol when the symbol name matches and there are no other parts to the descriptor" do
       expect(subject.find(subject.name)).to be subject
     end
 
-    it "returns nothing when the symbol name matches but the member does not" do
-      expect(subject.find("#{subject.name}.bar")).to be nil
-      expect(subject.find("#{subject.name}#bar")).to be nil
-      expect(subject.find("#{subject.name}~bar")).to be nil
+    it "returns false when the symbol name matches but the member does not" do
+      expect(subject.find("#{subject.name}.bar")).to be false
+      expect(subject.find("#{subject.name}#bar")).to be false
+      expect(subject.find("#{subject.name}~bar")).to be false
     end
 
     it "returns an instance method" do
@@ -209,6 +209,22 @@ describe Docks::Containers::Klass do
     end
   end
 
+  describe "#members" do
+    it "returns all members, of any type" do
+      subject.add_members(method, private_method, static_method)
+      subject.add_members(property, private_property, static_property)
+
+      members = subject.members
+      expect(members.length).to be 6
+      expect(members).to include method
+      expect(members).to include property
+      expect(members).to include private_method
+      expect(members).to include private_property
+      expect(members).to include static_method
+      expect(members).to include static_property
+    end
+  end
+
   describe "#instance_members" do
     it "includes all instance methods and properties" do
       subject.add_members(method, private_method, static_method)
@@ -265,77 +281,20 @@ describe Docks::Containers::Klass do
     end
   end
 
-  describe "summary" do
+  describe "#summary" do
     before(:each) do
       subject.add_members(method, private_method, static_method)
       subject.add_members(property, private_property, static_property)
     end
 
-    describe "#instance_members" do
-      it "has summarized instance members of the original " do
-        members = subject.summary.instance_members
-        expect(members.length).to be 4
-        expect(members).to include method.summary
-        expect(members).to include property.summary
-        expect(members).to include private_method.summary
-        expect(members).to include private_property.summary
-      end
-    end
+    let(:summary) { subject.summary }
 
-    describe "#static_members" do
-      it "has summarized static members of the original" do
-        members = subject.summary.static_members
-        expect(members.length).to be 2
-        expect(members).to include static_method.summary
-        expect(members).to include static_property.summary
-      end
-    end
-
-    describe "#find" do
-      before(:each) do
-        subject[:methods] = []
-        subject[:properties] = []
-      end
-
-      let(:summary) { subject.summary }
-
-      it "returns nil if the descriptor symbol doesn't match" do
-        expect(summary.find("baz")).to be nil
-      end
-
-      it "returns the symbol when the symbol name matches and there are no other parts to the descriptor" do
-        expect(summary.find(summary.name)).to be summary
-      end
-
-      it "returns nothing when the symbol name matches but the member does not" do
-        expect(summary.find("#{summary.name}.bar")).to be nil
-        expect(summary.find("#{summary.name}#bar")).to be nil
-        expect(summary.find("#{summary.name}~bar")).to be nil
-      end
-
-      it "returns an instance method" do
-        static_method.name = method.name
-        subject.add_members(static_method, method)
-        expect(subject.summary.find("#{subject.name}##{method.name}")).to eq method.summary
-      end
-
-      it "returns a static method" do
-        static_method.name = method.name
-        subject.add_members(method, static_method)
-        expect(subject.summary.find("#{subject.name}.#{static_method.name}")).to eq static_method.summary
-      end
-
-      it "returns an instance property" do
-        static_property.name = property.name
-        subject.add_members(static_property, property)
-        expect(subject.summary.find("#{subject.name}##{property.name}")).to eq property.summary
-      end
-
-      it "returns a static property" do
-        static_property.name = property.name
-        subject.add_members(property, static_property)
-        expect(subject.summary.find("#{subject.name}.#{static_property.name}")).to eq static_property.summary
-      end
+    it "preserves the symbol_id, name, properties, and methods" do
+      expect(summary).to be_a described_class
+      expect(summary.name).to eq subject.name
+      expect(summary.symbol_id).to eq subject.symbol_id
+      expect(summary.properties).to eq subject.properties.map(&:summary)
+      expect(summary.methods).to eq subject.methods.map(&:summary)
     end
   end
 end

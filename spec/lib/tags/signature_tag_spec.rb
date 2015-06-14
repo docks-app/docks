@@ -28,7 +28,7 @@ describe Docks::Tags::Signature do
     let(:method) { Docks::Containers::Function.new(name: "foo", source: OpenStruct.new(file: "foo.coffee")) }
     let(:klass) { Docks::Containers::Klass.new(name: "Foo", methods: [method], source: OpenStruct.new(file: "foo.coffee")) }
     let(:factory) { Docks::Containers::Factory.new(name: "Bar", methods: [method], source: OpenStruct.new(file: "foo.coffee")) }
-    let(:pattern) { Docks::Containers::Pattern.new("foo") }
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
 
     it "asks the language for a function to update the signature" do
       pattern.add(:script, function)

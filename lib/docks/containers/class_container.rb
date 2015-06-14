@@ -36,21 +36,17 @@ module Docks
       def static_properties; properties.select { |prop| prop.static? } end
       def instance_properties; properties.reject { |prop| prop.static? } end
 
+      def members; instance_members + static_members end
       def instance_members; instance_methods + instance_properties end
       def static_members; static_methods + static_properties end
 
       def find(descriptor)
-        descriptor = Naming.parse_descriptor(descriptor)
-        return unless descriptor[:symbol] == self[:name]
-        instance_member, static_member = descriptor.values_at(:instance_member, :static_member)
-        return unless descriptor[:local_member].nil?
-        return self if instance_member.nil? && static_member.nil?
+        descriptor = Descriptor.new(descriptor)
 
-        if instance_member
-          instance_members.find { |member| member.name == instance_member }
-        else
-          static_members.find { |member| member.name == static_member }
-        end
+        return false unless descriptor.symbol == fetch(:name, nil)
+        return self unless descriptor.member?
+
+        members.find { |member| member.find(descriptor) } || false
       end
 
       def add_member(symbol)
@@ -71,33 +67,10 @@ module Docks
       end
 
       def summary
-        Summary.new(self)
-      end
-
-      protected
-
-      class Summary < Symbol::Summary
-        attr_accessor :instance_members, :static_members
-
-        def initialize(klass)
-          super
-          @instance_members = klass.instance_members.map { |member| member.summary }
-          @static_members = klass.static_members.map { |member| member.summary }
-        end
-
-        def find(descriptor)
-          descriptor = Naming.parse_descriptor(descriptor)
-          return unless descriptor[:symbol] == @name
-          instance_member, static_member = descriptor.values_at(:instance_member, :static_member)
-          return unless descriptor[:local_member].nil?
-          return self if instance_member.nil? && static_member.nil?
-
-          if instance_member
-            instance_members.find { |member| member.name == instance_member }
-          else
-            static_members.find { |member| member.name == static_member }
-          end
-        end
+        summary = super
+        summary.properties = fetch(:properties, []).map(&:summary)
+        summary.methods = fetch(:methods, []).map(&:summary)
+        summary
       end
     end
   end

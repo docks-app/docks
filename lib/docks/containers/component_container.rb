@@ -46,9 +46,17 @@ module Docks
       end
 
       def find(descriptor)
-        descriptor = Naming.parse_descriptor(descriptor)
-        return self if descriptor[:symbol] == self[:name]
-        recursive_subcomponents.find { |subcomponent| subcomponent.name == descriptor[:symbol] }
+        super || find_in_members(descriptor)
+      end
+
+      def summary
+        summary = super
+
+        [:states, :variants, :subcomponents].each do |property|
+          summary[property] = fetch(property, []).map(&:summary)
+        end
+
+        summary
       end
 
       protected
@@ -58,6 +66,26 @@ module Docks
           all_subcomponents << subcomponent
           all_subcomponents.concat(subcomponent.recursive_subcomponents)
         end
+      end
+
+      def find_in_members(descriptor)
+        descriptor = Descriptor.new(descriptor)
+
+        found = if !(descriptor.member? && descriptor.symbol != fetch(:name, nil))
+          possible_variation_name = descriptor.member || descriptor.symbol
+          variations.find { |variation| variation.find(descriptor) } || false
+        else
+          false
+        end
+
+        return found if found
+
+        # Can't do a regular #find since each component searches its subcomponents
+        subcomponents.each do |subcomponent|
+          break if found = subcomponent.find(descriptor)
+        end
+
+        found
       end
     end
   end

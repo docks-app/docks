@@ -8,7 +8,7 @@ module Docks
       end
 
       def <<(pattern)
-        pattern = pattern.summary unless pattern.kind_of?(Containers::Base::Summary)
+        pattern = pattern.summary unless pattern.summarized?
         @patterns[pattern.name.to_s] ||= pattern
       end
 
@@ -45,17 +45,13 @@ module Docks
       end
 
       def find(descriptor)
-        descriptor = Naming.parse_descriptor(descriptor)
-
-        pattern_name = descriptor[:pattern]
-        pattern_name = descriptor.delete(:symbol) if pattern_name.nil?
-        return if pattern_name.nil?
-
-        pattern = @patterns[Group.group_identifier(pattern_name).to_s]
-        return if pattern.nil?
+        descriptor = Descriptor.new(descriptor, assume: :pattern)
+        pattern = @patterns[descriptor.pattern]
+        return false if pattern.nil?
 
         symbol = pattern.find(descriptor)
-        OpenStruct.new(pattern: pattern, symbol: symbol)
+        symbol = nil if !symbol || symbol == pattern
+        ::OpenStruct.new(pattern: pattern, symbol: symbol)
       end
     end
   end

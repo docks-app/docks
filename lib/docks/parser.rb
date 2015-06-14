@@ -1,8 +1,9 @@
 module Docks
   class Parser
     def self.parse(files)
-      files = Array(files)
-      pattern = Containers::Pattern.new(Group.group_identifier(files.first).to_s)
+      files = Array(files).select { |file| File.exists?(file) }
+
+      pattern = Containers::Pattern.new(name: Group.group_identifier(files.first).to_s)
       pattern.files = files
       pattern.modified = files.map { |file| File.mtime(file) }.max
 

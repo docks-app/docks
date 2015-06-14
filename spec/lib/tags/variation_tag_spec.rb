@@ -11,7 +11,7 @@ describe Docks::Tags::Variation do
     before(:each) { Docks::Tags.register_bundled_tags }
 
     describe "joining variations to their components" do
-      let(:pattern) { Docks::Containers::Pattern.new("foo") }
+      let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
       let(:subcomponent) { Docks::Containers::Component.new(name: "foo__bar") }
       let(:component) { Docks::Containers::Component.new(name: "foo", subcomponents: [subcomponent]) }
       let(:state) { Docks::Containers::State.new(name: "foo--is-bar") }
@@ -57,7 +57,7 @@ describe Docks::Tags::Variation do
     end
 
     describe "clean up names" do
-      let(:pattern) { Docks::Containers::Pattern.new("foo") }
+      let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
       let(:variation) { Docks::Containers::State.new(name: "foo--is-bar", activate_with: ["--baz", "foo--fuzz"], precludes: "--qux") }
       let(:bad_name_variation) { Docks::Containers::Variant.new(name: "--baz") }
 
@@ -91,7 +91,7 @@ describe Docks::Tags::Variation do
       let(:component) { Docks::Containers::Component.new(name: "tab", subcomponents: [subcomponent]) }
 
       let(:pattern) do
-        pattern = Docks::Containers::Pattern.new("tab")
+        pattern = Docks::Containers::Pattern.new(name: "tab")
         pattern.add(:style, component)
         pattern
       end

@@ -28,7 +28,7 @@ describe Docks::Tags::Markup do
 
     let(:component) { Docks::Containers::Component.new(name: name) }
     let(:pattern) do
-      pattern = Docks::Containers::Pattern.new(name)
+      pattern = Docks::Containers::Pattern.new(name: name)
       pattern.add(:style, component)
       pattern
     end
@@ -43,7 +43,7 @@ describe Docks::Tags::Markup do
 
       let(:component) { Docks::Containers::Component.new(name: name) }
       let(:pattern) do
-        pattern = Docks::Containers::Pattern.new(name)
+        pattern = Docks::Containers::Pattern.new(name: name)
         pattern.add(:style, component)
         pattern
       end
@@ -175,7 +175,7 @@ describe Docks::Tags::Markup do
       let(:component) { Docks::Containers::Component.new(name: "foo", states: [state_without_demo, state_with_demo]) }
 
       let(:pattern) do
-        pattern = Docks::Containers::Pattern.new("foo")
+        pattern = Docks::Containers::Pattern.new(name: "foo")
         pattern.add(:style, component)
         pattern
       end
