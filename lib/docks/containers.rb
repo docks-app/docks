@@ -1,18 +1,12 @@
 module Docks
   module Containers
-
-    # Public: all of the symbols that can appear on their own at the top level
-    # of parse results. Some symbols are excluded from this list (like variants
-    # and states) because these are always grouped under another top-level
-    # symbol in a post-processing step.
-
     TOP_LEVEL_SYMBOLS = [
-      Docks::Types::Symbol::COMPONENT,
-      Docks::Types::Symbol::CLASS,
-      Docks::Types::Symbol::FACTORY,
-      Docks::Types::Symbol::FUNCTION,
-      Docks::Types::Symbol::MIXIN,
-      Docks::Types::Symbol::VARIABLE
+      Types::Symbol::COMPONENT,
+      Types::Symbol::CLASS,
+      Types::Symbol::FACTORY,
+      Types::Symbol::FUNCTION,
+      Types::Symbol::MIXIN,
+      Types::Symbol::VARIABLE
     ]
 
     @@container_associations = Hash.new

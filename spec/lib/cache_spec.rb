@@ -6,7 +6,7 @@ describe Docks::Cache do
   let(:name) { "button" }
 
   let(:pattern) do
-    pattern = Docks::Containers::Pattern.new(name)
+    pattern = Docks::Containers::Pattern.new(name: name)
     pattern.add(:script, Docks::Containers::Symbol.new(pattern: name.upcase))
     pattern.modified = Date.new
     pattern

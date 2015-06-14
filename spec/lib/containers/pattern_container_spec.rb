@@ -9,7 +9,7 @@ describe Docks::Containers::Pattern do
   let(:title) { "UI Button" }
   let(:now) { Date.parse("1991-01-11") }
   let(:pattern_symbol) { Docks::Containers::Symbol.new(pattern: title) }
-  let(:pattern) { described_class.new(name) }
+  let(:pattern) { described_class.new(name: name) }
 
   describe "#name" do
     it "is the name of the pattern during initialization" do
@@ -30,7 +30,7 @@ describe Docks::Containers::Pattern do
 
   describe "#group" do
     it "defaults to including the pattern in some common group" do
-      group_1, group_2 = pattern.group, described_class.new("foo").group
+      group_1, group_2 = pattern.group, described_class.new(name: "foo").group
       expect(group_1).to_not be nil
       expect(group_1).to eq group_2
     end
@@ -170,8 +170,12 @@ describe Docks::Containers::Pattern do
   end
 
   describe "#find" do
-    it "returns nil when it can't find a given symbol" do
-      expect(pattern.find("foo")).to be nil
+    it "returns itself if there is a matching pattern name and no symbol" do
+      expect(pattern.find(Docks::Descriptor.new(pattern.name, assume: :pattern))).to be pattern
+    end
+
+    it "returns false when it can't find a given symbol" do
+      expect(pattern.find("foo")).to be false
     end
 
     it "returns a symbol whose name matches the passed descriptor" do
@@ -181,11 +185,11 @@ describe Docks::Containers::Pattern do
     end
 
     it "asks the contained symbol to find the descriptor and returns if successful" do
-      method = Docks::Containers::Function.new(name: "toggle")
+      method = Docks::Containers::Function.new(name: "toggle", method: true)
       factory = Docks::Containers::Factory.new(name: "Foo", methods: [method])
       pattern.add(:script, factory)
 
-      search = Docks::Naming.parse_descriptor("Foo#toggle")
+      search = Docks::Descriptor.new("Foo#toggle")
       expect(factory).to receive(:find).with(search).and_call_original
       expect(pattern.find(search)).to be method
     end
@@ -263,31 +267,15 @@ describe Docks::Containers::Pattern do
   end
 
   describe "#summary" do
-    it "preserves the name, title, and group of the pattern" do
-      summary = pattern.summary
+    before(:each) { pattern.add(:script, Docks::Containers::Function.new(name: "foo")) }
+    let(:summary) { pattern.summary }
+
+    it "preserves the name, group, title, and symbols" do
+      expect(summary).to be_a described_class
       expect(summary.name).to eq pattern.name
-      expect(summary.title).to eq pattern.title
       expect(summary.group).to eq pattern.group
-    end
-
-    it "summarizes all contained symbols" do
-      component = Docks::Containers::Component.new(name: "bar")
-      pattern.add(:style, component)
-      function = Docks::Containers::Function.new(name: "baz")
-      pattern.add(:script, function)
-
-      expect(component).to receive(:summary)
-      expect(function).to receive(:summary)
-      pattern.summary
-    end
-
-    it "asks the contained symbol to find the descriptor and returns if successful" do
-      method = Docks::Containers::Function.new(name: "toggle")
-      factory = Docks::Containers::Factory.new(name: "Foo", methods: [method])
-      pattern.add(:script, factory)
-
-      search = Docks::Naming.parse_descriptor("Foo#toggle")
-      expect(pattern.summary.find(search)).to eq method.summary
+      expect(summary.title).to eq pattern.title
+      expect(summary.symbols).to eq pattern.symbols.map(&:summary)
     end
   end
 end

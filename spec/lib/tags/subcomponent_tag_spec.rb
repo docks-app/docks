@@ -10,7 +10,7 @@ describe Docks::Tags::Subcomponent do
   describe "#setup_post_processors" do
     let(:component_container) { Docks::Containers::Component }
 
-    let(:pattern) { Docks::Containers::Pattern.new("button") }
+    let(:pattern) { Docks::Containers::Pattern.new(name: "button") }
     let(:component) { component_container.new(name: "button") }
     let(:subcomponent_one) { component_container.new(name: "button__text") }
     let(:subcomponent_two) { component_container.new(name: "button__text__icon") }

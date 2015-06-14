@@ -15,6 +15,26 @@ module Docks
         return super unless method?
         "method-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
       end
+
+      def summary
+        summary = super
+        summary.static = fetch(:static, nil)
+        summary.method = fetch(:method, nil)
+        summary
+      end
+
+      protected
+
+      def matches_exactly?(descriptor)
+        name = fetch(:name, nil)
+        is_method = method?
+
+        matches = (!is_method && super) ||
+          (is_method && instance? && descriptor.instance_member == name) ||
+          (is_method && static? && descriptor.static_member == name)
+
+        matches && self
+      end
     end
   end
 end

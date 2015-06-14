@@ -12,7 +12,7 @@ describe Docks::Tags::For do
   end
 
   describe "post process" do
-    let(:pattern) { Docks::Containers::Pattern.new("foo") }
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
 
     context "when there are components with variations" do
       let(:variant) { Docks::Containers::Variant.new(name: "foo--bar") }

@@ -1,6 +1,32 @@
 require "spec_helper"
 
 describe Docks::Containers::Component do
+  let(:sub_subcomponent) do
+    Docks::Containers::Component.new(name: "foo__bar__baz")
+  end
+
+  let(:subcomponent) do
+    Docks::Containers::Component.new(name: "foo__bar", subcomponents: [sub_subcomponent])
+  end
+
+  let(:component) do
+    Docks::Containers::Component.new(name: "foo", subcomponents: [subcomponent])
+  end
+
+  let(:states) do
+    [
+      Docks::Containers::State.new(name: "foo--is-bar"),
+      Docks::Containers::State.new(name: "foo--is-baz")
+    ]
+  end
+
+  let(:variants) do
+    [
+      Docks::Containers::Variant.new(name: "foo--bar"),
+      Docks::Containers::Variant.new(name: "foo--baz")
+    ]
+  end
+
   describe "#has_demo?" do
     it "has a demo when it has non-empty markup" do
       expect(described_class.new(markup: "<p>Hi!</p>").has_demo?).to be true
@@ -24,18 +50,6 @@ describe Docks::Containers::Component do
   end
 
   describe "#subcomponents" do
-    let(:sub_subcomponent) do
-      described_class.new(name: "foo__bar__baz")
-    end
-
-    let(:subcomponent) do
-      described_class.new(name: "foo__bar", subcomponents: [sub_subcomponent])
-    end
-
-    let(:component) do
-      described_class.new(name: "foo", subcomponents: [subcomponent])
-    end
-
     context "when no options are passed" do
       it "has subcomponents when they are included on the component" do
         expect(component.subcomponent.length).to be 1
@@ -65,9 +79,6 @@ describe Docks::Containers::Component do
   end
 
   describe "#variations" do
-    let(:states) { [{ foo: "bar" }, { baz: "qux" }] }
-    let(:variants) { [{ bar: "foo" }, { qux: "baz" }] }
-
     it "has no variations when there are no states or variants" do
       component = described_class.new({})
       expect(component.variations).to be_empty
@@ -101,6 +112,47 @@ describe Docks::Containers::Component do
       (states + variants).each do |variation|
         expect(variations).to include(variation)
       end
+    end
+  end
+
+  describe "#find" do
+    it "returns a component when the descriptor exactly matches" do
+      expect(component.find(component.name)).to be component
+      expect(component.find("#{component.name}#bar")).to be false
+    end
+
+    it "returns a nested component when it exactly matches" do
+      expect(component.find(sub_subcomponent.name)).to be sub_subcomponent
+      expect(component.find("#{sub_subcomponent.name}#bar")).to be false
+    end
+
+    it "returns a variation when the variation name exactly matches" do
+      subcomponent.states.concat(states)
+      states.each { |state| state.for = subcomponent.name }
+      expect(component.find(states.first.name)).to be states.first
+    end
+
+    it "returns a variation that is declared as an instance member" do
+      subcomponent.states.concat(states)
+      states.each { |state| state.for = subcomponent.name }
+      expect(component.find("#{subcomponent.name}##{states.first.name}")).to be states.first
+    end
+
+    it "doesn't return a variation unless the symbol name matches" do
+      subcomponent.states.concat(states)
+      expect(component.find("qux##{states.first.name}")).to be false
+    end
+  end
+
+  describe "#summary" do
+    let(:summary) { component.summary }
+
+    it "preserves the symbol_id, name, variations, and subcomponents" do
+      expect(summary).to be_a described_class
+      expect(summary.name).to eq component.name
+      expect(summary.symbol_id).to eq component.symbol_id
+      expect(summary.variations).to eq component.variations.map(&:summary)
+      expect(summary.subcomponents).to eq component.subcomponents.map(&:summary)
     end
   end
 end

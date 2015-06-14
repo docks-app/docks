@@ -39,10 +39,10 @@ module Docks
         parent_component = nil
         (@components + @new_components).each do |possible_parent|
           parent_component = possible_parent.find(parent_component_name)
-          break unless parent_component.nil?
+          break if parent_component
         end
 
-        if parent_component.nil?
+        unless parent_component
           parent_component = Containers::Component.new(name: parent_component_name)
           created_component = true
         end

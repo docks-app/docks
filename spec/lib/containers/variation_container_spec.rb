@@ -32,4 +32,21 @@ describe Docks::Containers::Variation do
       expect(subject.has_demo?).to be false
     end
   end
+
+  describe "#find" do
+    before(:each) do
+      subject.for = "foo"
+      subject.name = "foo--bar"
+    end
+
+    it "finds a variation when the name matches the symbol" do
+      expect(subject.find(subject.name)).to be subject
+      expect(subject.find("foo--baz")).to be false
+    end
+
+    it "finds a variation when any member information matches the variation name and the symbol matches the base class" do
+      expect(subject.find("#{subject.for}~#{subject.name}")).to be subject
+      expect(subject.find("baz~#{subject.name}")).to be false
+    end
+  end
 end

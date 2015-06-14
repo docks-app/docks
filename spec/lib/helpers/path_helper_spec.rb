@@ -6,7 +6,7 @@ describe Docks::Helpers::Path do
   end
 
   let(:pattern_library) { Docks::Containers::PatternLibrary.new }
-  let(:pattern) { Docks::Containers::Pattern.new("foo") }
+  let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
 
   before(:each) do
     Docks::Languages.register_bundled_languages

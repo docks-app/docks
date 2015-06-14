@@ -16,6 +16,10 @@ module Docks
 
       protected
 
+      def matches_exactly?(descriptor)
+        super || (descriptor.member? && descriptor.member == fetch(:name) && descriptor.symbol == fetch(:for, nil))
+      end
+
       def set_defaults
         self[:active] = false if self[:active].nil?
         self[:demo_type] ||= Types::Demo::SELECT

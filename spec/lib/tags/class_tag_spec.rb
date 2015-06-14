@@ -37,7 +37,7 @@ describe Docks::Tags::Klass do
       Docks::Tags.register(Docks::Tags::Factory)
     end
 
-    let(:pattern) { Docks::Containers::Pattern.new("foo") }
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
     let(:factory) { Docks::Containers::Factory.new }
     let(:klass) { Docks::Containers::Klass.new }
     let(:method) { Docks::Containers::Function.new(method: true) }

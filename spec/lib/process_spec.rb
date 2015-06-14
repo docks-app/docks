@@ -30,7 +30,7 @@ describe Docks::Process do
     end
 
     context "when the argument is a pattern" do
-      let(:pattern) { Docks::Containers::Pattern.new("foo") }
+      let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
 
       it "returns the processed pattern" do
         expect(subject.process(pattern)).to be pattern

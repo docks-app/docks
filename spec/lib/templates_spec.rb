@@ -36,7 +36,7 @@ describe Docks::Templates do
     it "returns a template matching the name of a passed pattern" do
       template = "custom_template"
       subject.register(template, for: /bar/)
-      expect(subject.template_for(Docks::Containers::Pattern.new("bar")).path).to eq template
+      expect(subject.template_for(Docks::Containers::Pattern.new(name: "bar")).path).to eq template
     end
 
     it "returns the demo template when the ID is :demo" do

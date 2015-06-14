@@ -150,7 +150,7 @@ describe Docks::Builder do
 
       groups.each do |id, group|
         expect(Docks::Cache).to receive(:cached?).with(group).and_return(false)
-        expect(Docks::Parser).to receive(:parse).with(group).and_return(Docks::Containers::Pattern.new("foo"))
+        expect(Docks::Parser).to receive(:parse).with(group).and_return(Docks::Containers::Pattern.new(name: "foo"))
         expect_any_instance_of(Docks::Cache).to receive(:<<)
       end
 

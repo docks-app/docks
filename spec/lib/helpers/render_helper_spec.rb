@@ -6,7 +6,7 @@ describe Docks::Helpers::Render do
   end
 
   describe "#render_everything" do
-    let(:pattern) { Docks::Containers::Pattern.new("foo") }
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
     let(:component) { Docks::Containers::Component.new(name: "foo") }
     before(:each) { subject.instance_variable_set(:@pattern, pattern) }
 

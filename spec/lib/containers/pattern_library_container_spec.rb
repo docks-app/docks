@@ -6,7 +6,7 @@ describe Docks::Containers::PatternLibrary do
   let(:name) { "button" }
 
   let(:pattern_one) do
-    Docks::Containers::Pattern.new(name)
+    Docks::Containers::Pattern.new(name: name)
   end
 
   let(:factory) do
@@ -14,7 +14,7 @@ describe Docks::Containers::PatternLibrary do
   end
 
   let(:pattern_two) do
-    pattern = Docks::Containers::Pattern.new("code_block")
+    pattern = Docks::Containers::Pattern.new(name: "code_block")
     pattern.add(:script, factory)
     pattern
   end
@@ -88,10 +88,10 @@ describe Docks::Containers::PatternLibrary do
       subject << pattern_two
     end
 
-    it "returns nil when no pattern matches the passed descriptor" do
-      expect(subject.find("foo")).to be nil
-      expect(subject.find("foo::bar")).to be nil
-      expect(subject.find("foo#bar")).to be nil
+    it "returns false when no pattern matches the passed descriptor" do
+      expect(subject.find("foo")).to be false
+      expect(subject.find("foo::bar")).to be false
+      expect(subject.find("foo#bar")).to be false
     end
 
     it "finds a pattern with a name matching the passed descriptor" do
