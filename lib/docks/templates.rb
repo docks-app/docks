@@ -18,31 +18,35 @@ module Docks
       end
     end
 
-    def self.demo_template; @@demo_template end
-    def self.default_layout; @@default_layout end
-    def self.fallback_template; @@fallback_template end
+    def self.demo_template;@demo_template end
+    def self.default_layout;@default_layout end
+    def self.fallback_template;@fallback_template end
     def self.default_template; fallback_template end
 
-    def self.fallback_template=(template); @@fallback_template = Template.new(template) end
+    def self.fallback_template=(template);@fallback_template = Template.new(template) end
     def self.default_template=(template); self.fallback_template = template end
-    def self.default_layout=(layout); @@default_layout = layout end
+    def self.default_layout=(layout);@default_layout = layout end
 
     def self.demo_template=(template); self.set_demo_template(template) end
 
     def self.set_demo_template(template, options = {})
       options[:layout] ||= "demo"
-      @@demo_template = Template.new(template, options)
+     @demo_template = Template.new(template, options)
     end
 
     def self.register(template, options = {})
-      @@templates << Template.new(template, options)
+     @templates << Template.new(template, options)
+    end
+
+    def self.<<(*args)
+      register(*args)
     end
 
     def self.template_for(id)
       id = id.name if id.kind_of?(Containers::Pattern)
       return demo_template if id.to_sym == :demo_template
 
-      @@templates.reverse_each do |template|
+     @templates.reverse_each do |template|
         return template if template.matches?(id)
       end
 
@@ -73,10 +77,10 @@ module Docks
     end
 
     def self.clean
-      @@demo_template = Template.new("demo", layout: "demo")
-      @@fallback_template = Template.new("pattern")
-      @@default_layout = "application"
-      @@templates = []
+      @demo_template = Template.new("demo", layout: "demo")
+      @fallback_template = Template.new("pattern")
+      @default_layout = "application"
+      @templates = []
     end
 
     clean

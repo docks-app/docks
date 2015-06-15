@@ -7,6 +7,10 @@ module Docks
       @sources << source unless @sources.include?(source)
     end
 
+    def self.<<(source)
+      register(source)
+    end
+
     def self.path_for(symbol, options = {})
       @sources.each do |source|
         return source.path_for(symbol) if source.recognizes?(symbol, options)
