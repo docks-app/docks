@@ -8,16 +8,23 @@ module Docks
   class Configuration
     include Singleton
 
-    ROOT_DEPENDENT_PATHS = [:sources, :destination, :include_assets, :cache_location, :library_assets, :helpers]
+    ROOT_DEPENDENT_PATHS = [
+      :sources,
+      :destination,
+      :compiled_assets,
+      :cache_location,
+      :library_assets,
+      :helpers
+    ]
 
     # Key details — these are required
-    attr_accessor :sources, :destination, :include_assets
+    attr_accessor :sources, :destination
 
     # Locations
     attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
-    attr_accessor :github_repo, :mount_at, :helpers
+    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets
 
     # Stateful stuff
     attr_reader :configured
@@ -103,7 +110,7 @@ module Docks
     def reset
       @configured = false
       @sources = []
-      @include_assets = []
+      @compiled_assets = []
       @github_repo = nil
 
       rails = defined?(::Rails)

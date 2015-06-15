@@ -30,6 +30,24 @@ module Docks
         "<script src='#{relative_asset_path File.join(Docks.config.asset_folders.scripts, "#{script.split(".").first}.js")}'></script>"
       end
 
+      def compiled_style_tags
+        content = Array(Docks.config.compiled_assets)
+          .select { |asset| Docks::Languages.language_for(asset).kind_of?(Docks::Languages::CSS) && File.exists?(asset) }
+          .map { |asset| stylesheet_link_tag(asset) }
+          .join("\n")
+
+        content.strip.empty? ? nil : content
+      end
+
+      def compiled_script_tags
+        content = Array(Docks.config.compiled_assets)
+          .select { |asset| Docks::Languages.language_for(asset).kind_of?(Docks::Languages::JavaScript) && File.exists?(asset) }
+          .map { |asset| javascript_include_tag(asset) }
+          .join("\n")
+
+        content.strip.empty? ? nil : content
+      end
+
       def pattern_path(pattern)
         pattern = pattern.name if pattern.kind_of?(Containers::Pattern)
         Docks.config.destination + File.join(pattern.to_s, "index.html")
