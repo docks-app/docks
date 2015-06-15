@@ -23,11 +23,13 @@ module Docks
       end
 
       def stylesheet_link_tag(stylesheet)
-        "<link rel='stylesheet' type='text/css' href='#{relative_asset_path File.join(Docks.config.asset_folders.styles, "#{stylesheet.split(".").first}.css")}'>"
+        path = stylesheet.kind_of?(Pathname) ? stylesheet : File.join(Docks.config.asset_folders.styles, "#{stylesheet.split(".").first}.css")
+        "<link rel='stylesheet' type='text/css' href='#{relative_asset_path(path)}'>"
       end
 
       def javascript_include_tag(script)
-        "<script src='#{relative_asset_path File.join(Docks.config.asset_folders.scripts, "#{script.split(".").first}.js")}'></script>"
+        path = script.kind_of?(Pathname) ? script : File.join(Docks.config.asset_folders.scripts, "#{script.split(".").first}.js")
+        "<script src='#{relative_asset_path(path)}'></script>"
       end
 
       def compiled_style_tags
