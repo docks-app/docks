@@ -65,12 +65,17 @@ describe Docks::Helpers::Path do
 
     it "returns a relative path to the stylesheet" do
       output = subject.stylesheet_link_tag("style")
-      expect(output).to have_tag(:link, with: { rel: "stylesheet", type: "text/css", href: expected_path })
+      expect(output).to have_tag :link, with: { rel: "stylesheet", type: "text/css", href: expected_path }
     end
 
     it "doesn't duplicate the filename" do
       output = subject.stylesheet_link_tag("style.css")
-      expect(output).to have_tag(:link, with: { href: expected_path })
+      expect(output).to have_tag :link, with: { href: expected_path }
+    end
+
+    it "handles fully formed paths" do
+      output = subject.stylesheet_link_tag(Docks.config.destination + "styles/style.css")
+      expect(output).to have_tag :link, with: { rel: "stylesheet", type: "text/css", href: expected_path }
     end
   end
 
@@ -84,6 +89,11 @@ describe Docks::Helpers::Path do
 
     it "doesn't duplicate the filename" do
       output = subject.javascript_include_tag("script.js")
+      expect(output).to have_tag :script, with: { src: expected_path }
+    end
+
+    it "handles fully formed paths" do
+      output = subject.javascript_include_tag(Docks.config.destination + "scripts/script.js")
       expect(output).to have_tag :script, with: { src: expected_path }
     end
   end

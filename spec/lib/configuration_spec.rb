@@ -135,4 +135,20 @@ describe Docks::Configuration do
       expect(yielded).to be Docks::Tags
     end
   end
+
+  describe "#github_repo" do
+    it "returns nil when there is no github repo" do
+      expect(subject.github_repo).to be nil
+    end
+
+    it "returns the URL for a github repo when provided" do
+      subject.github_repo = "https://github.com/lemonmade/docks"
+      expect(subject.github_repo).to eq "https://github.com/lemonmade/docks"
+    end
+
+    it "constructs the github URL when the repo was specified" do
+      subject.github_repo = "lemonmade/docks"
+      expect(subject.github_repo).to eq "https://github.com/lemonmade/docks"
+    end
+  end
 end

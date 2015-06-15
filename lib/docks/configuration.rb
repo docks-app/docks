@@ -76,6 +76,11 @@ module Docks
       @asset_folders
     end
 
+    def github_repo
+      return nil if @github_repo.nil? || @github_repo.empty?
+      "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
+    end
+
     def finalize
       @configured = true
     end
