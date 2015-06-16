@@ -27,7 +27,8 @@ module Docks
     attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
-    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets, :naming_convention
+    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
+                  :naming_convention, :pattern_id
 
     # Stateful stuff
     attr_reader :configured
@@ -80,16 +81,7 @@ module Docks
     end
 
     def naming_convention=(new_naming_convention)
-      if [String, ::Symbol].include?(new_naming_convention.class)
-        new_naming_convention = new_naming_convention.to_sym
-        begin
-          Docks::Naming.convention = Docks::Naming::Conventions.const_get(new_naming_convention)
-        rescue NameError
-        end
-      else
-        new_naming_convention = new_naming_convention.instance if new_naming_convention.respond_to?(:instance)
-        Docks::Naming.convention = new_naming_convention if new_naming_convention.kind_of?(Docks::Naming::Conventions::Base)
-      end
+      Docks::Naming.convention = new_naming_convention
     end
 
     def naming_convention
@@ -99,6 +91,10 @@ module Docks
     def github_repo
       return nil if @github_repo.nil? || @github_repo.empty?
       "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
+    end
+
+    def pattern_id(*args)
+      Docks.pattern_id(*args)
     end
 
     def pattern_id=(block)

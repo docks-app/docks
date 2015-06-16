@@ -186,11 +186,18 @@ describe Docks::Configuration do
     end
   end
 
-  describe "#pattern_id" do
+  describe "#pattern_id=" do
     it "passes the pattern ID block to the Docks class method" do
       identifier = Docks.instance_variable_get(:@pattern_id)
       expect(Docks).to receive(:pattern_id=).with(identifier)
       subject.pattern_id = identifier
+    end
+  end
+
+  describe "#pattern_id" do
+    it "calls the core pattern ID method" do
+      expect(Docks).to receive(:pattern_id).with("foo").and_return "foo"
+      expect(subject.pattern_id("foo")).to eq "foo"
     end
   end
 end
