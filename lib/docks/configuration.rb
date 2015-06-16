@@ -37,34 +37,17 @@ module Docks
       reset
     end
 
-    # Updates the root directory against which `ROOT_DEPENDENT_PATHS` are
-    # evaluated.
-    #
-    # new_root - A Pathname or string representing the root path.
-    #
-    # Returns nothing.
-
     def root=(new_root)
       @root = new_root.kind_of?(Pathname) ? new_root : Pathname.new(new_root)
     end
 
-    # Adds custom templates. The keys of the passed Hash will be treated as a
-    # pattern to match in order to use the template represented by the
-    # associated value. If the passed Hash has `default` or `fallback` keys,
-    # that template will be used as the fallback template. If a `demo` key
-    # exists, that template will be used as the template for component demos.
-    #
-    # special_templates - A Hash representing the custom templates to use.
-    #
-    # Returns nothing.
-
     def templates=(special_templates)
       if fallback = special_templates.delete("default") || special_templates.delete("fallback")
-        Templates.fallback_template = fallback
+        Templates.fallback = fallback
       end
 
       if demo = special_templates.delete("demo")
-        Templates.demo_template = demo
+        Templates.demo = demo
       end
 
       special_templates.each do |match, template|

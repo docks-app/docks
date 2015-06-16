@@ -3,6 +3,10 @@ module Docks
     class Template
       attr_reader :path, :layout
 
+      def self.new(name, options = {})
+        name.kind_of?(self) ? name : super
+      end
+
       def initialize(name, options = {})
         @path = name
         @matcher = options[:matches] || options[:for]
@@ -10,7 +14,7 @@ module Docks
       end
 
       def layout
-        @layout.nil? ? Templates.default_layout : @layout
+        @layout || Templates.default_layout
       end
 
       def matches?(id)
@@ -18,21 +22,16 @@ module Docks
       end
     end
 
-    def self.demo_template;@demo_template end
-    def self.default_layout;@default_layout end
-    def self.fallback_template;@fallback_template end
-    def self.default_template; fallback_template end
+    def self.demo; @demo_template end
+    def self.demo=(template); @demo_template = Template.new(@demo_template, layout: "demo") end
 
-    def self.fallback_template=(template);@fallback_template = Template.new(template) end
-    def self.default_template=(template); self.fallback_template = template end
-    def self.default_layout=(layout);@default_layout = layout end
+    def self.default; @default_template end
+    def self.fallback; default end
+    def self.default=(template); @default_template = template end
+    def self.fallback=(template); self.default = template end
 
-    def self.demo_template=(template); self.set_demo_template(template) end
-
-    def self.set_demo_template(template, options = {})
-      options[:layout] ||= "demo"
-     @demo_template = Template.new(template, options)
-    end
+    def self.default_layout; @default_layout end
+    def self.default_layout=(layout); @default_layout = layout end
 
     def self.register(template, options = {})
      @templates << Template.new(template, options)
