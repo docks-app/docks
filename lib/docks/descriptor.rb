@@ -34,7 +34,7 @@ module Docks
 
     def parse(string, options)
       string = string.sub(PATTERN) do
-        @pattern = Group.group_identifier($1).to_s
+        @pattern = Docks.pattern_id($1)
         ""
       end
 

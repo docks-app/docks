@@ -146,7 +146,7 @@ describe Docks::Builder do
         bar: ["bar.scss", "bar.coffee"]
       }
 
-      expect(Docks::Group).to receive(:group).and_return(groups)
+      expect(Docks::Grouper).to receive(:group).and_return(groups)
 
       groups.each do |id, group|
         expect(Docks::Cache).to receive(:cached?).with(group).and_return(false)
@@ -201,7 +201,7 @@ describe Docks::Builder do
     end
 
     it "copies only the compiled assets from the source directory" do
-      expect(Docks::Group).to receive(:group).and_return(Hash.new)
+      expect(Docks::Grouper).to receive(:group).and_return(Hash.new)
       subject.build
 
       compiled_assets_selector = "**/*.{css,html,js,svg,png,jpg}"
@@ -221,7 +221,7 @@ describe Docks::Builder do
 
     it "writes a file for each pattern" do
       files = {}
-      expect(Docks::Group).to receive(:group).and_return(patterns)
+      expect(Docks::Grouper).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
@@ -244,7 +244,7 @@ describe Docks::Builder do
     # Gross test, must refactor
     it "removes pattens that are no longer part of the pattern group" do
       files = {}
-      expect(Docks::Group).to receive(:group).and_return(patterns)
+      expect(Docks::Grouper).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
@@ -261,7 +261,7 @@ describe Docks::Builder do
       files = {}
       excluded_pattern = patterns.keys.first
       patterns.delete(excluded_pattern)
-      expect(Docks::Group).to receive(:group).and_return(patterns)
+      expect(Docks::Grouper).to receive(:group).and_return(patterns)
 
       patterns.each do |id, group|
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
@@ -286,7 +286,7 @@ describe Docks::Builder do
     it "provides the pattern and pattern library to every render call as locals and ivars" do
       pattern_library = Docks::Containers::PatternLibrary.new
 
-      expect(Docks::Group).to receive(:group).and_return(patterns)
+      expect(Docks::Grouper).to receive(:group).and_return(patterns)
       expect(Docks::Cache).to receive(:pattern_library).and_return(pattern_library)
       patterns.each do |id, group|
         pattern = OpenStruct.new(name: id)
@@ -308,7 +308,7 @@ describe Docks::Builder do
     end
 
     it "doesn't die when there are no cache results matching a pattern" do
-      expect(Docks::Group).to receive(:group).and_return(patterns)
+      expect(Docks::Grouper).to receive(:group).and_return(patterns)
       patterns.each do |id, group|
         expect { Docks::Cache.pattern_for(id) }.to raise_error(Docks::NoPatternError)
       end

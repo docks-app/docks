@@ -185,4 +185,12 @@ describe Docks::Configuration do
       expect { subject.naming_convention = Docks::Naming }.to_not change { Docks::Naming.convention }
     end
   end
+
+  describe "#pattern_id" do
+    it "passes the pattern ID block to the Docks class method" do
+      identifier = Docks.instance_variable_get(:@pattern_id)
+      expect(Docks).to receive(:pattern_id=).with(identifier)
+      subject.pattern_id = identifier
+    end
+  end
 end

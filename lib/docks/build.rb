@@ -6,7 +6,7 @@ module Docks
       cache = Cache.new
       cache.clear if options.fetch(:clear_cache, false)
 
-      Group.group(Docks.config.sources).each do |group_identifier, group|
+      Grouper.group(Docks.config.sources).each do |group_identifier, group|
         if Cache.cached?(group)
           cache.no_update(group_identifier)
         else
@@ -73,7 +73,7 @@ module Docks
       pattern_library = Cache.pattern_library
       rendered_patterns = Set.new
 
-      Group.group(Docks.config.sources).each do |id, _group|
+      Grouper.group(Docks.config.sources).each do |id, _group|
         rendered_patterns << id if render_pattern(id, pattern_library)
       end
 

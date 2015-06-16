@@ -3,7 +3,7 @@ require_relative "version.rb"
 
 module Docks
   class Cache
-    DIR = "docks_cache"
+    DIR = "docks"
     META_FILE = "docks_meta"
     PATTERN_LIBRARY_FILE = "docks_pattern_library"
 
@@ -33,7 +33,7 @@ module Docks
 
     def self.cached?(group)
       group = Array(group)
-      cache_modified = last_modified(Group.group_identifier(group.first))
+      cache_modified = last_modified(Docks.pattern_id(group.first))
       !cache_modified.nil? && cache_modified > most_recent_modified_date(group)
     end
 

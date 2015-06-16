@@ -46,7 +46,7 @@ module Docks
     end
 
     def self.most_common_markup_language
-      markup_files = Group.source_files_of_type(Types::Languages::MARKUP)
+      markup_files = Grouper.source_files_of_type(Types::Languages::MARKUP)
       return if markup_files.empty?
       most_common = markup_files.map { |file| extension_for_file(file) }.group_by { |ext| ext }.values.max_by(&:size).first
       language_for(most_common)

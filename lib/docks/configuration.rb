@@ -101,6 +101,10 @@ module Docks
       "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
     end
 
+    def pattern_id=(block)
+      Docks.pattern_id = block
+    end
+
     def finalize
       @configured = true
     end
@@ -141,7 +145,7 @@ module Docks
       rails = defined?(::Rails)
 
       @root = rails ? ::Rails.root : Pathname.pwd
-      @cache_location = rails ? "tmp/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
+      @cache_location = rails ? "tmp/cache/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
 
       # These options only apply for static site generation — Rails handles
       # these details when it's being used

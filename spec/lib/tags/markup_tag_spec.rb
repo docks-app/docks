@@ -50,8 +50,8 @@ describe Docks::Tags::Markup do
 
       describe "associates external markup files" do
         before :each do
-          expect(Docks::Group).to receive(:source_files_of_type).with(Docks::Types::Languages::MARKUP).at_least(:once).and_return ["components/baz.erb", markup_file_name]
-          expect(Docks::Group).to receive(:source_files_of_type).with(Docks::Types::Languages::STUB).at_least(:once).and_return []
+          expect(Docks::Grouper).to receive(:source_files_of_type).with(Docks::Types::Languages::MARKUP).at_least(:once).and_return ["components/baz.erb", markup_file_name]
+          expect(Docks::Grouper).to receive(:source_files_of_type).with(Docks::Types::Languages::STUB).at_least(:once).and_return []
         end
 
         it "associates a markup file matching a component with the markup for that component" do
@@ -90,8 +90,8 @@ describe Docks::Tags::Markup do
         before :each do
           component.helper = "foo"
 
-          expect(Docks::Group).to receive(:source_files_of_type).with(Docks::Types::Languages::MARKUP).at_least(:once).and_return []
-          expect(Docks::Group).to receive(:source_files_of_type).with(Docks::Types::Languages::STUB).at_least(:once).and_return ["stubs/baz.yml", stub_file_name]
+          expect(Docks::Grouper).to receive(:source_files_of_type).with(Docks::Types::Languages::MARKUP).at_least(:once).and_return []
+          expect(Docks::Grouper).to receive(:source_files_of_type).with(Docks::Types::Languages::STUB).at_least(:once).and_return ["stubs/baz.yml", stub_file_name]
         end
 
         it "does not create helper markup if there is regular markup" do
@@ -132,7 +132,7 @@ describe Docks::Tags::Markup do
 
       describe "cleans up the combination of markup and helper" do
         before(:each) do
-          expect(Docks::Group).to receive(:source_files_of_type).at_least(:once).and_return []
+          expect(Docks::Grouper).to receive(:source_files_of_type).at_least(:once).and_return []
         end
 
         it "leaves everything alone when the markup and helper don't overlap" do

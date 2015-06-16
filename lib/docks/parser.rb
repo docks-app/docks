@@ -3,7 +3,7 @@ module Docks
     def self.parse(files)
       files = Array(files).select { |file| File.exists?(file) }
 
-      pattern = Containers::Pattern.new(name: Group.group_identifier(files.first).to_s)
+      pattern = Containers::Pattern.new(name: Docks.pattern_id(files.first))
       pattern.files = files
       pattern.modified = files.map { |file| File.mtime(file) }.max
 
@@ -38,7 +38,7 @@ module Docks
       Docks.current_file = file
       Docks.current_parser = parser_for(file)
       Docks.current_language = Languages.language_for(file)
-      Docks.current_pattern = Group.group_identifier(file)
+      Docks.current_pattern = Docks.pattern_id(file)
 
       symbol = yield
 

@@ -27,7 +27,7 @@ describe Docks::Descriptor do
 
     it "identifies a pattern name" do
       result = subject.new("#{pattern}::#{symbol}")
-      expect(result.pattern).to eq Docks::Group.group_identifier(pattern).to_s
+      expect(result.pattern).to eq Docks.pattern_id(pattern)
       expect(result.symbol).to eq symbol
     end
 

@@ -91,7 +91,16 @@ Docks.configure do |config|
   # These will be included automatically in all template rendering.
   config.helpers = []
 
-  config.pattern_id do |file|
+  # This option allows you to provide a custom lambda to determine what pattern
+  # a given string belongs to. The lambda should accept a single file name
+  # which may be either a filename (most commonly), or any other string (for
+  # example, this is used to try to match the name of a component to a markup
+  # file by first running both through this lambda). The default, if you do
+  # not provide anything for the option below (or provide an empty lambda)
+  # will strip leading underscores and normalize dashes and underscores of the
+  # extension-less base name of whatever string you pass to it. For details,
+  # see `lib/group.rb`.
+  config.pattern_id = lambda do |file|
   end
 
   # Yields an object that allows you to register custom tags. Your

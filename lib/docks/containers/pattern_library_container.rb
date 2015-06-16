@@ -13,7 +13,7 @@ module Docks
       end
 
       def [](pattern_name)
-        @patterns[Group.group_identifier(pattern_name).to_s]
+        @patterns[Docks.pattern_id(pattern_name)]
       end
 
       def has_pattern?(pattern_name)
