@@ -3,6 +3,9 @@ require "pathname"
 
 require_relative "cache.rb"
 require_relative "templates.rb"
+require_relative "tags.rb"
+require_relative "symbol_sources.rb"
+require_relative "naming.rb"
 
 module Docks
   class Configuration
@@ -24,7 +27,7 @@ module Docks
     attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
-    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets
+    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets, :naming_convention
 
     # Stateful stuff
     attr_reader :configured
@@ -74,6 +77,23 @@ module Docks
       end
 
       @asset_folders
+    end
+
+    def naming_convention=(new_naming_convention)
+      if [String, ::Symbol].include?(new_naming_convention.class)
+        new_naming_convention = new_naming_convention.to_sym
+        begin
+          Docks::Naming.convention = Docks::Naming::Conventions.const_get(new_naming_convention)
+        rescue NameError
+        end
+      else
+        new_naming_convention = new_naming_convention.instance if new_naming_convention.respond_to?(:instance)
+        Docks::Naming.convention = new_naming_convention if new_naming_convention.kind_of?(Docks::Naming::Conventions::Base)
+      end
+    end
+
+    def naming_convention
+      Docks::Naming.convention
     end
 
     def github_repo

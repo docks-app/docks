@@ -151,4 +151,38 @@ describe Docks::Configuration do
       expect(subject.github_repo).to eq "https://github.com/lemonmade/docks"
     end
   end
+
+  describe "#naming_convention" do
+    after(:each) do
+      Docks::Naming.send(:clean)
+    end
+
+    it "defaults to BEM" do
+      expect(subject.naming_convention).to eq Docks::Naming::Conventions::BEM.instance
+      expect(Docks::Naming.convention).to eq Docks::Naming::Conventions::BEM.instance
+    end
+
+    it "converts a string version of the naming convention into the corresponding naming convention" do
+      subject.naming_convention = "SUIT"
+      expect(subject.naming_convention).to eq Docks::Naming::Conventions::SUIT.instance
+      expect(Docks::Naming.convention).to eq Docks::Naming::Conventions::SUIT.instance
+    end
+
+    it "uses the passed naming convention if it is a class" do
+      subject.naming_convention = Docks::Naming::Conventions::SUIT
+      expect(subject.naming_convention).to eq Docks::Naming::Conventions::SUIT.instance
+      expect(Docks::Naming.convention).to eq Docks::Naming::Conventions::SUIT.instance
+    end
+
+    it "uses the passed naming convention if it is an instance" do
+      subject.naming_convention = Docks::Naming::Conventions::SUIT.instance
+      expect(subject.naming_convention).to eq Docks::Naming::Conventions::SUIT.instance
+      expect(Docks::Naming.convention).to eq Docks::Naming::Conventions::SUIT.instance
+    end
+
+    it "doesn't change the convention when an invalid setting is passed" do
+      expect { subject.naming_convention = "foo" }.to_not change { Docks::Naming.convention }
+      expect { subject.naming_convention = Docks::Naming }.to_not change { Docks::Naming.convention }
+    end
+  end
 end
