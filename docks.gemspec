@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.require_paths         = ["lib"]
 
   s.add_dependency "redcarpet",     "~> 3.1"
-  s.add_dependency "activesupport", "> 4.0"
+  s.add_dependency "activesupport"
 
   s.add_development_dependency "railties", [">= 3.2.5", "< 5"]
   s.add_development_dependency "bundler", "~> 1.3"

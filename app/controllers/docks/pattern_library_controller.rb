@@ -1,9 +1,6 @@
 module Docks
-  class HomeController < Docks::ApplicationController
-    layout "docks/demo", only: [:demo]
-
-    def index
-    end
+  class PatternLibraryController < ::ApplicationController
+    respond_to :html
 
     def pattern
       Docks.parse
@@ -13,7 +10,7 @@ module Docks
       @pattern_library = Cache.pattern_library
 
       template = Docks.template_for(pattern)
-      render template.path
+      render(file: template.path, layout: template.layout)
     end
   end
 end
