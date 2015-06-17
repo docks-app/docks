@@ -32,4 +32,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "slim", "~> 3.0"
   s.add_development_dependency "awesome_print", "~> 1.6"
   s.add_development_dependency "rspec-html-matchers", "~> 0.7"
+  s.add_development_dependency "html2haml", "~> 2.0"
+  s.add_development_dependency "html2slim", "~> 0.2"
 end

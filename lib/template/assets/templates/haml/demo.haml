@@ -1,0 +1,14 @@
+.iframe{"data-iframe-id" => id}
+  .demo{"data-iframe-id" => id}
+    - if demo.kind_of?(Docks::Containers::Demo)
+      - demo_variations = [demo.component] + demo.joint_variations
+      - demo_variations.each do |variation|
+        - name = variation.name
+        %section.demo__section{"data-name" => name, id: "demo__section--#{name}"}
+          - unless demo_variations.length == 1
+            %header.demo__header
+              %h2.badge.badge--code= name
+          .content= variation.markup
+    - else
+      %section.demo__section
+        .content= demo
