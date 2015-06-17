@@ -24,12 +24,17 @@ module Docks
         "<svg class='#{klass}'><use xlink:href='#icon--#{name}'></use></svg"
       end
 
+      def docks_demo(demo, locals = {})
+        locals[:id] ||= unique_iframe_id
+        locals[:demo] = demo
+        render(Docks::Templates.demo.path, layout: Docks::Templates.demo.layout, locals: locals)
+      end
+
       %w(
         avatar
         select
         code_block
         button
-        demo
         tablist
         tablist_tab
         tablist_panel

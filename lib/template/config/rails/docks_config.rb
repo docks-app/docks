@@ -18,9 +18,27 @@ Docks.configure do |config|
   # library's files.
   config.github_repo = ""
 
+  # Yields an object that allows you to register custom templates for particular
+  # patterns. See `Docks::Templates` for all of the available template
+  # customizations. The basics are that you can set the fallback template,
+  # fallback layout file, and the template for demos with the `fallback=`,
+  # `default_layout=`, and `demo=` methods. You can also register a custom
+  # template for patterns matching a pattern ID by calling `Templates.register`
+  # like so:
+  #
+  # config.custom_templates do |templates|
+  #   templates.register("color.html.erb", for: /color/)
+  #   # or, equivalently, templates << Docks::Templates::Template.new("color.html.erb", for: /color/)
+  # end
+  #
+  # Which would register "color.html.erb" to be used for patterns whose name
+  # matches `/color/`. You can also call `Docks::Templates.register` with a
+  # hash of pattern: template pairs, in which the keys will be used as the
+  # "matcher" and the values will be the custom template to use for patterns
+  # with a matching name.
   config.custom_templates do |templates|
-    templates.default = "pattern.html.erb"
-    templates.demo = "demo.html.erb"
+    templates.fallback = "pattern"
+    templates.demo = "demo"
   end
 
   # The naming convention to use for such things as identifying a state versus

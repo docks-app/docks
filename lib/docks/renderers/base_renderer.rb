@@ -34,6 +34,7 @@ module Docks
         else
           layout = locals.delete(:layout)
           layout = nil unless layout
+          locals = locals.delete(:locals) if locals.key?(:locals)
         end
 
         if content.nil?

@@ -7,16 +7,52 @@ describe Docks::Templates do
     subject.send(:clean)
   end
 
+  describe ".register" do
+    let(:templates) do
+      { "foo" => "bar", "bar" => "baz" }
+    end
+
+    it "calls the private hash registering method when the first argument is a hash" do
+      expect(subject).to receive(:register_from_hash).with(templates)
+      subject.register(templates)
+    end
+
+    it "registers each template for a pattern matching the passed key" do
+      templates.each do |match, template|
+        expect(subject).to receive(:register).with(template, for: Regexp.new(match.to_s))
+      end
+      subject.send(:register_from_hash, templates)
+    end
+
+    it "registers a template with the fallback or default key as the fallback template" do
+      templates["default"] = "default"
+      expect(subject).to receive(:fallback=).with(templates["default"])
+      expect(subject).not_to receive(:register).with(templates["default"], for: Regexp.new("default"))
+      subject.send(:register_from_hash, templates)
+
+      templates["fallback"] = "default"
+      expect(subject).to receive(:fallback=).with(templates["fallback"])
+      subject.send(:register_from_hash, templates)
+    end
+
+    it "registers a template with the :demo key as the demo template" do
+      templates["demo"] = "my-custom-demo"
+      expect(subject).to receive(:demo=).with(templates["demo"])
+      expect(subject).not_to receive(:register).with(templates["demo"], for: Regexp.new("demo"))
+      subject.send(:register_from_hash, templates)
+    end
+  end
+
   describe ".template_for" do
     context "when no template matches" do
       it "provides the default template when no other template matches" do
-        expect(subject.template_for("foo")).to be subject.fallback_template
+        expect(subject.template_for("foo")).to be subject.fallback
       end
 
       it "allows setting a custom default template" do
         template = "custom_default"
 
-        subject.default_template = template
+        subject.fallback = template
         expect(subject.template_for("foo").path).to eq template
       end
     end
@@ -39,14 +75,20 @@ describe Docks::Templates do
       expect(subject.template_for(Docks::Containers::Pattern.new(name: "bar")).path).to eq template
     end
 
+    it "returns the last template matching the passed ID" do
+      subject.register("template_1", for: /bar/)
+      subject.register("template_2", for: /bar/)
+      expect(subject.template_for("bar").path).to eq "template_2"
+    end
+
     it "returns the demo template when the ID is :demo" do
-      expect(subject.template_for(:demo_template)).to eq subject.demo_template
+      expect(subject.template_for(:demo)).to eq subject.demo
     end
   end
 
   describe ".default_layout=" do
     it "has the correct default layout" do
-      expect(subject.default_template.layout).to eq "application"
+      expect(subject.fallback.layout).to eq "pattern"
     end
 
     it "uses the passed default layout" do
@@ -55,37 +97,29 @@ describe Docks::Templates do
       subject.register("no_layout", matches: /no_layout/)
       subject.register("with_layout", matches: /with_layout/, layout: "custom_layout")
 
-      expect(subject.default_template.layout).to eq layout
+      expect(subject.fallback.layout).to eq layout
       expect(subject.template_for("no_layout").layout).to eq layout
       expect(subject.template_for("with_layout").layout).not_to eq layout
     end
   end
 
-  describe ".demo_template=" do
+  describe ".demo=" do
     it "saves the passed template as the demo template" do
-      demo_template = "custom_demo"
-      subject.demo_template = demo_template
-      expect(subject.demo_template.path).to eq demo_template
-    end
-  end
-
-  describe ".set_demo_template" do
-    it "saves the passed template as the demo template" do
-      demo_template = "custom_demo"
-      subject.set_demo_template(demo_template)
-      expect(subject.demo_template.path).to eq demo_template
+      demo = "custom_demo"
+      subject.demo = demo
+      expect(subject.demo.path).to eq demo
     end
 
     it "uses the default demo layout when none is passed" do
-      demo_template = "custom_demo"
-      subject.set_demo_template(demo_template)
-      expect(subject.demo_template.layout).to eq "demo"
+      demo = "custom_demo"
+      subject.demo = demo
+      expect(subject.demo.layout).to eq "demo"
     end
 
     it "uses the passed demo layout" do
       demo_layout = "custom_demo_layout"
-      subject.set_demo_template("custom_demo", layout: demo_layout)
-      expect(subject.demo_template.layout).to eq demo_layout
+      subject.demo = Docks::Templates::Template.new("custom_demo", layout: demo_layout)
+      expect(subject.demo.layout).to eq demo_layout
     end
   end
 

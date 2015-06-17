@@ -164,7 +164,7 @@ describe Docks::Builder do
     dest_dir = File.join(existing_dir, destination)
 
     let(:patterns) do
-      { foo: "bar", bar: "baz" }
+      { "foo" => "bar", "bar" => "baz" }
     end
 
     around do |example|
@@ -291,7 +291,7 @@ describe Docks::Builder do
       patterns.each do |id, group|
         pattern = OpenStruct.new(name: id)
 
-        default_template = Docks::Templates.default_template
+        default_template = Docks::Templates.fallback
         expect(Docks::Templates).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
         expect(Docks::Templates).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
         expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
@@ -301,7 +301,7 @@ describe Docks::Builder do
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
         expect(renderer).to receive(:ivars=).with pattern_library: pattern_library, pattern: pattern
-        expect(renderer).to receive(:render).with hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
+        expect(renderer).to receive(:render).with anything, hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
       end
 
       subject.build

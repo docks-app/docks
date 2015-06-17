@@ -23,33 +23,37 @@ module Docks
     end
 
     def self.demo; @demo_template end
-    def self.demo=(template); @demo_template = Template.new(@demo_template, layout: "demo") end
+    def self.demo=(template); @demo_template = Template.new(template, layout: "demo") end
 
     def self.default; @default_template end
     def self.fallback; default end
-    def self.default=(template); @default_template = template end
+    def self.default=(template); @default_template = Template.new(template) end
     def self.fallback=(template); self.default = template end
 
     def self.default_layout; @default_layout end
     def self.default_layout=(layout); @default_layout = layout end
 
     def self.register(template, options = {})
-     @templates << Template.new(template, options)
+      if template.kind_of?(Hash)
+        register_from_hash(template)
+      else
+        @templates << Template.new(template, options)
+      end
     end
 
-    def self.<<(*args)
-      register(*args)
+    def self.<<(template)
+      register(template)
     end
 
     def self.template_for(id)
       id = id.name if id.kind_of?(Containers::Pattern)
-      return demo_template if id.to_sym == :demo_template
+      return demo if id.to_sym == :demo
 
      @templates.reverse_each do |template|
         return template if template.matches?(id)
       end
 
-      fallback_template
+      fallback
     end
 
     def self.search_for_template(template, options = {})
@@ -67,6 +71,20 @@ module Docks
 
     private
 
+    def self.register_from_hash(templates)
+      if fallback = templates.delete("default") || templates.delete("fallback")
+        self.fallback = fallback
+      end
+
+      if demo = templates.delete("demo")
+        self.demo = demo
+      end
+
+      templates.each do |match, template|
+        register(template, for: Regexp.new(match.to_s))
+      end
+    end
+
     def self.loose_search_for(path)
       return if path.nil?
       path = Docks.config.library_assets + Docks.config.asset_folders.templates + path
@@ -77,8 +95,8 @@ module Docks
 
     def self.clean
       @demo_template = Template.new("demo", layout: "demo")
-      @fallback_template = Template.new("pattern")
-      @default_layout = "application"
+      @default_template = Template.new("pattern")
+      @default_layout = "pattern"
       @templates = []
     end
 

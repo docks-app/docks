@@ -35,6 +35,31 @@ describe Docks::Helpers::Component do
     end
   end
 
+  describe "#docks_demo" do
+    it "renders the demo template/ layout" do
+      expect(includer).to receive(:render).with(Docks::Templates.demo.path, hash_including(layout: Docks::Templates.demo.layout)).and_return "foo"
+      expect(includer.docks_demo("<div></div>")).to eq "foo"
+    end
+
+    it "passes the passed demo along as the demo local" do
+      demo = "foo bar"
+      expect(includer).to receive(:render).with(anything, hash_including(locals: hash_including(demo: demo)))
+      includer.docks_demo(demo)
+    end
+
+    it "passes other locals along to the render call" do
+      locals = { foo: "bar", baz: "qux" }
+      expect(includer).to receive(:render).with(anything, hash_including(locals: hash_including(locals)))
+      includer.docks_demo("foo bar", locals)
+    end
+
+    it "defaults the id local to a unique iframe ID" do
+      expect(includer).to receive(:unique_iframe_id).and_return 1
+      expect(includer).to receive(:render).with(anything, hash_including(locals: hash_including(id: 1)))
+      includer.docks_demo("foo bar")
+    end
+  end
+
   describe Docks::Helpers::Component::Component do
     subject { described_class }
 

@@ -96,7 +96,7 @@ module Docks
       FileUtils.mkdir_p(directory)
 
       File.open(html_file, "w") do |file|
-        file.write renderer.render template: template,
+        file.write renderer.render template,
                                    layout: layout,
                                    locals: { pattern: pattern, pattern_library: pattern_library }
       end
@@ -116,7 +116,7 @@ module Docks
 
     def self.remove_unused_directories(rendered_patterns)
       Dir[Docks.config.destination + Docks.config.mount_at + "*"].each do |pattern_dir|
-        next if rendered_patterns.include?(File.basename(pattern_dir).to_sym)
+        next if rendered_patterns.include?(File.basename(pattern_dir))
         deleted_file = Dir[File.join(pattern_dir, "*")].first
         FileUtils.rm_rf(pattern_dir)
         Messenger.file(deleted_file, :deleted)

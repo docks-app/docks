@@ -42,17 +42,7 @@ module Docks
     end
 
     def templates=(special_templates)
-      if fallback = special_templates.delete("default") || special_templates.delete("fallback")
-        Templates.fallback = fallback
-      end
-
-      if demo = special_templates.delete("demo")
-        Templates.demo = demo
-      end
-
-      special_templates.each do |match, template|
-        Templates.register(template, for: Regexp.new(match.to_s))
-      end
+      Templates.register(special_templates)
     end
 
     def asset_folders=(new_asset_folders)

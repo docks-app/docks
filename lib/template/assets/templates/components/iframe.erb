@@ -8,5 +8,5 @@
 
 <iframe class="iframe" data-iframe-id="<%= id %>" frameborder="0"></iframe>
 <script class="iframe__content">
-  <%= CGI.escapeHTML render(Docks::Templates.demo.path, layout: Docks::Templates.demo.layout, locals: { demo: component.demo, id: id }) %>
+  <%= CGI.escapeHTML docks_demo(component.demo, id: id) %>
 </script>

@@ -84,9 +84,8 @@ module Docks
 
     # When a pattern exists but did not need to be re-parsed, this needs to
     # be communicated so that we can keep track of what patterns still exist.
-    def no_update(id)
-      id = id.to_s
-      @pattern_library << @old_pattern_library[id]
+    def no_update(pattern)
+      @pattern_library << @old_pattern_library[pattern]
     end
 
     def dump
@@ -100,8 +99,7 @@ module Docks
 
       # Clear out anything that didn't get written to the new cache
       @old_pattern_library.patterns.each do |name, pattern|
-        id = name.to_s
-        FileUtils.rm_rf(Docks.config.cache_location + id) unless @pattern_library.has_pattern?(id)
+        FileUtils.rm_rf(Docks.config.cache_location + name) unless @pattern_library.has_pattern?(name)
       end
     end
 
