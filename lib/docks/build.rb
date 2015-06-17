@@ -138,7 +138,7 @@ module Docks
       FileUtils.mkdir_p(styles_dir)
 
       FileUtils.cp_r(Dir[File.join(@template_dir, "assets/styles/*.css")], styles_dir)
-      FileUtils.cp_r Dir[File.join(@template_dir, "assets/styles", style_ext, "*.#{style_ext}")],
+      FileUtils.cp_r Dir[File.join(@template_dir, "assets/styles", style_ext, "*")],
                      styles_dir
     end
 

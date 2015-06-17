@@ -25,13 +25,11 @@
 // you.
 //
 // @example
-// @include docks-demo-height(dropdown, 10em);
+// +docks-demo-height(dropdown, 10em)
 
-@mixin docks-demo-height($component, $height) {
-  #demo__section--#{$component} > .demo__content {
-    min-height: #{$height} !important;
-  }
-}
+=docks-demo-height($component, $height)
+  #demo__section--#{$component} > .demo__content
+    min-height: #{$height} !important
 
 //*
 // Forces the background of the demo for `$component` to be `$color`. You may
@@ -46,13 +44,11 @@
 // @param {Color} $color - The background color you want.
 //
 // @example
-// @include docks-demo-background(button--light, rgb(50, 50, 50));
+// +docks-demo-background(button--light, rgb(50, 50, 50))
 
-@mixin docks-demo-background($component, $color) {
-  #demo__section--#{$component} {
-    background-color: #{$color} !important;
-  }
-}
+=docks-demo-background($component, $color)
+  #demo__section--#{$component}
+    background-color: #{$color} !important
 
 //*
 // Forces the demo container for `$component` to have no horizontal padding.
@@ -65,14 +61,12 @@
 // without the leading `"."`).
 //
 // @example
-// @include docks-demo-no-padding(grid);
+// +docks-demo-no-padding(grid)
 
-@mixin docks-demo-no-padding($component) {
-  #demo__section--#{$component} {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
+=docks-demo-no-padding($component)
+  #demo__section--#{$component}
+    padding-left: 0
+    padding-right: 0
 
 //*
 // Allows you to specify a block of styles that will apply only to the demo
@@ -88,12 +82,9 @@
 // without the leading `"."`).
 //
 // @example
-// @include docks-demo-styles(button) {
-//   text-align: center;
-// }
+// +docks-demo-styles(button)
+//   text-align: center
 
-@mixin docks-demo-styles($component) {
-  #demo__section--#{$component} {
-    @content;
-  }
-}
+=docks-demo-styles($component)
+  #demo__section--#{$component}
+    @content

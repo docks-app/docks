@@ -74,12 +74,12 @@ describe Docks::Builder do
       end
     end
 
-    %w(scss less).each do |preprocessor|
+    %w(scss sass less stylus).each do |preprocessor|
       it "copies the #{preprocessor} style helpers to the pattern library assets folder" do
         default_options[:style_preprocessor] = preprocessor
         subject.setup(default_options)
 
-        copied_style_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "**/*.#{preprocessor}")].map { |file| File.basename(file) }
+        copied_style_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "**/*")].select { |file| File.extname(file) != ".css" }.map { |file| File.basename(file) }
         original_style_helpers = Dir[File.join(template_dir, "assets", "styles", preprocessor, "**/*")].map { |file| File.basename(file) }
 
         original_style_helpers.each do |style_helper|
