@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email                 = ["chrismsauve@gmail.com"]
   s.license               = "MIT"
   s.homepage              = ""
-  s.summary               = "A documentation and styleguide generator for front-end projects."
+  s.summary               = "A pattern library generator for front-end projects."
   s.description           = s.summary
 
   s.files                 = `git ls-files`.split("\n")
@@ -22,8 +22,9 @@ Gem::Specification.new do |s|
   s.require_paths         = ["lib"]
 
   s.add_dependency "redcarpet",     "~> 3.1"
-  s.add_dependency "activesupport", "~> 4.0"
+  s.add_dependency "activesupport", "> 4.0"
 
+  s.add_development_dependency "railties", [">= 3.2.5", "< 5"]
   s.add_development_dependency "bundler", "~> 1.3"
   s.add_development_dependency "rubocop", "< 1.0"
   s.add_development_dependency "rake", "~> 10.4"
