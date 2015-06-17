@@ -84,6 +84,16 @@ describe Docks::Templates do
     it "returns the demo template when the ID is :demo" do
       expect(subject.template_for(:demo)).to eq subject.demo
     end
+
+    it "throws an error when no template matches the path" do
+      expect { subject.search_for_template("fuzz") }.to raise_error Docks::NoTemplateError
+    end
+
+    it "throws an error with customized messaging for partials, layouts, and normal templates" do
+      expect { subject.search_for_template("fuzz") }.to raise_error %r{No template matching}
+      expect { subject.search_for_template("fuzz", must_be: :layout) }.to raise_error %r{No layout matching}
+      expect { subject.search_for_template("fuzz", must_be: :partial) }.to raise_error %r{No partial matching}
+    end
   end
 
   describe ".default_layout=" do

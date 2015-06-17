@@ -67,6 +67,8 @@ module Docks
 
       in_specific = loose_search_for(File.join("#{(options[:must_be] || :partial).to_s.sub(/s$/, '')}{s,}", template))
       return in_specific unless in_specific.nil?
+
+      raise Docks::NoTemplateError, "No #{options[:must_be] || "template"} matching '#{template}' was found. Make sure that you have a template by that name in the '#{options[:must_be].nil? ? Docks.config.asset_folders.templates : options[:must_be].to_s.pluralize}' folder of your pattern library's assets (or in a subdirectory of that folder), or provide a full path to the desired file."
     end
 
     private

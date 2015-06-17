@@ -42,14 +42,12 @@ module Docks
           options[:must_be] = :partial if must_be_partial
 
           found_template = Templates.search_for_template(template, options)
-          raise Docks::NoTemplateError, "No template matching '#{template}' was found. Make sure that you have a template by that name in the 'templates' folder of your pattern library's assets (or in a subdirectory of that folder), or provide a full path to the desired template." if found_template.nil?
           content = @cache[found_template] || File.read(found_template)
           @cache[found_template] = content
         end
 
         if layout
           found_layout = Templates.search_for_template(layout, must_be: :layout)
-          raise Docks::NoTemplateError, "No layout matching '#{layout}' was found. Make sure that you have a template by that name in the 'layout' folder of your pattern library's assets (or in a subdirectory of that folder), or provide a full path to the desired layout file." if found_layout.nil?
           layout = @cache[found_layout] || File.read(found_layout)
           @cache[found_layout] = layout
         end
