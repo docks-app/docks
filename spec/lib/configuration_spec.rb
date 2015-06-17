@@ -96,25 +96,25 @@ describe Docks::Configuration do
 
   describe "#custom_languages" do
     it "yields the language manager" do
-      yielded = nil
-      subject.custom_languages { |languages| yielded = languages }
-      expect(yielded).to be Docks::Languages
+      expect { |block| subject.custom_languages(&block) }.to yield_with_args Docks::Languages
     end
   end
 
   describe "#custom_templates" do
     it "yields the template manager" do
-      yielded = nil
-      subject.custom_templates { |templates| yielded = templates }
-      expect(yielded).to be Docks::Templates
+      expect { |block| subject.custom_templates(&block) }.to yield_with_args Docks::Templates
     end
   end
 
   describe "#custom_tags" do
     it "yields the tag manager" do
-      yielded = nil
-      subject.custom_tags { |tags| yielded = tags }
-      expect(yielded).to be Docks::Tags
+      expect { |block| subject.custom_tags(&block) }.to yield_with_args Docks::Tags
+    end
+  end
+
+  describe "#custom_symbol_sources" do
+    it "yields the symbol source manager" do
+      expect { |block| subject.custom_symbol_sources(&block) }.to yield_with_args Docks::SymbolSources
     end
   end
 
