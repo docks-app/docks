@@ -89,6 +89,13 @@ describe Docks::Renderers::Base do
       expect(subject.send(:normalize_content_and_locals, partial: "template", locals: locals).last).to eq locals
     end
 
+    it "separates the layout and locals from the second argument" do
+      locals = { foo: "bar" }
+      result = subject.send(:normalize_content_and_locals, "template", layout: "application", locals: locals)
+      expect(result[1]).to eq File.read(File.join(layouts_dir, "application.html.erb"))
+      expect(result.last).to eq locals
+    end
+
     it "throws an error when no matching template is found" do
       expect { subject.send(:normalize_content_and_locals, "foo") }.to raise_error(Docks::NoTemplateError)
     end

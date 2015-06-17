@@ -34,16 +34,16 @@ module Docks
       protected
 
       def associate_content_from_external_files(components)
-        markup_files = Docks::Group.source_files_of_type(Types::Languages::MARKUP)
-        stub_files = Docks::Group.source_files_of_type(Types::Languages::STUB)
+        markup_files = Grouper.source_files_of_type(Types::Languages::MARKUP)
+        stub_files = Grouper.source_files_of_type(Types::Languages::STUB)
 
         components.each do |component|
           name = component.name
-          id = Docks::Group.group_identifier(name)
+          id = Docks.pattern_id(name)
 
           if component.markup.nil? && !markup_files.empty?
             markup_file = markup_files.find do |file|
-              name == File.basename(file, ".*").sub(/^_+/, "") || id == Docks::Group.group_identifier(file)
+              name == File.basename(file, ".*").sub(/^_+/, "") || id == Docks.pattern_id(file)
             end
 
             component.markup = File.read(markup_file) unless markup_file.nil?
@@ -54,7 +54,7 @@ module Docks
             next unless markup_language.respond_to?(:helper_markup_for)
 
             stub_file = stub_files.find do |file|
-              name == File.basename(file, ".*").sub(/^_+/, "") || id == Docks::Group.group_identifier(file)
+              name == File.basename(file, ".*").sub(/^_+/, "") || id == Docks.pattern_id(file)
             end
 
             stub = stub_file.nil? ? nil : Languages.language_for(stub_file).load_stub(stub_file)
@@ -92,7 +92,7 @@ module Docks
       end
 
       def update_markup_for_variation(markup, variation)
-        variation.markup = markup.gsub(/class\s*=\s*['"][^'"]*#{Docks::Naming.convention.component(variation.name)}[\s'"]/) do |match|
+        variation.markup = markup.gsub(/class\s*=\s*['"][^'"]*#{Naming.convention.component(variation.name)}[\s'"]/) do |match|
           "#{match[0...-1]} #{variation.name}#{match[-1]}"
         end
       end

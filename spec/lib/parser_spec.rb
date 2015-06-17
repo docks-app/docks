@@ -3,9 +3,11 @@ require "spec_helper"
 describe Docks::Parser do
   subject { Docks::Parser }
 
-  before :each do
+  around do |example|
     Docks::Tags.register_bundled_tags
     Docks::Languages.register_bundled_languages
+    example.run
+    subject.send(:clean)
   end
 
   describe ".parse" do
@@ -36,6 +38,30 @@ describe Docks::Parser do
       expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:style, style_parser.parse(style_file))
       expect_any_instance_of(Docks::Containers::Pattern).to receive(:add).with(:script, script_parser.parse(script_file))
       subject.parse([style_file, script_file])
+    end
+
+    it "uses a matching registered parser" do
+      class ExampleParser < Docks::Parsers::Base; end
+      subject.register(ExampleParser, for: /fixture/)
+      expect(ExampleParser.instance).to receive(:parse).with(style_file).and_return([])
+      subject.parse([style_file])
+    end
+
+    it "uses the last registered parser" do
+      class ExampleParser < Docks::Parsers::Base; end
+      class OtherParser < Docks::Parsers::Base; end
+
+      subject.register(ExampleParser, for: /fixture/)
+      subject.register(OtherParser, for: /parser/)
+      expect(OtherParser.instance).to receive(:parse).with(style_file).and_return([])
+      subject.parse([style_file])
+    end
+
+    it "doesn't use a parser that doesn't match the file" do
+      class ExampleParser < Docks::Parsers::Base; end
+      subject.register(ExampleParser, for: /script/)
+      expect(ExampleParser.instance).to_not receive(:parse)
+      subject.parse([style_file])
     end
 
     it "doesn't try to parse a file that doesn't exist" do

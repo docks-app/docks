@@ -118,5 +118,10 @@ describe Docks::Languages do
 
       subject.register(Docks::Languages::Sass)
     end
+
+    it "is aliased to <<" do
+      expect(subject).to receive(:register).with Docks::Languages::Sass
+      subject << Docks::Languages::Sass
+    end
   end
 end

@@ -223,5 +223,10 @@ describe Docks::Tags do
       expect(Example1.instance).to receive(:setup_post_processors)
       subject.register(Example1)
     end
+
+    it "is aliased to <<" do
+      expect(subject).to receive(:register).with Example1
+      subject << Example1
+    end
   end
 end

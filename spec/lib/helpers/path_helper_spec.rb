@@ -65,12 +65,17 @@ describe Docks::Helpers::Path do
 
     it "returns a relative path to the stylesheet" do
       output = subject.stylesheet_link_tag("style")
-      expect(output).to have_tag(:link, with: { rel: "stylesheet", type: "text/css", href: expected_path })
+      expect(output).to have_tag :link, with: { rel: "stylesheet", type: "text/css", href: expected_path }
     end
 
     it "doesn't duplicate the filename" do
       output = subject.stylesheet_link_tag("style.css")
-      expect(output).to have_tag(:link, with: { href: expected_path })
+      expect(output).to have_tag :link, with: { href: expected_path }
+    end
+
+    it "handles fully formed paths" do
+      output = subject.stylesheet_link_tag(Docks.config.destination + "styles/style.css")
+      expect(output).to have_tag :link, with: { rel: "stylesheet", type: "text/css", href: expected_path }
     end
   end
 
@@ -86,6 +91,11 @@ describe Docks::Helpers::Path do
       output = subject.javascript_include_tag("script.js")
       expect(output).to have_tag :script, with: { src: expected_path }
     end
+
+    it "handles fully formed paths" do
+      output = subject.javascript_include_tag(Docks.config.destination + "scripts/script.js")
+      expect(output).to have_tag :script, with: { src: expected_path }
+    end
   end
 
   describe "#relative_asset_path" do
@@ -93,6 +103,78 @@ describe Docks::Helpers::Path do
       expect(subject.relative_asset_path(Docks.current_render_destination)).to eq Pathname.new(".")
       expect(subject.relative_asset_path(Docks.current_render_destination + "foo/bar.baz")).to eq Pathname.new("foo/bar.baz")
       expect(subject.relative_asset_path(Docks.current_render_destination.dirname)).to eq Pathname.new("..")
+    end
+  end
+
+  describe "#compiled_style_tags" do
+    let(:css_path) { Pathname.new(Docks.config.root + "foo.css") }
+    let(:css_filename) { css_path.basename.to_s }
+
+    it "returns nothing when the compiled assets are empty" do
+      expect(subject.compiled_style_tags).to be nil
+
+      Docks.configure_with(compiled_assets: [])
+      expect(subject.compiled_style_tags).to be nil
+
+      Docks.configure_with(compiled_assets: nil)
+      expect(subject.compiled_style_tags).to be nil
+    end
+
+    it "includes CSS assets" do
+      Docks.configure_with(compiled_assets: [css_filename, "bar.scss", "baz.js"])
+
+      expect(File).to receive(:exists?).with(css_path).and_return true
+      expect(subject).to receive(:stylesheet_link_tag).with(css_path).and_return css_filename
+
+      expect(subject).not_to receive(:stylesheet_link_tag).with("bar.scss")
+      expect(subject).not_to receive(:stylesheet_link_tag).with("baz.js")
+
+      expect(subject.compiled_style_tags).to eq css_filename
+    end
+
+    it "does not include CSS assets that don't exist" do
+      Docks.configure_with(compiled_assets: css_filename)
+
+      expect(File).to receive(:exists?).with(css_path).and_return false
+      expect(subject).to_not receive(:stylesheet_link_tag).with "foo.css"
+
+      expect(subject.compiled_style_tags).to be nil
+    end
+  end
+
+  describe "#compiled_script_tags" do
+    let(:js_path) { Pathname.new(Docks.config.root + "foo.js") }
+    let(:js_filename) { js_path.basename.to_s }
+
+    it "returns nothing when the compiled assets are empty" do
+      expect(subject.compiled_script_tags).to be nil
+
+      Docks.configure_with(compiled_assets: [])
+      expect(subject.compiled_script_tags).to be nil
+
+      Docks.configure_with(compiled_assets: nil)
+      expect(subject.compiled_script_tags).to be nil
+    end
+
+    it "includes CSS assets" do
+      Docks.configure_with(compiled_assets: [js_filename, "bar.coffee", "baz.css"])
+
+      expect(File).to receive(:exists?).with(js_path).and_return true
+      expect(subject).to receive(:javascript_include_tag).with(js_path).and_return js_filename
+
+      expect(subject).not_to receive(:javascript_include_tag).with("bar.scss")
+      expect(subject).not_to receive(:javascript_include_tag).with("baz.js")
+
+      expect(subject.compiled_script_tags).to eq js_filename
+    end
+
+    it "does not include CSS assets that don't exist" do
+      Docks.configure_with(compiled_assets: js_filename)
+
+      expect(File).to receive(:exists?).with(js_path).and_return false
+      expect(subject).to_not receive(:javascript_include_tag).with "foo.css"
+
+      expect(subject.compiled_script_tags).to be nil
     end
   end
 end

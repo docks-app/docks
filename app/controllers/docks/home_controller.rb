@@ -8,7 +8,7 @@ module Docks
     def pattern
       Docks.parse
 
-      pattern = Group.group_identifier(params[:pattern])
+      pattern = Docks.pattern_id(params[:pattern])
       @pattern = Cache.pattern_for(pattern)
       @pattern_library = Cache.pattern_library
 

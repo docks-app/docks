@@ -3,21 +3,32 @@ require "pathname"
 
 require_relative "cache.rb"
 require_relative "templates.rb"
+require_relative "tags.rb"
+require_relative "symbol_sources.rb"
+require_relative "naming.rb"
 
 module Docks
   class Configuration
     include Singleton
 
-    ROOT_DEPENDENT_PATHS = [:sources, :destination, :include_assets, :cache_location, :library_assets, :helpers]
+    ROOT_DEPENDENT_PATHS = [
+      :sources,
+      :destination,
+      :compiled_assets,
+      :cache_location,
+      :library_assets,
+      :helpers
+    ]
 
     # Key details — these are required
-    attr_accessor :sources, :destination, :include_assets
+    attr_accessor :sources, :destination
 
     # Locations
     attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
-    attr_accessor :github_repo, :mount_at, :helpers
+    attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
+                  :naming_convention, :pattern_id
 
     # Stateful stuff
     attr_reader :configured
@@ -26,39 +37,12 @@ module Docks
       reset
     end
 
-    # Updates the root directory against which `ROOT_DEPENDENT_PATHS` are
-    # evaluated.
-    #
-    # new_root - A Pathname or string representing the root path.
-    #
-    # Returns nothing.
-
     def root=(new_root)
       @root = new_root.kind_of?(Pathname) ? new_root : Pathname.new(new_root)
     end
 
-    # Adds custom templates. The keys of the passed Hash will be treated as a
-    # pattern to match in order to use the template represented by the
-    # associated value. If the passed Hash has `default` or `fallback` keys,
-    # that template will be used as the fallback template. If a `demo` key
-    # exists, that template will be used as the template for component demos.
-    #
-    # special_templates - A Hash representing the custom templates to use.
-    #
-    # Returns nothing.
-
     def templates=(special_templates)
-      if fallback = special_templates.delete("default") || special_templates.delete("fallback")
-        Templates.fallback_template = fallback
-      end
-
-      if demo = special_templates.delete("demo")
-        Templates.demo_template = demo
-      end
-
-      special_templates.each do |match, template|
-        Templates.register(template, for: Regexp.new(match.to_s))
-      end
+      Templates.register(special_templates)
     end
 
     def asset_folders=(new_asset_folders)
@@ -67,6 +51,27 @@ module Docks
       end
 
       @asset_folders
+    end
+
+    def naming_convention=(new_naming_convention)
+      Docks::Naming.convention = new_naming_convention
+    end
+
+    def naming_convention
+      Docks::Naming.convention
+    end
+
+    def github_repo
+      return nil if @github_repo.nil? || @github_repo.empty?
+      "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
+    end
+
+    def pattern_id(*args)
+      Docks.pattern_id(*args)
+    end
+
+    def pattern_id=(block)
+      Docks.pattern_id = block
     end
 
     def finalize
@@ -83,6 +88,14 @@ module Docks
 
     def custom_templates
       yield Templates
+    end
+
+    def custom_symbol_sources
+      yield SymbolSources
+    end
+
+    def custom_parsers
+      yield Parser
     end
 
     ROOT_DEPENDENT_PATHS.each do |path|
@@ -103,13 +116,13 @@ module Docks
     def reset
       @configured = false
       @sources = []
-      @include_assets = []
+      @compiled_assets = []
       @github_repo = nil
 
       rails = defined?(::Rails)
 
       @root = rails ? ::Rails.root : Pathname.pwd
-      @cache_location = rails ? "tmp/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
+      @cache_location = rails ? "tmp/cache/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
 
       # These options only apply for static site generation — Rails handles
       # these details when it's being used

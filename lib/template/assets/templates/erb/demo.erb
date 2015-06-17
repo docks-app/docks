@@ -1,17 +1,8 @@
-<%
-  component.configure do |config|
-    config.defaults(id: unique_iframe_id)
-  end
-
-  demo = component.demo
-  id = component.id
-%>
-
 <div class="iframe" data-iframe-id="<%= id %>">
   <div class="demo" data-iframe-id="<%= id %>">
 
     <% if demo.kind_of?(Docks::Containers::Demo) %>
-      <% demo_variations = ([demo.component] + demo.joint_variations) %>
+      <% demo_variations = [demo.component] + demo.joint_variations %>
       <% demo_variations.each do |variation| %>
         <% name = variation.name %>
 

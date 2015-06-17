@@ -3,6 +3,10 @@ module Docks
     class Template
       attr_reader :path, :layout
 
+      def self.new(name, options = {})
+        name.kind_of?(self) ? name : super
+      end
+
       def initialize(name, options = {})
         @path = name
         @matcher = options[:matches] || options[:for]
@@ -10,7 +14,7 @@ module Docks
       end
 
       def layout
-        @layout.nil? ? Templates.default_layout : @layout
+        @layout || Templates.default_layout
       end
 
       def matches?(id)
@@ -18,35 +22,38 @@ module Docks
       end
     end
 
-    def self.demo_template; @@demo_template end
-    def self.default_layout; @@default_layout end
-    def self.fallback_template; @@fallback_template end
-    def self.default_template; fallback_template end
+    def self.demo; @demo_template end
+    def self.demo=(template); @demo_template = Template.new(template, layout: "demo") end
 
-    def self.fallback_template=(template); @@fallback_template = Template.new(template) end
-    def self.default_template=(template); self.fallback_template = template end
-    def self.default_layout=(layout); @@default_layout = layout end
+    def self.default; @default_template end
+    def self.fallback; default end
+    def self.default=(template); @default_template = Template.new(template) end
+    def self.fallback=(template); self.default = template end
 
-    def self.demo_template=(template); self.set_demo_template(template) end
-
-    def self.set_demo_template(template, options = {})
-      options[:layout] ||= "demo"
-      @@demo_template = Template.new(template, options)
-    end
+    def self.default_layout; @default_layout end
+    def self.default_layout=(layout); @default_layout = layout end
 
     def self.register(template, options = {})
-      @@templates << Template.new(template, options)
+      if template.kind_of?(Hash)
+        register_from_hash(template)
+      else
+        @templates << Template.new(template, options)
+      end
+    end
+
+    def self.<<(template)
+      register(template)
     end
 
     def self.template_for(id)
       id = id.name if id.kind_of?(Containers::Pattern)
-      return demo_template if id.to_sym == :demo_template
+      return demo if id.to_sym == :demo
 
-      @@templates.reverse_each do |template|
+     @templates.reverse_each do |template|
         return template if template.matches?(id)
       end
 
-      fallback_template
+      fallback
     end
 
     def self.search_for_template(template, options = {})
@@ -60,9 +67,25 @@ module Docks
 
       in_specific = loose_search_for(File.join("#{(options[:must_be] || :partial).to_s.sub(/s$/, '')}{s,}", template))
       return in_specific unless in_specific.nil?
+
+      raise Docks::NoTemplateError, "No #{options[:must_be] || "template"} matching '#{template}' was found. Make sure that you have a template by that name in the '#{options[:must_be].nil? ? Docks.config.asset_folders.templates : options[:must_be].to_s.pluralize}' folder of your pattern library's assets (or in a subdirectory of that folder), or provide a full path to the desired file."
     end
 
     private
+
+    def self.register_from_hash(templates)
+      if fallback = templates.delete("default") || templates.delete("fallback")
+        self.fallback = fallback
+      end
+
+      if demo = templates.delete("demo")
+        self.demo = demo
+      end
+
+      templates.each do |match, template|
+        register(template, for: Regexp.new(match.to_s))
+      end
+    end
 
     def self.loose_search_for(path)
       return if path.nil?
@@ -73,10 +96,10 @@ module Docks
     end
 
     def self.clean
-      @@demo_template = Template.new("demo", layout: "demo")
-      @@fallback_template = Template.new("pattern")
-      @@default_layout = "application"
-      @@templates = []
+      @demo_template = Template.new("demo", layout: "demo")
+      @default_template = Template.new("pattern")
+      @default_layout = "pattern"
+      @templates = []
     end
 
     clean

@@ -1,30 +1,98 @@
 ---
+# An array of glob patterns specifying all source files. These will be the
+# sources for all of your library's patterns. Include any style, script,
+# markup, stub, and description files you have to document your patterns.
+# These paths should be relative to the root of your project.
 sources:
-  - styles/**/*.scss
-  - scripts/**/*.coffee
+  - "styles/**/*.{css,scss,sass,less,styl}"
+  - "scripts/**/*.{js,coffee,coffeescript}"
 
+# The destination folder in which you would like to generate the static
+# pattern library. This path should be relative to the root of your project.
 destination: public
 
-include_assets:
+# When generating your static styleguide, these assets will be included
+# in the default layout file automatically (via a `link` tag when the asset
+# is a stylesheet, and via a `script` tag when it is a JavaScript file).
+#
+# These assets must be compiled — Docks will not compile assets for you
+# automatically. Feel free to omit this option if you are going to manually
+# add the required asset tags to your layout file. These paths should be
+# relative to the root of your project.
+compiled_assets:
   - public/styles/style.css
   - public/scripts/script.js
 
+# This option determines where Docks should look for assets of different
+# types. This is primarily used in determining where templates for your pages
+# are and by the path helpers in determining where stylesheets and script
+# files should be in order to create the appropriate links to them from your
+# templates. It is also used to determine where some of the bundled assets are
+# for use by the default theme. If you change the folder names in your pattern
+# library assets folder, make sure that those names correspond to these ones.
+#
+# These folders are relative to the root of your destination/ source assets
+# directories, not to your project's root.
 asset_folders:
   scripts: scripts
   styles: styles
   templates: templates
   images: images
 
+# The folder in which the source assets for the static pattern library are
+# located. You do not need to include your own assets in this folder — it is
+# used primarily to contain the template files and the Docks-provided styles
+# and scripts. If you use relative references for custom templates, though,
+# they will be relative to the templates folder of this directory.
+# Additionally, all compiled asset types (CSS, JavaScript, and images) will be
+# copied from here to the destination folder during builds.
+#
+# When running `docks init`, the starter assets will be added to a folder named
+# `pattern_library_assets`. If you rename that folder, please rename it here,
+# also. This path should be relative to the root of your project.
 library_assets: pattern_library_assets
 
-cache_location: .docks_cache
-
-
-
+# The root path of your pattern library. When generating a static version,
+# all pattern files will be nested inside this directory.
 mount_at: pattern-library
 
+# The name of the Github repo for this project. This can either be the URL or
+# in the form `<username>/<repo>`. The default theme uses this option, if
+# passed, to provide links to create issue and view source for your pattern
+# library's files.
 github_repo: ""
 
+# This option allows you to specify the default template files to use and
+# provide a list of patterns that will use custom templates for rendering.
+# The special key `default` will set the default template to render for
+# patterns that do not have a custom template. The special key `demo` will
+# specify the template to use for rendering demos (the content that will
+# appear in iframes in the default theme).
+#
+# To provide a custom template for any other pattern, simply use the pattern
+# identifier as a key and the custom template (relative to the
+# `asset_folders.templates` directory inside of the `library_assets` folder)
+# as the value. For example, you could use `color: color.erb` to have the
+# pattern with an ID of `color` use the template in (using the default
+# folders): `<root>/pattern_library_assets/templates/color.erb`. To provide
+# more complex matching or custom layouts in addition to custom templates,
+# you must use the `.rb` version of this config file.
 templates:
-  default: pattern.erb
-  demo: demo.erb
+  fallback: pattern
+  demo: demo
+
+# The naming convention to use for such things as identifying a state versus
+# a variant and determining the base class of a given variation. There are
+# a few bundled naming conventions, viewable under lib/docks/naming_conventions.
+# You can either pass a string with the name of the desired naming convention
+# (capitalization is important) or pass an instance of a naming convention
+# instance. If creating your own naming convention, make sure to inherit and
+# override all methods in `Docks::Naming::Conventions::Base`.
+naming_convention: BEM
+
+# A list of file names that contain helper modules needed to render your
+# components, or that you want available to be used inside your views. Every
+# module in each of these files will be included in the renderer so that you
+# have access to them in all of your templates. These files should be relative
+# to the root of your project.
+helpers: []
