@@ -78,8 +78,8 @@ github_repo: ""
 # more complex matching or custom layouts in addition to custom templates,
 # you must use the `.rb` version of this config file.
 templates:
-  default: pattern.erb
-  demo: demo.erb
+  fallback: pattern
+  demo: demo
 
 # The naming convention to use for such things as identifying a state versus
 # a variant and determining the base class of a given variation. There are
