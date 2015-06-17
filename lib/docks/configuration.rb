@@ -94,6 +94,10 @@ module Docks
       yield SymbolSources
     end
 
+    def custom_parsers
+      yield Parser
+    end
+
     ROOT_DEPENDENT_PATHS.each do |path|
       define_method(path) do
         paths = instance_variable_get("@#{path.to_s}".to_sym)

@@ -118,6 +118,12 @@ describe Docks::Configuration do
     end
   end
 
+  describe "#custom_parsers" do
+    it "yields the parser manager" do
+      expect { |block| subject.custom_parsers(&block) }.to yield_with_args Docks::Parser
+    end
+  end
+
   describe "#github_repo" do
     it "returns nil when there is no github repo" do
       expect(subject.github_repo).to be nil

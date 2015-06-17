@@ -122,21 +122,28 @@ Docks.configure do |config|
   end
 
   # Yields an object that allows you to register custom tags. Your
-  # tag should extend `Docks::Tags::Base`. Once you have defined it, register
-  # the custom tag as follows:
+  # tag should extend `Docks::Tags::Base` (or a subclass). Once you have defined
+  # it, register the custom tag as follows:
   #
   # config.custom_tags { |tags| tags << MyCustomTagClass }
   config.custom_tags do |tags|
   end
 
   # Yields an object that allows you to register custom languages. Your
-  # language should extend `Docks::Languages::Base`. Once you have defined
-  # it, register the custom language as follows:
+  # language should extend `Docks::Languages::Base`. (or a subclass) Once you
+  # have defined it, register the custom language as follows:
   #
   # config.custom_languages { |languages| languages << MyCustomLanguageClass }
   config.custom_languages do |languages|
   end
 
+  # Yields an object that allows you to register custom parsers. Your
+  # parser should extend `Docks::Parsers::Base` (or a subclass). The second
+  # argument should be a hash with a `:for` key that specifies a regular
+  # expression that will match files that should use this parser. Once you have
+  # defined it, register the custom parser as follows:
+  #
+  # config.custom_parsers { |parsers| parsers.register(MyCustomParserClass, for: /the_pattern_to_match/) }
   config.custom_parsers do |parsers|
   end
 
