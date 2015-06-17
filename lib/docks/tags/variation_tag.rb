@@ -76,7 +76,7 @@ module Docks
         component = nil
         (@components + @new_components).each do |check_component|
           component = check_component.find(component_name)
-          break unless component.nil?
+          break if component
         end
 
         if component.nil?

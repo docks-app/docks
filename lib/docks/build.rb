@@ -6,9 +6,9 @@ module Docks
       cache = Cache.new
       cache.clear if options.fetch(:clear_cache, false)
 
-      Grouper.group(Docks.config.sources).each do |group_identifier, group|
+      Grouper.group(Docks.config.sources).each do |identifier, group|
         if Cache.cached?(group)
-          cache.no_update(group_identifier)
+          cache.no_update(identifier)
         else
           cache << Parser.parse(group)
         end

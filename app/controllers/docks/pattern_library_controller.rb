@@ -10,7 +10,7 @@ module Docks
       @pattern_library = Cache.pattern_library
 
       template = Docks.template_for(pattern)
-      render(file: template.path, layout: template.layout)
+      render template.path, layout: template.layout
     end
   end
 end
