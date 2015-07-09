@@ -4,7 +4,7 @@ module Docks
       def initialize
         @name = :include_with
         @multiline = false
-        @type = Docks::Types::Tags::MULTIPLE_PER_LINE
+        @multiple_allowed = true
       end
 
       def process(symbol)

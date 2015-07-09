@@ -1,18 +1,6 @@
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@beta`.
-    #
-    # This tag indicates the version and description of a beta notice for the
-    # current symbol.
-
     class Beta < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@beta` name for use in documentation, allows multiple lines of
-      # documentation to be included in the tag, and allows only a single such
-      # tag included per documentation block.
-
       def initialize
         @name = :beta
         @synonyms = [:experimental]
@@ -29,6 +17,7 @@ module Docks
               }
             end
           end
+
           OpenStruct.new(beta)
         end
       end

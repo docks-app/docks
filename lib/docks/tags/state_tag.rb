@@ -7,7 +7,7 @@ module Docks
         @name = :state
         @parseable = true
         @synonyms = [:states]
-        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
+        @multiple_allowed = true
       end
 
       def process(symbol)

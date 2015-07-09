@@ -3,17 +3,7 @@ require_relative "../markdown.rb"
 
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@description`. Use this tag to provide a
-    # detailed description of the symbol for display in the pattern lab. This
-    # description (along with the description options for all other tags that
-    # support a description) will be parsed as Markdown.
-
     class Description < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@description` name for use in documentation.
-
       def initialize
         @name = :description
         @markdown = Redcarpet::Markdown.new(Markdown::Renderer, fenced_code_blocks: true)
