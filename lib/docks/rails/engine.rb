@@ -5,7 +5,7 @@ module Docks
     isolate_namespace Docks
     engine_name :docks
 
-    config.assets.precompile += %w(pattern.css pattern.js demo.css demo.js)
+    config.assets.precompile += %w(pattern-library.css pattern-library.js pattern-library-demo.css pattern-library-demo.js)
 
     initializer :assets, group: :all do |app|
       Docks::Engine.default_root_path(app.root)
@@ -20,7 +20,7 @@ module Docks
     end
 
     def self.prepend_routes(app)
-      mount_at = "/#{Docks.config.mount_at.split("/", 2).last}"
+      mount_at = "/#{Docks.config.mount_at.sub(/^\//, "")}"
       return if app.routes.recognize_path(mount_at)[:action] != "routing_error" rescue nil
 
       app.routes.prepend do

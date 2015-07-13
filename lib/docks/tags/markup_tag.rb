@@ -1,18 +1,6 @@
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@markup`.
-    #
-    # The `markup` tag is the easiest way to include markup for your
-    # components. The default template will use this (with some extra logic
-    # thrown in) to generate the demo component.
-
     class Markup < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@markup` name for use in documentation and allows it to span multiple
-      # lines.
-
       def initialize
         @name = :markup
       end

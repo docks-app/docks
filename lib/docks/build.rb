@@ -6,9 +6,9 @@ module Docks
       cache = Cache.new
       cache.clear if options.fetch(:clear_cache, false)
 
-      Grouper.group(Docks.config.sources).each do |group_identifier, group|
+      Grouper.group(Docks.config.sources).each do |identifier, group|
         if Cache.cached?(group)
-          cache.no_update(group_identifier)
+          cache.no_update(identifier)
         else
           cache << Parser.parse(group)
         end
@@ -138,7 +138,7 @@ module Docks
       FileUtils.mkdir_p(styles_dir)
 
       FileUtils.cp_r(Dir[File.join(@template_dir, "assets/styles/*.css")], styles_dir)
-      FileUtils.cp_r Dir[File.join(@template_dir, "assets/styles", style_ext, "*.#{style_ext}")],
+      FileUtils.cp_r Dir[File.join(@template_dir, "assets/styles", style_ext, "*")],
                      styles_dir
     end
 

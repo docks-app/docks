@@ -11,10 +11,6 @@ describe Docks::Tags::Private do
     expect(subject.multiple_allowed?).to be false
   end
 
-  it "only allows one tag per file" do
-    expect(subject.only_one_per_file_allowed?).to be false
-  end
-
   describe "#process" do
     describe "#process" do
       let(:symbol) { Docks::Containers::Symbol.new(private: true) }

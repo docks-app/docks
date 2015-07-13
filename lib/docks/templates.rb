@@ -96,10 +96,14 @@ module Docks
     end
 
     def self.clean
-      @demo_template = Template.new("demo", layout: "demo")
+      @demo_template = Template.new("demo", layout: (rails? ? "docks/demo" : "demo"))
       @default_template = Template.new("pattern")
-      @default_layout = "pattern"
+      @default_layout = rails? ? "docks/pattern" : "pattern"
       @templates = []
+    end
+
+    def self.rails?
+      defined?(Rails)
     end
 
     clean

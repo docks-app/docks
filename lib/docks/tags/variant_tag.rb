@@ -5,9 +5,9 @@ module Docks
     class Variant < Variation
       def initialize
         @name = :variant
-        @parseable = true
         @synonyms = [:modifier]
-        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
+        @parseable = true
+        @multiple_allowed = true
       end
 
       def process(symbol)

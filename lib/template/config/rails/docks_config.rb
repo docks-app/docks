@@ -39,6 +39,7 @@ Docks.configure do |config|
   config.custom_templates do |templates|
     templates.fallback = "pattern"
     templates.demo = "demo"
+    templates.default_layout = "docks/pattern"
   end
 
   # The naming convention to use for such things as identifying a state versus

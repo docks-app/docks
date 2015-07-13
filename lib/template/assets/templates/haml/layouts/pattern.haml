@@ -1,0 +1,17 @@
+!!!
+%html
+  %head
+    %title= @pattern.title
+    %meta{content: "text/html; charset=US-ASCII", "http-equiv" => "content-type"}/
+    %meta{content: "width=device-width, initial-scale=1.0", name: "viewport"}/
+    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic"
+    = stylesheet_link_tag "pattern-library"
+    = compiled_style_tags
+  %body
+    = docks_icons
+    .wrapper
+      = yield
+    :javascript
+      window.pattern = #{CGI.escapeHTML(@pattern.to_json)};
+    = javascript_include_tag "pattern_library"
+    = compiled_script_tags

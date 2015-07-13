@@ -1,0 +1,90 @@
+//*
+// @pattern Pattern Library Helpers
+// @author Chris Sauve (github: lemonmade)
+//
+// This file provides a set of helpers that allow you to provide custom style
+// overrides for components in demos. Please use these helpers in place of
+// custom selectors whenever possible — if the internal mechanisms the generator
+// uses to create these demos is ever changed, these helpers will be updated to
+// reflect the new selectors that are needed.
+
+//*
+// Forces the height of the passed `component` demo to be at least `height`.
+// Demos of some components may not respond properly to automatically
+// calculating their height. For example, absolutely-positioned dropdowns do
+// not cause the height of their container to increase, but we may want some
+// extra vertical space for them to appear into. This mixin allows you to
+// force a particular demo to have at least the passed height.
+//
+// @param {String} component - The exact name of the component you wish to
+// forcibly size (in most cases, this is the component's class name, without
+// the leading `"."`).
+//
+// @param {Number} height - The height you wish to force the component demo
+// to be. This number should have some units, the choice of which is left to
+// you.
+//
+// @example
+// docks-demo-height(dropdown, 10em)
+
+docks-demo-height(component, height)
+  #demo__section--{component} > .demo__content
+    min-height height !important
+
+//*
+// Forces the background of the demo for `component` to be `color`. You may
+// wish to use this in cases where an element typically appears on a background
+// color that is not the default for the way they are presented in demos (the
+// default theme displays these on a pure white background).
+//
+// @param {String} component - The exact name of the component you wish to
+// forcibly set the background color for (in most cases, this is the component's
+// class name, without the leading `"."`).
+//
+// @param {Color} color - The background color you want.
+//
+// @example
+// docks-demo-background(button--light, rgb(50, 50, 50))
+
+docks-demo-background(component, color)
+  #demo__section--{component}
+    background-color color !important
+
+//*
+// Forces the demo container for `component` to have no horizontal padding.
+// The default theme provides this padding since, in general, it is more
+// aesthetically pleasing to do so. This may not, however, work for all your
+// components, in which case you can use this mixin.
+//
+// @param {String} component - The exact name of the component you wish to
+// remove padding for (in most cases, this is the component's class name,
+// without the leading `"."`).
+//
+// @example
+// docks-demo-no-padding(grid)
+
+docks-demo-no-padding(component)
+  #demo__section--{component}
+    padding-left 0
+    padding-right 0
+
+//*
+// Allows you to specify a block of styles that will apply only to the demo
+// container for `component`. If you are simply trying to force a particular
+// height, use [`docks-demo-height`](@link). If you are trying to set a custom
+// background color, use [`docks-demo-background`](@link). If you are trying to
+// remove the horizontal padding on a component's demo, use
+// [`docks-demo-no-padding`](@link). Use this mixin only for more advanced
+// styling concerns.
+//
+// @param {String} component - The exact name of the component you wish to
+// add custom styling for (in most cases, this is the component's class name,
+// without the leading `"."`).
+//
+// @example
+// +docks-demo-styles(button)
+//   text-align: center
+
+docks-demo-styles(component)
+  #demo__section--{component}
+    {block}

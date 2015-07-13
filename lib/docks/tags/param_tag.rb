@@ -1,23 +1,10 @@
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@param`.
-    #
-    # The `param` tag allows you to provide details around the types of
-    # parameters expected for a given symbol.
-
     class Param < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@param` name for use in documentation, will allow multiple tags per
-      # documentation block, will allow multiline documentation to be included
-      # in the tag, and will create the `@arg` and `@argument` as synonyms for
-      # `@param`.
-
       def initialize
         @name = :param
         @synonyms = [:arg, :argument, :parameter]
-        @type = Docks::Types::Tags::MULTIPLE_PER_BLOCK
+        @multiple_allowed = true
       end
 
       def process(symbol)

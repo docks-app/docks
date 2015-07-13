@@ -1,17 +1,6 @@
 module Docks
   module Tags
-
-    # Public: The tag attributes for `@since`.
-    # This tag indicates a version in which this symbol was introduced.
-
     class Since < Base
-
-      # Public: creates an instance of the tag. This will give the tag the
-      # `@since` name for use in documentation, allows multiple lines of
-      # documentation to be included in the tag, allows only a single such tag
-      # included per documentation block, and will create the `@introduced_in`
-      # tag as a synonym for `@since`.
-
       def initialize
         @name = :since
         @synonyms = [:introduced_in]

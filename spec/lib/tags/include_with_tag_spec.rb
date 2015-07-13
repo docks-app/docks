@@ -11,10 +11,6 @@ describe Docks::Tags::IncludeWith do
     expect(subject.multiple_allowed?).to be true
   end
 
-  it "allows multiple tags per line" do
-    expect(subject.multiple_per_line_allowed?).to be true
-  end
-
   describe "#process" do
     let(:symbol) { Docks::Containers::Symbol.new }
 

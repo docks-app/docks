@@ -1,11 +1,7 @@
 Docks::Engine.routes.draw do
-  root to: "home#index"
+  root to: "pattern_library#index"
 
   match "/:pattern", as: "pattern",
-                     to: "home#pattern",
+                     to: "pattern_library#pattern",
                      via: [:get]
-
-  match "/demo/:pattern/:demo", as: "pattern_demo",
-                                to: "home#demo",
-                                via: [:get]
 end
