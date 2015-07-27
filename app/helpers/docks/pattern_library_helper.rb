@@ -1,5 +1,5 @@
 module Docks
-  module ApplicationHelper
+  module PatternLibraryHelper
     def details_for(symbol)
       details = {
         tags: [],
