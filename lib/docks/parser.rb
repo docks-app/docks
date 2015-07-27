@@ -21,6 +21,13 @@ module Docks
       @custom_parsers.push(parser: parser, for: match)
     end
 
+    def self.parse_block(content, language)
+      store_current_details("foo.#{language}") do
+        symbol = Docks.current_parser.parse_comment_block(content)
+        Process.process(symbol)
+      end
+    end
+
     private
 
     def self.parseable?(file)

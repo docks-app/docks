@@ -8,13 +8,6 @@ describe Docks::Languages::Base do
       expect(subject.load_stub("foo.bar")).to be nil
     end
   end
-
-  describe "#friendly_presentation" do
-    it "defaults the friendly presentation to the name of the symbol" do
-      name = "foo"
-      expect(subject.friendly_presentation(name: name)).to eq name
-    end
-  end
 end
 
 describe Docks::Languages do

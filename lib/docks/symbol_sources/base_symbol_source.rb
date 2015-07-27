@@ -5,7 +5,7 @@ module Docks
     class Base
       include Singleton
 
-      def recognizes?(symbol); false end
+      def recognizes?(symbol, options = {}); false end
       def path_for(symbol); nil end
     end
   end

@@ -70,7 +70,7 @@ module Docks
 
         last_tag = nil
 
-        comment_block.gsub(@comment_line_pattern, "").strip.split("\n").each do |comment_line|
+        comment_block.sub(/#{@comment_pattern}\*\s*/, '').gsub(@comment_line_pattern, "").strip.split("\n").each do |comment_line|
           line_details = comment_line.match(@tag_pattern)
           next if line_details.nil? || line_details[:text].nil?
 

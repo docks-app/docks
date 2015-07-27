@@ -47,7 +47,7 @@ Docks.configure do |config|
   # a few bundled naming conventions, viewable under lib/docks/naming_conventions.
   # You can either pass a string with the name of the desired naming convention
   # (capitalization is important) or pass an instance of a naming convention
-  # instance. If creating your own naming convention, make sure to inherit and
+  # class. If creating your own naming convention, make sure to inherit and
   # override all methods in `Docks::Naming::Conventions::Base`.
   config.naming_convention = "BEM"
 

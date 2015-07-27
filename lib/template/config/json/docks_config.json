@@ -10,7 +10,7 @@
 
   // The destination folder in which you would like to generate the static
   // pattern library. This path should be relative to the root of your project.
-  "destination": "pattern_library",
+  "destination": "public",
 
   // When generating your static styleguide, these assets will be included
   // in the default layout file automatically (via a `link` tag when the asset
@@ -90,7 +90,7 @@
   // a few bundled naming conventions, viewable under lib/docks/naming_conventions.
   // You can either pass a string with the name of the desired naming convention
   // (capitalization is important) or pass an instance of a naming convention
-  // instance. If creating your own naming convention, make sure to inherit and
+  // class. If creating your own naming convention, make sure to inherit and
   // override all methods in `Docks::Naming::Conventions::Base`.
   "naming_convention": "BEM",
 

@@ -12,7 +12,6 @@ module Docks
       def load_stub(file); nil end
       def parser; nil end
       def renderer; nil end
-      def friendly_presentation(symbol); symbol[:name] end
     end
   end
 end

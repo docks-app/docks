@@ -21,7 +21,7 @@ module Docks
         color = options.delete(:color)
         klass << " icon--#{color.to_s.gsub("_", "-")}" unless color.nil?
 
-        "<svg class='#{klass}'><use xlink:href='#icon--#{name}'></use></svg"
+        "<svg class='#{klass}'><use xlink:href='#icon--#{name}'></use></svg>"
       end
 
       def docks_demo(demo, locals = {})
