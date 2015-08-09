@@ -7,7 +7,7 @@ describe Docks::Tags::Method do
     expect(subject.multiline?).to be false
   end
 
-  it "only allows one tag per block" do
+  it "only allows multiple per block" do
     expect(subject.multiple_allowed?).to be false
   end
 

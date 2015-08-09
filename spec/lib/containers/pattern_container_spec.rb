@@ -186,7 +186,9 @@ describe Docks::Containers::Pattern do
 
     it "asks the contained symbol to find the descriptor and returns if successful" do
       method = Docks::Containers::Function.new(name: "toggle", method: true)
-      factory = Docks::Containers::Factory.new(name: "Foo", methods: [method])
+      factory = Docks::Containers::Factory.new(name: "Foo")
+      factory.add_member(method)
+
       pattern.add(:script, factory)
 
       search = Docks::Descriptor.new("Foo#toggle")

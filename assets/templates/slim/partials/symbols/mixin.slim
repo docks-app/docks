@@ -1,0 +1,45 @@
+| <div class="section" id="
+= mixin.symbol_id
+| " data-private="
+= mixin.private?
+| "> 
+header
+  .inline-group
+    .inline-group__item
+      h3.type.type--heading.type--heading-3
+        span.type--code
+          = mixin.name
+    - if mixin.private? || mixin.deprecated
+      .inline-group__item
+        .badge__container
+          - if mixin.private?
+            span.badge.badge--standalone.badge--secret
+              | private
+          - if mixin.deprecated
+            span.badge.badge--standalone.badge--warning
+              | deprecated
+.type-container
+  = mixin.description
+= docks_code_block code: mixin.signature, language: mixin.source.language_code, id: "mixin--#{mixin.name}", full_width?: true
+- unless (aliases = mixin.fetch(:aliases, [])).empty?
+  h4.type.type--heading.type--heading-4
+    | Aliases
+  - aliases.each do |an_alias|
+    code.type--code
+      = an_alias
+- unless (params = mixin.fetch(:params, [])).empty?
+  h4.type.type--heading.type--heading-4
+    | Parameters
+  - params.each do |param|
+    h5.type.type--heading.type--heading-5
+      span.type--code
+        = param.name
+      span.badge
+        = param.types.first
+    .type-container.type-container--small
+      = param.description
+- unless (examples = mixin.fetch(:examples, [])).empty?
+  h4.type.type--heading.type--heading-4
+    = "Example".pluralize(examples.length)
+  - examples.each do |example|
+    = docks_code_block code: example.code, language: example.language, condensed?: true

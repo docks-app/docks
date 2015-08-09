@@ -15,7 +15,7 @@ describe Docks::Parsers::Less do
       target_name = "message-width"
       name, type = subject.symbol_details_from_first_line(" @#{target_name}: 40rem;").values
       expect(type).to eq Docks::Types::Symbol::VARIABLE
-      expect(name).to eq target_name
+      expect(name).to eq "@#{target_name}"
     end
 
     describe "states" do

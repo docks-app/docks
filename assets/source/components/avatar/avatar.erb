@@ -1,0 +1,20 @@
+<%
+  avatar.configure do |config|
+    config.defaults(author: OpenStruct.new(name: "", github: "", twitter: "", email: ""))
+  end
+
+  service, profile_name, url = if avatar.author.github
+    ["github", avatar.author.github, "https://github.com/#{avatar.author.github}"]
+  elsif avatar.author.twitter
+    ["twitter", avatar.author.twitter, "https://twitter.com/#{avatar.author.twitter}"]
+  elsif avatar.author.email
+    ["email", avatar.author.email, "mailto:#{avatar.author.email}"]
+  else
+    []
+  end
+%>
+
+<a class="avatar" data-service="<%= service %>" data-profile-name="<%= profile_name %>" href="<%= url.nil? ? "javascript:;" : url %>">
+  <span class="avatar__initials"><%= avatar.author.name.split(/\s+/).map { |name| name[0] }.join("") %></span>
+  <div class="avatar__image"></div>
+</a>

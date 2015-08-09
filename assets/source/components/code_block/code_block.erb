@@ -1,0 +1,95 @@
+<%
+  code_block.configure do |config|
+    config.defaults code: nil,
+                    language: "html",
+                    hideable?: false,
+                    full_width?: false,
+                    hidden?: false,
+                    demo?: false,
+                    demo: nil,
+                    condensed?: false,
+                    id: nil,
+                    options: []
+
+    config.classes  base: "code-block",
+                    header: "code-block__header"
+
+    config.conditional_classes if: :hidden?, base: "code-block--is-hidden"
+    config.conditional_classes if: :full_width?, base: "code-block--full-width"
+    config.conditional_classes if: :demo?, base: "code-block--with-demo"
+    config.conditional_classes if: :demo, base: "code-block--with-demo"
+    config.conditional_classes if: :condensed?, base: "code-block--condensed"
+  end
+
+  code = if code_block.code.kind_of?(Array)
+    code_block.code
+  else
+    [{ code: code_block.code, language: code_block.language }]
+  end
+
+  has_tabs = code.length > 1
+  has_demo = code_block.demo? || !code_block.demo.nil?
+  has_header = has_tabs || code_block.options.length > 1
+  hideable = code_block.hidden? || code_block.hideable? || has_tabs
+  id = code_block.id || unique_iframe_id
+%>
+
+<div class="<%= component.classes_for(:base) %><%= " code-block--with-header" if has_header %>"<% if has_demo %> data-iframe-id="<%= id %>"<% end %>>
+  <% if has_demo %>
+    <div class="code-block__demo">
+      <%= docks_resizable demo: component.demo || code.last[:code], id: id %>
+    </div>
+  <% end %>
+
+  <div class="code-block__content">
+    <% if has_header %>
+      <header class="<%= component.classes_for(:header) %>">
+
+        <div>
+          <% if has_tabs %>
+            <% docks_tablist do |tablist| %>
+              <% code.each_with_index do |code_details, index| %>
+                <%= tablist.tab(text: code_details[:label], active?: index == 0, id: "language-tab-#{index + 1}--#{id}", panel_id: "language-tab-panel-#{index + 1}--#{id}") %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="code-block__actions">
+          <% options = component.options %>
+          <% if options && options.length > 1 %>
+            <%= docks_select code?: true, options: options %>
+          <% end %>
+
+          <button class="docks-button docks-button--dark"><%= component.hidden? ? "Show" : "Hide" %></button>
+        </div>
+      </header>
+    <% end %>
+
+    <% if has_tabs %>
+      <div class="tablist__panel-container">
+        <% code.each_with_index do |code_details, index| %>
+          <% docks_component("tablist:panel", active?: index == 0, tab_id: "language-tab-#{index + 1}--#{id}", id: "language-tab-panel-#{index + 1}--#{id}") do %>
+            <div class="code-block__code-container">
+<pre class="code-block__code" data-code-block-language="<%= code_details[:language] %>" tabindex="-1"><code><%= CGI.escapeHTML(code_details[:code]).strip %></code></pre>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+    <% else %>
+      <% code_details = code.first %>
+      <div class="code-block__code-container">
+<pre class="code-block__code" data-code-block-language="<%= code_details[:language] %>" tabindex="-1"><code><%= CGI.escapeHTML(code_details[:code]).strip %></code></pre>
+      </div>
+
+    <% end %>
+  </div>
+
+  <% if hideable %>
+    <button class="code-block__toggler">
+      <%= docks_icon :code, color: :red, size: :medium %>
+      <span><%= component.hidden? ? "Show" : "Hide" %></span>
+    </button>
+  <% end %>
+</div>

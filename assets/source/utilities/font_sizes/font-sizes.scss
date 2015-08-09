@@ -1,0 +1,85 @@
+//        ___      ___          ___                             ___                   ___          ___
+//       /  /\    /  /\        /__/\        ___                /  /\      ___        /  /\        /  /\
+//      /  /:/_  /  /::\       \  \:\      /  /\              /  /:/_    /  /\      /  /::|      /  /:/_
+//     /  /:/ /\/  /:/\:\       \  \:\    /  /:/             /  /:/ /\  /  /:/     /  /:/:|     /  /:/ /\
+//    /  /:/ /:/  /:/  \:\  _____\__\:\  /  /:/             /  /:/ /::\/__/::\    /  /:/|:|__  /  /:/ /:/_
+//   /__/:/ /:/__/:/ \__\:\/__/::::::::\/  /::\            /__/:/ /:/\:\__\/\:\__/__/:/ |:| /\/__/:/ /:/ /\
+//   \  \:\/:/\  \:\ /  /:/\  \:\~~\~~\/__/:/\:\           \  \:\/:/~/:/  \  \:\/\__\/  |:|/:/\  \:\/:/ /:/
+//    \  \::/  \  \:\  /:/  \  \:\  ~~~\__\/  \:\           \  \::/ /:/    \__\::/   |  |:/:/  \  \::/ /:/
+//     \  \:\   \  \:\/:/    \  \:\         \  \:\           \__\/ /:/     /__/:/    |  |::/    \  \:\/:/
+//      \  \:\   \  \::/      \  \:\         \__\/             /__/:/      \__\/     |  |:/      \  \::/
+//       \__\/    \__\/        \__\/                           \__\/                 |__|/        \__\/
+//
+//*
+// @pattern Font Sizes
+// @group Helper
+//
+// The stylesheet exists as a single place to manage all font sizes. To use
+// a font size in your stylesheet, follow this procedure:
+//
+// 1. Add a well-named entry to the `$FONT-SIZES` map with the value set to
+//    the font size for that element.
+//
+// 2. If you wish to include a `font-size` declaration in your stylesheet,
+//    `@include font-size()`, passing it the name of the component to retrieve
+//    the font-size for.
+//
+// 3. Retrieving the actual font-size dimension (for example, to be used in a
+//    calculation to determine necessary padding) should be done by passing the
+//    same argument discussed above to the `font-size` *function*.
+
+
+
+$FONT_SIZES: (
+  heading-1: rem(36),
+  heading-2: rem(30),
+  heading-3: rem(24),
+  heading-4: rem(14),
+  heading-5: rem(20),
+  label: rem(16),
+  paragraph: rem(20),
+  paragraph-small: rem(18),
+  avatar: rem(20),
+  badge: 0.75em,
+  badge--standalone: rem(16),
+  code-block: rem(16),
+  code-block--condensed: rem(14),
+  list-heading: rem(20),
+  select: rem(16),
+  tablist: rem(16),
+  tablist--large: rem(24),
+  control: rem(18)
+);
+
+
+
+//*
+// Retrives the font-size for an element declared in the global
+// `$FONT_SIZES` map. This will not actually add a CSS rule — if you
+// would like the actual `font-size` rule to be printed, use the
+// `@mixin` version. Use this function when you want to retrive the font
+// size for use in other calculations.
+//
+// @param {String} $element - The element whose font-size should be retrieved.
+// @returns {Number}
+
+@function font-size($element) {
+  @return map-get($FONT-SIZES, $element);
+}
+
+
+
+//*
+// Retrives the font-size for an element declared in the global
+// `$FONT_SIZES` map **and** prints the `font-size` rule.
+//
+// @param {String} $element - The element whose font-size should be retrieved.
+//
+// @example
+// .type--heading-1 {
+//   @include font-size(heading-1); // => font-size: 2rem;
+// }
+
+@mixin font-size($element) {
+  font-size: font-size($element);
+}

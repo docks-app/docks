@@ -6,11 +6,11 @@ describe Docks::Containers::Variable do
   end
 
   let(:static_property) do
-    described_class.new(name: "bar", static: true, property: true)
+    described_class.new(name: "bar", static: true, property: true, for: "Foo")
   end
 
   let(:instance_property) do
-    described_class.new(name: "baz", static: false, property: true)
+    described_class.new(name: "baz", static: false, property: true, for: "Foo")
   end
 
   describe "#static?" do

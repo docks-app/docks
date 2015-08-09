@@ -1,0 +1,20 @@
+<%
+  tab.configure do |config|
+    config.defaults text: "Tab",
+                    active?: false,
+                    id: "tab",
+                    panel_id: "tab_panel",
+                    icon: nil
+
+    config.classes(base: "tablist__tab")
+    config.conditional_classes(if: :active?, base: "tablist__tab--is-active")
+  end
+%>
+
+<a class="<%= tab.classes_for(:base) %>" role="tab" tabindex="<%= tab.active? ? 0 : -1 %>" aria-controls="<%= tab.panel_id %>" href="#<%= tab.panel_id %>" id="<%= tab.id %>">
+  <% if tab.icon %>
+    <%= docks_icon(tab.icon, style: :stroke) %>
+  <% end %>
+
+  <span class="tablist__tab__text"><%= tab.text %></span>
+</a>

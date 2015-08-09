@@ -1,0 +1,40 @@
+<section class="section" id="<%= demo.component.symbol_id %>" data-private="<%= demo.component.private? %>">
+  <header class="content">
+    <div class="grid">
+      <div class="grid__item">
+        <h3 class="type type--heading type--heading-2">
+          <% if title = demo.component.title %>
+            <%= title %>
+          <% else %>
+            <span class="type--code"><%= demo.component.name %></span>
+          <% end %>
+        </h3>
+      </div>
+
+      <div class="grid__item grid__item--no-flex">
+        <div class="docks-button__container">
+          <div class="docks-button" data-xray-trigger="<%= demo.name %>">x-ray</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    <%
+      markup = render(inline: (demo.component.markup || demo.component.helper), layout: false)
+      code_details = []
+      code_details << { code: demo.component.helper, language: "erb", label: "Helper" } unless demo.component.helper.nil?
+      code_details << { code: markup, language: "html", label: "Markup" }
+      options = [demo.name].concat demo.joint_variations.map { |variant| variant.name }
+    %>
+
+    <%= docks_code_block(code: code_details, hideable?: true, full_width?: true, hidden?: true, options: options, id: demo.name, demo: demo) %>
+    <%#= docks_toggle_container variations: demo.select_variations(group_by_component: true), base_class: demo.component.name %>
+
+    <% if demo.component.description %>
+      <div class="content">
+        <div class="type-container">
+          <%= demo.component.description %>
+        </div>
+      </div>
+    <% end %>
+  </section>

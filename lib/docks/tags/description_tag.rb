@@ -41,6 +41,10 @@ module Docks
             recursive_markdown_description(value)
           end
         end
+
+        if symbol.respond_to?(:members)
+          symbol.members.each { |member| recursive_markdown_description(member) }
+        end
       end
 
       def associate_external_description_files(pattern)
@@ -58,12 +62,12 @@ module Docks
           remaining_description = slice_up_description_for_symbols(description, symbol.fetch(:states, []) + symbol.fetch(:variants, []))
           symbol.description ||= remaining_description
 
-        when Containers::Klass, Containers::Factory
-          remaining_description = slice_up_description_for_symbols(description, symbol.fetch(:properties, []) + symbol.fetch(:methods, []))
+        when Containers::Function
+          remaining_description = slice_up_description_for_symbols(description, symbol.fetch(:params, []) + symbol.members)
           symbol.description ||= remaining_description
 
-        when Containers::Function
-          remaining_description = slice_up_description_for_symbols(description, symbol.fetch(:params, []))
+        when Containers::Symbol
+          remaining_description = slice_up_description_for_symbols(description, symbol.members)
           symbol.description ||= remaining_description
 
         else

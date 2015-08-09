@@ -1,0 +1,19 @@
+.vertical-stack {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  width: 100%;
+}
+
+.vertical-stack__item {
+  flex: 1 1 0px;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vertical-stack__item--fixed {
+  flex: 0 0 auto;
+  overflow: visible;
+}

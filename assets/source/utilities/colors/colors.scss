@@ -1,0 +1,112 @@
+//*
+// @pattern Colors
+// @group Helper
+//
+// This stylesheet provides a centralized location to manage colors. Colors
+// should **never** be declared in CSS directly; instead, add the color to the
+// `$COLORS` map (following the "color-modifier" naming convention) and
+// then include it as required using the `color()` function described below.
+//
+// The color component also provides some utility methods to darken (`shade()`)
+// and lighten (`tint()`) colors — use these only for one-offs that are deemed
+// absolutely necessary. For variations that are used in multiple places, add
+// a new variation to the `$COLORS` map.
+
+
+$UI_COLORS: (
+  white: ( base: rgb(255, 255, 255) ),
+  black: ( base: rgb(30, 30, 31) ),
+
+  gray: (
+    light: rgb(242, 242, 243),
+    base: rgb(227, 228, 230),
+    dark: rgb(209, 211, 215),
+    darker: rgb(156, 157, 165),
+    darkest: rgb(110, 111, 122)
+  ),
+
+  yellow: (
+    base: rgb(253, 247, 175),
+    dark: rgb(133, 126, 50)
+  ),
+
+  blue: (
+    base: rgb(183, 214, 246),
+    dark: rgb(140, 194, 251),
+    darker: rgb(98, 121, 144)
+  )
+);
+
+@function ui-color($color, $shade: base) {
+  @return map-get(map-get($UI_COLORS, $color), $shade);
+}
+
+
+$COLORS: (
+  white: rgb(255, 255, 255),
+  black: rgb(30, 30, 31),
+
+  blue-light: rgb(135, 194, 235),
+  blue: rgb(65, 150, 223),
+  blue-dark: rgb(40, 134, 214),
+  blue-darker: rgb(26, 92, 171),
+
+  yellow: rgb(252, 246, 161),
+  yellow-dark: rgb(139, 134, 72),
+
+  slate-light: rgb(55, 57, 60),
+  slate: rgb(51, 54, 58),
+
+  gray-lighter: rgb(248, 248, 248),
+  gray-light: rgb(241, 241, 241),
+  gray: rgb(207, 207, 207),
+  gray-dark: rgb(177, 177, 177),
+  gray-darker: rgb(74, 74, 74)
+);
+
+
+//*
+// Returns the color associated with the passed identifier.
+//
+// @author Chris Sauve (github: lemonmade)
+//
+// @param {String} $color - The color (or other identifier that
+//                          maps to a color) to search for in the
+//                          global `$COLORS` map.
+//
+// @example scss
+// .foo {
+//   background: color(red); // => background: rgb(245, 79, 84);
+// }
+//
+// @returns {Color}
+
+@function color($color) {
+  @return map-get($COLORS, $color);
+}
+
+
+//*
+// Slightly lighten a color.
+//
+// @param {Color} $color - The color to tint.
+// @param {Number} $percentage - Percentage of `$color` in the returned color.
+//
+// @returns {Color}
+
+@function tint($color, $percentage) {
+  @return mix($color, color(white), $percentage);
+}
+
+
+//*
+// Slightly darken a color.
+//
+// @param {Color} $color - The color to shade.
+// @param {Number} $percentage - Percentage of `$color` in the returned color.
+//
+// @returns {Color}
+
+@function shade($color, $percentage) {
+  @return mix($color, color(black), $percentage);
+}

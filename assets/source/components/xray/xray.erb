@@ -1,0 +1,50 @@
+<div class="x-ray">
+  <header class="page-header">
+    <div class="grid grid--vertically-centered">
+      <div class="grid__item">
+        <h1 class="type type--heading type--heading-1"></h1>
+      </div>
+
+      <div class="grid__item grid__item--no-flex">
+        <button class="x-ray__closer" data-xray-dismiss="true">
+          <span class="helper--visually-hidden">Close X-ray</span>
+          <div class="icon icon--action icon--close"></div>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="x-ray__content">
+    <div class="x-ray__diagram">
+      <%= docks_exploded %>
+    </div>
+
+    <aside class="x-ray__list"></aside>
+    <div class="x-ray__details"></div>
+  </div>
+
+  <script type="text/template" data-xray-template="list">
+    <ul class="link-list"></ul>
+  </script>
+
+  <script type="text/template" data-xray-template="details">
+    <div class="content">
+      <div class="type type--heading type--heading-3">
+        <span class="x-ray__details__tagname type--code"></span>
+        <span class="x-ray__details__class type--code"></span>
+      </div>
+
+      <div class="type-container">
+        <div class="x-ray__details__description"></div>
+      </div>
+
+      <div class="x-ray__details__variations">
+        <h4 class="type type--heading type--heading-4">Variations</h4>
+        <div class="type-container type-container--small">
+          <ul class="unstyled-list"></ul>
+        </div>
+      </div>
+    </div>
+  </script>
+</div>
+

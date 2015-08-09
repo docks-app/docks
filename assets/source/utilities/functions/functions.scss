@@ -1,0 +1,127 @@
+//        ___      ___          ___          ___          ___
+//       /  /\    /__/\        /__/\        /  /\        /  /\
+//      /  /:/_   \  \:\       \  \:\      /  /:/       /  /:/_
+//     /  /:/ /\   \  \:\       \  \:\    /  /:/       /  /:/ /\
+//    /  /:/ /:/__  \  \:\  _____\__\:\  /  /:/  ___  /  /:/ /::\
+//   /__/:/ /:/__/\  \__\:\/__/::::::::\/__/:/  /  /\/__/:/ /:/\:\
+//   \  \:\/:/\  \:\ /  /:/\  \:\~~\~~\/\  \:\ /  /:/\  \:\/:/~/:/
+//    \  \::/  \  \:\  /:/  \  \:\  ~~~  \  \:\  /:/  \  \::/ /:/
+//     \  \:\   \  \:\/:/    \  \:\       \  \:\/:/    \__\/ /:/
+//      \  \:\   \  \::/      \  \:\       \  \::/       /__/:/
+//       \__\/    \__\/        \__\/        \__\/        \__\/
+//
+//*
+// @pattern Functions
+// @group Helper
+// @author Chris Sauve (github: lemonmade)
+//
+// Functions simply return a value: they don't actually add a any styles to
+// the compiled stylesheet. Use these to provide solutions to common calculations
+// or Sass operations.
+
+
+
+//*
+// Removes the units from a number.
+//
+// @deprecated 2.1.0
+// @private
+//
+// @param {Number} $value - The number (usually a measurement) that you would
+//                          like to remove units from.
+// @returns {Number}
+//
+// @example
+// $foo: strip-units(4rem); // => 4
+// $bar: strip-units(30%); // => 30
+
+@function strip-units($value) {
+  @return ($value / ($value*0 + 1));
+}
+
+//*
+// Converts the passed value (assumed to be in pixels) to the corresponding `rem`
+// value. This conversion assumes a base font size of `16px`.
+//
+// @param {Number} $value - The pixel value to convert.
+// @returns {Number}
+
+@function rem($value) {
+  @return (strip-units($value) / 16 * 1rem);
+}
+
+//*
+// Halves a given measurement.
+//
+// @param {Number} $measurement - The measurement to halve.
+// @returns {Number}
+// @alias half
+//
+// @example
+// $foo: halve(4rem); // => 2rem
+// $bar: half(36); // => 18
+
+@function halve($measurement) {
+  @return ($measurement / 2);
+}
+
+@function half($measurement) {
+  @return halve($measurement);
+}
+
+//*
+// Quarters a given measurement.
+//
+// @param {Number} $measurement - The measurement to quarter.
+// @returns {Number}
+//
+// @example
+// $foo: quarter(4rem); // => 1rem
+
+@function quarter($measurement) {
+  @return ($measurement / 4);
+}
+
+//*
+// Doubles a given measurement.
+//
+// @param {Number} $measurement - The measurement to double.
+// @returns {Number}
+//
+// @example
+// $foo: double(4rem); // => 8rem
+
+@function double($measurement) {
+  @return ($measurement * 2);
+}
+
+//*
+// Negates a given measurement.
+//
+// @param {Number} $measurement - The measurement to negate.
+// @returns {Number}
+//
+// @example
+// $foo: negative(4rem); // => -4rem
+// $bar: negative(-4rem); // => 4rem
+
+@function negative($measurement) {
+  @return ($measurement * -1);
+}
+
+//*
+// Multiples a given measurement by the provided factor. Use this in those
+// (rare) instances where you need a factor that is not `2`, `0.5`, `0.25`, or
+// `-1` (in which case, use the relevant multiplication function directly).
+//
+// @param {Number} $measurement - The measurement to multiple.
+// @param {Number} $factor      - The multiplication factor.
+// @returns {Number}
+//
+// @example
+// $foo: multiply(4rem, 3); // => 12rem
+// $bar: multiply(4rem, 2); // => 8rem BUT don't do this — use double(4rem) instead
+
+@function multiply($measurement, $factor) {
+  @return ($measurement * $factor);
+}

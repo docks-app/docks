@@ -1,0 +1,158 @@
+//                    ___        _____        ___          ___
+//       _____       /  /\      /  /::\      /  /\        /  /\
+//      /  /::\     /  /::\    /  /:/\:\    /  /:/_      /  /:/_
+//     /  /:/\:\   /  /:/\:\  /  /:/  \:\  /  /:/ /\    /  /:/ /\
+//    /  /:/~/::\ /  /:/~/::\/__/:/ \__\:|/  /:/_/::\  /  /:/ /:/_
+//   /__/:/ /:/\:/__/:/ /:/\:\  \:\ /  /:/__/:/__\/\:\/__/:/ /:/ /\
+//   \  \:\/:/~/:|  \:\/:/__\/\  \:\  /:/\  \:\ /~~/:/\  \:\/:/ /:/
+//    \  \::/ /:/ \  \::/      \  \:\/:/  \  \:\  /:/  \  \::/ /:/
+//     \  \:\/:/   \  \:\       \  \::/    \  \:\/:/    \  \:\/:/
+//      \  \::/     \  \:\       \__\/      \  \::/      \  \::/
+//       \__\/       \__\/                   \__\/        \__\/
+
+//*
+// @pattern Badge
+//
+// A badge is a small chunk of text in a colored box that denotes a particular
+// attribute about the interface element to which it is attached. When
+// additional explanatory text is required, use a `notice` instead — badges
+// should only ever be one word in length. It is appropriate to have multiple
+// badges attached to a single element if additional details about that
+// element need to be indicated.
+//
+// @since 1.0.0
+
+
+$badge--spacing: half(default(spacing));
+
+
+
+//*
+// The actual badge. Each badge provides spacing between itself and badges it
+// is next to, so they must be wrapped in a `badge__container` to remove any
+// excess outside spacing if you include more than a single badge.
+//
+// Because badges most often sit allongside other text, they are designed to
+// scale with the size of whatever container they are in. They will always be
+// slightly smaller than the text size of the content to which they are
+// attached such that the top and bottom of the badge approximately match the
+// ascenders/ descenders of the text.
+//
+// @markup
+// <div class="badge__container">
+//   <% 5.times do |i| %>
+//     <div class="badge">Badge <%= i + 1 %></div>
+//   <% end %>
+// </div>
+
+.badge {
+  // position
+  position: relative;
+
+  // box model
+  flex: 0 0 auto;
+  display: inline-block;
+  // A little extra bottom padding to make it look centered.
+  padding: 0.15em 0.5em 0.25em;
+
+  // backdrop
+  @include default(border-radius);
+  background-color: ui-color(gray, light);
+
+  // type
+  @include font-size(badge);
+  line-height: default(line-height);
+  vertical-align: middle;
+  color: ui-color(gray, darker);
+}
+
+//*
+// Use this badge variation when you are trying to indicate some sort of
+// warning to the user — for example, when the content to which this badge is
+// attached has been deprecated or has a common pitfall.
+//
+// @demo_type joint
+
+.badge--warning {
+  background-color: ui-color(yellow);
+  color: ui-color(yellow, dark);
+}
+
+//*
+// Use this badge variation when you are trying to indicate a new or updated
+// status for the attached content. For example, this badge might be used to
+// indicate something is in beta or has recently been upgraded or released.
+//
+// @demo_type joint
+
+.badge--new {
+  background-color: ui-color(blue);
+  color: ui-color(blue, darker);
+}
+
+//*
+// Use this badge variation when the attached content is meant to be
+// concealed, secret, or in some other way not intended to be used in the
+// average case. For example, this badge can be used to indicate that
+// something is private/ for internal use only.
+//
+// @demo_type joint
+
+.badge--secret {
+  background-color: ui-color(gray, darkest);
+  color: ui-color(gray);
+}
+
+//*
+// This variation is used to fix the vertical padding on badges that are meant
+// to contain content styled as code. Because the monospace font family has
+// different font properties, leaving the existing `padding`/ `line-height`
+// along results in the text sitting too closely to the top of the badge. This
+// fixes the problem using a very un-scientific redistribution of the
+// available padding.
+//
+// Note that, because the monospace font has more space allocated for each
+// character, a badge with this variant will be wider than one without it,
+// even if they have the same content.
+//
+// @demo_type select
+
+.badge--code {
+  // @include type--monospace-font-family;
+  padding-bottom: 0;
+  padding-top: 0.2em;
+}
+
+//*
+// A badge that is used on its own (that is, not beside other text, but may be
+// beside other buttons).
+//
+// @demo_type select
+
+.badge--standalone {
+  @include font-size(badge--standalone);
+}
+
+
+
+//*
+// This container should always be wrapped around a set of badges. It removes
+// any excess right and bottom margin (which every contained badge has to
+// allow for spacing between rows and columns of badges), while still allowing
+// the badges to break onto a new line if there is not enough space to contain
+// them all on a single line.
+//
+// If only a single badge exists, this container can be omitted.
+
+.badge__container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  margin-right: negative($badge--spacing) !important;
+  margin-bottom: negative($badge--spacing) !important;
+
+  > .badge {
+    margin-right: $badge--spacing;
+    margin-bottom: $badge--spacing;
+  }
+}

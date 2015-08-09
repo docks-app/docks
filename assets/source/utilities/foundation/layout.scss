@@ -1,0 +1,67 @@
+//                    ___                 ___          ___
+//                   /  /\        ___    /  /\        /__/\        ___
+//                  /  /::\      /__/|  /  /::\       \  \:\      /  /\
+//    ___     ___  /  /:/\:\    |  |:| /  /:/\:\       \  \:\    /  /:/
+//   /__/\   /  /\/  /:/~/::\   |  |:|/  /:/  \:\  ___  \  \:\  /  /:/
+//   \  \:\ /  /:/__/:/ /:/\:\__|__|:/__/:/ \__\:\/__/\  \__\:\/  /::\
+//    \  \:\  /:/\  \:\/:/__\/__/::::\  \:\ /  /:/\  \:\ /  /:/__/:/\:\
+//     \  \:\/:/  \  \::/       ~\~~\:\  \:\  /:/  \  \:\  /:/\__\/  \:\
+//      \  \::/    \  \:\         \  \:\  \:\/:/    \  \:\/:/      \  \:\
+//       \__\/      \  \:\         \__\/\  \::/      \  \::/        \__\/
+//                   \__\/               \__\/        \__\/
+
+.grid {
+  display: flex;
+}
+
+.grid--vertically-centered {
+  align-items: center;
+}
+
+.grid--align-right {
+  justify-content: flex-end;
+}
+
+.grid--outside-spacing {
+  margin: default(spacing) 0;
+  padding: 0 default(spacing);
+}
+
+.grid--space-between {
+  justify-content: space-between;
+
+  > .grid__item {
+    flex: 0 1 auto;
+  }
+}
+
+.grid__item {
+  padding: 0 (default(spacing) / 2);
+  flex: 1 1 0%;
+  display: flex;
+  align-items: center;
+
+  &:first-child { padding-left: 0; }
+  &:last-child { padding-right: 0; }
+}
+
+.grid__item--no-flex {
+  flex: 0 0 auto;
+}
+
+.grid__item--half {
+  flex: 0 0 50%;
+}
+
+
+
+
+
+.content {
+  padding: 0 default(spacing);
+  margin: default(spacing) 0;
+}
+
+.content--extra-vertical-spacing {
+  margin: multiply(default(spacing), 3) 0;
+}

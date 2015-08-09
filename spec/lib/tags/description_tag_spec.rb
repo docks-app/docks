@@ -125,7 +125,11 @@ describe Docks::Tags::Description do
 
         let(:method) { Docks::Containers::Function.new(name: "toggle") }
         let(:property) { Docks::Containers::Variable.new(name: "is_active") }
-        let(:klass) { Docks::Containers::Klass.new(name: name.capitalize, methods: [method], properties: [property]) }
+        let(:klass) do
+          klass = Docks::Containers::Klass.new(name: name.capitalize)
+          klass.add_members(method, property)
+          klass
+        end
 
         before(:each) do
           pattern.files = [description_file]

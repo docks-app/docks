@@ -1,0 +1,213 @@
+//                     ___                             ___          ___
+//       _____        /__/\         ___       ___     /  /\        /__/\
+//      /  /::\       \  \:\       /  /\     /  /\   /  /::\       \  \:\
+//     /  /:/\:\       \  \:\     /  /:/    /  /:/  /  /:/\:\       \  \:\
+//    /  /:/~/::\  ___  \  \:\   /  /:/    /  /:/  /  /:/  \:\  _____\__\:\
+//   /__/:/ /:/\:|/__/\  \__\:\ /  /::\   /  /::\ /__/:/ \__\:\/__/::::::::\
+//   \  \:\/:/~/:/\  \:\ /  /://__/:/\:\ /__/:/\:\\  \:\ /  /:/\  \:\~~\~~\/
+//    \  \::/ /:/  \  \:\  /:/ \__\/  \:\\__\/  \:\\  \:\  /:/  \  \:\  ~~~
+//     \  \:\/:/    \  \:\/:/       \  \:\    \  \:\\  \:\/:/    \  \:\
+//      \  \::/      \  \::/         \__\/     \__\/ \  \::/      \  \:\
+//       \__\/        \__\/                           \__\/        \__\/
+//
+//*
+// @pattern Buttons
+// @tagline Capture all the clicks.
+//
+// Buttons are what the user should press to initiate most actions. Actions
+// may take place on the page (for example, by activating a popover or x-ray
+// mode) or may send the user to another site to perform an action (the most
+// notable example of this are the buttons that send the user to Github). The
+// element on which to apply these classes will depend on whether the action
+// is internal or external to the page.
+//
+// @since 1.0.0
+
+
+
+$button--spacing: half(default(spacing));
+
+
+
+//*
+// @title Standard Buttons
+//
+// A standard button. This component normalizes the styles of both `button` and
+// `a` elements so that these classes can be placed on either one. If the action
+// is internal (i.e., doesn't require a `GET` request), use a `button`. If the
+// action does require a `GET`, use a URL. Never use an `a` tag with a blank
+// (or `"#"`) `href` attribute.
+//
+// Any variations on this button should ensure that they design and implement
+// designs for the `:focus` state, `:active` state, `:hover` state (optional),
+// and for icons with buttons (using a child selector to the `icon` component),
+// if adjustments to the contained icons are required.
+//
+// A single button can be included on its own, without any container. If
+// multiple buttons have to be placed beside each other, wrap all of the buttons
+// in a `docks-button__container`.
+//
+// @markup
+// <div class="docks-button__container">
+//   <button class="docks-button">button!</button>
+//
+//   <button class="docks-button">
+//     <%= docks_icon :github, size: :medium %>
+//     <span class="docks-button__text">icon + text</span>
+//   </button>
+//
+//   <button class="docks-button">
+//     <span class="docks-button__text">text + icon</span>
+//     <%= docks_icon :github, size: :medium %>
+//   </button>
+//
+//   <div class="docks-button__segmented-container">
+//     <button class="docks-button">Segment 1</button>
+//     <button class="docks-button">Segment 2</button>
+//   </div>
+// </div>
+
+.docks-button {
+  // box model
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 default(control-padding);
+
+  // backdrop
+  @include default(border-radius);
+  background-color: ui-color(gray, light);
+  border: none;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+
+  // type
+  // @include type--default-font-family;
+  @include font-size(control);
+  line-height: default(control-size);
+  color: ui-color(gray, darker);
+  vertical-align: middle;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:focus,
+  &:active {
+    background-color: ui-color(gray);
+    outline: none;
+  }
+
+  > *:first-child { margin-right: $button--spacing; }
+}
+
+//*
+// A slighter dark variation.
+
+.docks-button--dark {
+  background-color: ui-color(gray, dark);
+  color: ui-color(gray, darkest);
+
+  &:focus,
+  &:active {
+    background-color: ui-color(gray, dark);
+    color: ui-color(gray, darkest);
+  }
+}
+
+//*
+// A button that can no longer be pressed. Make sure to always also include the
+// `disabled` attribute on the actual `button` — this improves usability by
+// preventing the button from being tabbed to, and prevents any event handlers
+// on the `button` from running.
+//
+// @javascript_action this.classList.add("docks-button--is-disabled"); this.disabled = true
+
+.docks-button--is-disabled {
+  opacity: 0.3;
+}
+
+
+
+//*
+// A container for a collection of buttons that normalizes the margin on the
+// outside. This is necessary because each button inside the container has
+// right and bottom margin so that there is vertical and horizontal space
+// between each of any number of buttons.
+
+.docks-button__container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-right: negative($button--spacing) !important;
+  margin-bottom: negative($button--spacing) !important;
+
+  // Prevents margin from collapsing while still allowing overflow/
+
+  &:after { content: ""; display: table; }
+
+  // Allow for anything inside the container — this is useful for, for example,
+  // contained buttons that activate popovers and thus have popover containers
+  // around them.
+
+  > * {
+    flex: 0 0 auto;
+    margin-right: $button--spacing;
+    margin-bottom: $button--spacing;
+  }
+}
+
+//*
+// Use this container variation when you want all of the buttons inside the
+// container to consume an equal part of the total width available to the
+// container. Note that potentially-unexpected behavior may occur when the
+// buttons in this button group have a total intrinsic minimum width greater
+// than that of the container — buttons with smaller intrinsic widths in the
+// group will shrink as much as possible, and then buttons will start, one-by-one
+// as required, breaking onto additional lines (and filling them completely,
+// resulting in some buttons likely being larger than others).
+//
+// For the best results, try to have only two buttons side-by-side in a
+// container using this variant.
+
+.docks-button__container--fill-width {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  // For both buttons and non-button-ey things in button groups, like popover
+  // containers.
+
+  .docks-button,
+  > *:not(.docks-button) {
+    display: flex;
+    flex: 1 0 0%;
+    min-width: -webkit-min-content;
+    min-width: -moz-min-content;
+    min-width: min-content;
+  }
+}
+
+
+
+//*
+// The text for a button. This container is not necessary unless there is also
+// an icon in the button.
+
+.docks-button__text {}
+
+
+
+//*
+// A wrapper around buttons that causes them to look like one button segmented
+// into pieces.
+
+.docks-button__segmented-container {
+  display: inline-flex;
+
+  > .docks-button {
+    border-radius: 0;
+
+    &:not(:first-child) { border-left: none; }
+    &:first-child { border-radius: default(border-radius) 0 0 default(border-radius); }
+    &:last-child { border-radius: 0 default(border-radius) default(border-radius) 0; }
+  }
+}

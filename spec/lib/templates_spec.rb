@@ -81,10 +81,6 @@ describe Docks::Templates do
       expect(subject.template_for("bar").path).to eq "template_2"
     end
 
-    it "returns the demo template when the ID is :demo" do
-      expect(subject.template_for(:demo)).to eq subject.demo
-    end
-
     it "throws an error when no template matches the path" do
       expect { subject.search_for_template("fuzz") }.to raise_error Docks::NoTemplateError
     end
@@ -136,6 +132,18 @@ describe Docks::Templates do
   describe ".search_for_template" do
     it "does nothing when a non-string argument is passed" do
       expect(subject.search_for_template(false)).to be nil
+    end
+  end
+
+  describe ".last_template_update" do
+    before(:each) do
+      Docks.configure_with(root: File.expand_path("../../fixtures/renderers", __FILE__), library_assets: "")
+    end
+
+    it "returns the date of the most recently modified template" do
+      templates = Dir[Docks.config.library_assets + Docks.config.asset_folders.templates + "**/*.*"]
+      FileUtils.touch(templates.first)
+      expect(subject.last_template_update).to eq File.mtime(templates.first)
     end
   end
 end

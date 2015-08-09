@@ -14,7 +14,7 @@ module Docks
           else Docks::Types::Symbol::COMPONENT
         end
 
-        name = first_code_line.match(/^\s*&?[@\.#]?\s*([^\s\(\:]*)/).captures.first
+        name = first_code_line.match(/^\s*&?[\.#]?\s*(@?[^\s\(\:]*)/).captures.first
         { name: name, symbol_type: type }
       end
     end

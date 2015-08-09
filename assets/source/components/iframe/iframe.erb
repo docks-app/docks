@@ -1,0 +1,12 @@
+<%
+  iframe.configure do |config|
+    config.defaults(id: unique_iframe_id)
+  end
+
+  id = iframe.id
+%>
+
+<iframe class="iframe" data-iframe-id="<%= id %>" frameborder="0"></iframe>
+<script class="iframe__content" type="text/iframe-content">
+  <%= CGI.escapeHTML(docks_demo(iframe.demo, id: id)) %>
+</script>

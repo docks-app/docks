@@ -1,0 +1,230 @@
+//                               ___
+//                   ___        /  /\        ___
+//                  /  /\      /  /:/_      /  /\
+//    ___     ___  /  /:/     /  /:/ /\    /  /:/
+//   /__/\   /  /\/__/::\    /  /:/ /::\  /  /:/
+//   \  \:\ /  /:/\__\/\:\__/__/:/ /:/\:\/  /::\
+//    \  \:\  /:/    \  \:\/\  \:\/:/~/:/__/:/\:\
+//     \  \:\/:/      \__\::/\  \::/ /:/\__\/  \:\
+//      \  \::/       /__/:/  \__\/ /:/      \  \:\
+//       \__\/        \__\/     /__/:/        \__\/
+//                              \__\/
+
+//*
+// @pattern List
+//
+// A list allows you to present a set of selectable items vertically. These
+// lists can be be separated into any number of sublists, and two levels of
+// subheadings are available (so, you can have a sublist within a sublist).
+//
+// The sublists can optionally allow a subheading to toggle the visibility of
+// the associated sublist. It also supports the ability to filter the contents
+// of a list to only items matching a given string, hiding subheadings as
+// necessary.
+//
+// @since 1.0.0
+
+
+
+//*
+// The core container for a list. List items can go directly in this container
+// or, if you want to provide toggle-able or filter-able sublists, within a
+// sublist.
+
+.list {
+  padding: 0;
+  margin: default(spacing) 0 double(default(spacing));
+  list-style: none;
+
+  .type--heading {
+    padding-left: default(spacing);
+    padding-right: default(spacing);
+  }
+
+  .popover & {
+    margin-bottom: default(spacing);
+  }
+}
+
+//*
+// An individual item within a list. These items have hover, focus, and active
+// states so that it is clear what item is actionable/ being actioned.
+
+.list__item {
+  // box model
+  display: block;
+  padding: quarter(default(spacing)) default(spacing);
+
+  // backdrop
+  cursor: pointer;
+
+  // type
+  text-decoration: none;
+  color: ui-color(gray, darkest);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  &:hover,
+  &:focus {
+    outline: none;
+    background: ui-color(gray, light);
+  }
+
+  &:active {
+    background-color: ui-color(blue);
+    color: ui-color(blue, darker);
+  }
+}
+
+//*
+// An item that is currently active For example, in the sidebar, this class is
+// used for the item representing the currently-active pattern.
+
+.list__item--is-active {
+  &,
+  &:hover,
+  &:focus {
+    background-color: ui-color(blue);
+    color: ui-color(blue, darker);
+  }
+}
+
+//*
+// A list item that is indented on the left to indicate that it is related to
+// the closest, non-indented item above it.
+
+.list__item--indented {
+  padding-left: calc(#{default(spacing)} + 2ch);
+  position: relative;
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: calc(#{default(spacing)} + 1ch);
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: rgba(ui-color(black), 0.07);
+  }
+
+  &:last-child:before {
+    height: 85%;
+  }
+
+  .list__item:not(.list__item--indented) + &:before {
+    top: 15%;
+    height: 85%;
+  }
+}
+
+//*
+// A subset of items that have their own hading to distinguish them. This
+// subcomponent can contain any number of items and/ or other sublists. This
+// grouping also allows the [`Filterable`](@link filterable) component to
+// accurately hide subsets of the list, including headings within a group
+// where all items are hidden.
+
+.list__group {}
+
+
+
+//*
+// A horizontal list of links separated by slashes.
+
+.link-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+
+  > li {
+    position: relative;
+    flex: 0 0 auto;
+
+    &:after {
+      $link-list__item--separator-height: 80%;
+
+      content: "";
+
+      // position
+      position: absolute;
+      top: half(100% - $link-list__item--separator-height);
+      right: -1px;
+      transform: rotate(15deg);
+
+      // box model
+      display: block;
+      height: $link-list__item--separator-height;
+
+      // backdrop
+      border-right: 2px solid rgba(ui-color(gray, darkest), 0.1);
+    }
+
+    &:last-child:after {
+      display: none;
+      margin-right: 0;
+    }
+  }
+}
+
+//*
+// An individual list within a link list. This class should go on the actual
+// anchor (or `button`, if there is no reasonable `href`) element so that
+// there is as large a hit target as possible.
+//
+// Each item (except for the last one) is given a small separator so that it is
+// clear where the hit areas end. This is placed on the containing `li` since
+// the `link-list__item` can be a `button`.
+//
+// In the dark theme, the colors for each list item invert.
+
+.link-list__item {
+  // position
+  position: relative;
+
+  // box model
+  display: block;
+  cursor: pointer;
+  padding: quarter(default(spacing)) half(default(spacing));
+
+  // backdrop
+  @include remove-browser-styling;
+  background: none;
+  border: none;
+  opacity: 0.6;
+
+  // type
+  font-size: 1em;
+  line-height: 1;
+  color: ui-color(gray, darker);
+  transition: opacity 0.25s ease;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+    outline: none;
+  }
+}
+
+
+
+//*
+// A list that simply arranges the contained `li`s with some spacing between
+// them.
+
+.unstyled-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: double(default(spacing)) 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}

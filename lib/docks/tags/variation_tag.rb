@@ -6,6 +6,7 @@ module Docks
       def initialize
         @name = :variation
         @parseable = false
+        @multiple_allowed = true
       end
 
       def setup_post_processors

@@ -1,0 +1,191 @@
+//                ___                                             ___
+//        ___    /  /\        _____                   ___        /  /\        ___
+//       /  /\  /  /::\      /  /::\                 /  /\      /  /:/_      /  /\
+//      /  /:/ /  /:/\:\    /  /:/\:\  ___     ___  /  /:/     /  /:/ /\    /  /:/
+//     /  /:/ /  /:/~/::\  /  /:/~/::\/__/\   /  /\/__/::\    /  /:/ /::\  /  /:/
+//    /  /::\/__/:/ /:/\:\/__/:/ /:/\:\  \:\ /  /:/\__\/\:\__/__/:/ /:/\:\/  /::\
+//   /__/:/\:\  \:\/:/__\/\  \:\/:/~/:/\  \:\  /:/    \  \:\/\  \:\/:/~/:/__/:/\:\
+//   \__\/  \:\  \::/      \  \::/ /:/  \  \:\/:/      \__\::/\  \::/ /:/\__\/  \:\
+//        \  \:\  \:\       \  \:\/:/    \  \::/       /__/:/  \__\/ /:/      \  \:\
+//         \__\/\  \:\       \  \::/      \__\/        \__\/     /__/:/        \__\/
+//               \__\/        \__\/                              \__\/
+
+//*
+// @pattern Tablist
+//
+// Tablists are used to create groups of related content that is conditionally
+// shown or hidden based on the selected tab. The JavaScript part of this
+// components ensures that the required accessibility-related markup is added
+// to the tabs, and a number of different styles are available depending on
+// the context in which the tabs are being used.
+//
+// @since 1.0.0
+
+//*
+// The container for a set of tabs. While panels and tabs both use `tablist`
+// as their base component, only `tablist__tab`s are child nodes of this
+// component; `tablist__panel`s (and their container) are separate from the
+// document to allow tabs to move around the page independently of the content
+// they actually activate.
+//
+// The `tablist--manages-url` variant is unique in that it has no visual
+// differences, but will preserve the selected tab via a query string parameter
+// and restore the selected tab on subsequent page loads. To add this
+// functionality, simply pass `true` for the `:manage_url` option of the
+// `docks_tablist` view helper.
+//
+// @helper docks_tablist
+
+.tablist {
+  // box model
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  padding: half(default(spacing));
+  margin-right: negative(half(default(spacing)));
+
+  // backdrop
+  list-style: none;
+}
+
+//*
+// A larger set of tabs (both in terms of the font size of the tabs and the
+// padding within each tab).
+//
+// @set_by :size (:large)
+
+.tablist--large {
+  margin: double(default(spacing)) 0;
+
+  > .tablist__tab {
+    @include font-size(tablist--large);
+    line-height: 1;
+    padding: default(spacing) multiply(default(spacing), 2.5) multiply(default(spacing), 1.2);
+    border: none !important;
+    opacity: 1 !important;
+  }
+
+  > .tablist__tab--is-active {
+    background-color: ui-color(gray, light);
+  }
+}
+
+//*
+// A variation of the tablist that forces the JavaScript to preserve the
+// selected tab and reload that tab on subsequent page loads.
+//
+// @demo_type none
+// @set_by :manage_url
+
+.tablist--manages-url {}
+
+
+
+
+//*
+// A single tab in the tablist. Tabs will be a relatively light color by
+// default with progressively darker shades used on `:focus`/`:hover` and when
+// `:active`.
+//
+// Tabs should still work even when there is no JavaScript or CSS. To make this
+// work, ensure that each `tablist__tab` is an `a` tag with an `href` that
+// points to the `id` of the relevant `tablist__panel`. Likewise, the `id`s of
+// the tab and panel should match up vai the `aria-controls` and
+// `aria-labelledby` properties. The JavaScript component, if run, will
+// guarantee all of these associations.
+//
+// @helper docks_tablist_tab
+
+.tablist__tab {
+  // box model
+  display: inline-block;
+  padding: 0 default(control-padding);
+
+  // backdrop
+  opacity: 0.3;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: default(border-radius);
+  transition: opacity 0.3s ease, border-color 0.3s ease;
+
+  // type
+  @include font-size(control);
+  line-height: default(control-size);
+  color: ui-color(gray, darker);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &:focus,
+  &:hover {
+    outline: none;
+    opacity: 0.5;
+  }
+
+  > .icon {
+    height: double(default(spacing));
+    width: double(default(spacing));
+    @include icon--recolor(gray, dark);
+    stroke-width: 3px;
+  }
+}
+
+//*
+// The variation added to the tab whose corresponding tab is currently
+// visible. This class can either be applied manually by setting the `:active?`
+// argument to the helper method to `true` or by clicking on the correct tab
+// (which does all the required attribute manipulations through the JavaScript
+// component).
+//
+// @demo_type none
+// @set_by :active?
+
+.tablist__tab--is-active {
+  &, &:hover, &:focus {
+    border-color: ui-color(gray, darker);
+    opacity: 1;
+  }
+}
+
+//*
+// The text within a tab. This container is required in order for the text and
+// (optional) icon to be above one another.
+
+.tablist__tab__text {
+  display: block;
+}
+
+
+
+//*
+// A panel that contains the content that should be shown when the associated
+// tab is active.
+//
+// @helper docks_tablist_panel
+
+.tablist__panel {
+  display: none;
+}
+
+//*
+// A state indicating that the associated tab is active and the contents of
+// this panel should be made visible. There is no animation when switching
+// between tabs — they simply pop in and out of view.
+//
+// @demo_type none
+// @set_by :active?
+
+.tablist__panel--is-active {
+  display: block;
+}
+
+
+
+//*
+// A container around all of the panels for a tablist. This container
+// technically does nothing, but is a nice way to isolate a set of tab panels
+// from the surrounding content.
+
+.tablist__panel-container {}

@@ -1,4 +1,5 @@
 require "set"
+require "tempfile"
 
 module Docks
   class Builder
@@ -19,7 +20,6 @@ module Docks
 
     def self.build
       prepare_destination
-
       Messenger.file_header("Assets:")
       copy_library_assets
 
@@ -29,11 +29,10 @@ module Docks
     end
 
     def self.setup(options)
-      @template_dir = File.expand_path("../../template", __FILE__)
+      @template_dir = File.expand_path("../../../assets", __FILE__)
       @assets_dir = File.join(Dir.pwd, Docks::ASSETS_DIR)
       FileUtils.mkdir_p(@assets_dir)
 
-      setup_images
       setup_config(options[:config_type])
       setup_styles(options[:style_preprocessor])
       setup_scripts(options[:script_language])
@@ -42,31 +41,6 @@ module Docks
 
     def self.prepare_destination
       FileUtils.mkdir_p(Docks.config.destination + Docks.config.mount_at)
-    end
-
-    def self.copy_library_assets
-      library_assets_dir = Docks.config.library_assets
-      Dir[library_assets_dir + "**/*.{css,html,js,svg,png,jpg,gif}"].each do |file|
-        matching_destination = Docks.config.destination +
-                               File.dirname(file)
-                                   .gsub(library_assets_dir.to_s, "")
-                                   .sub(%r{^\/}, "")
-
-        FileUtils.mkdir_p(matching_destination)
-        copy_library_asset_file(file, matching_destination)
-      end
-    end
-
-    def self.copy_library_asset_file(file, destination)
-      copied_file = destination + File.basename(file)
-      update = File.exist?(copied_file)
-      FileUtils.cp(file, destination)
-
-      file = copied_file.to_s
-                        .gsub(Docks.config.destination.dirname.to_s, "")
-                        .sub(%r{^\/}, "")
-
-      Messenger.file(file, update ? :updated : :created)
     end
 
     def self.render_patterns
@@ -78,6 +52,37 @@ module Docks
       end
 
       rendered_patterns
+    end
+
+    def self.copy_library_assets
+      return unless Docks.config.copy_bundled_assets
+
+      Assets.styles.each do |style|
+        destination = Docks.config.destination + Docks.config.asset_folders.styles + copied_name_for(style)
+        copy_library_asset_file(style, destination)
+      end
+
+      Assets.scripts.each do |script|
+        destination = Docks.config.destination + Docks.config.asset_folders.scripts + copied_name_for(script)
+        copy_library_asset_file(script, destination)
+      end
+    end
+
+    def self.copy_library_asset_file(file, destination)
+      update = File.exist?(destination)
+      return if update && FileUtils.identical?(file, destination)
+      FileUtils.mkdir_p(File.dirname(destination)) unless update
+      FileUtils.cp(file, destination.to_s)
+
+      file = destination.to_s
+                        .gsub(Docks.config.destination.dirname.to_s, "")
+                        .sub(%r{^\/}, "")
+
+      Messenger.file(file, update ? :updated : :created)
+    end
+
+    def self.copied_name_for(asset)
+      File.basename(asset).sub(/pattern[\-_]library/, "docks")
     end
 
     def self.render_pattern(pattern, pattern_library)
@@ -93,16 +98,26 @@ module Docks
       html_file = directory + "index.html"
       update = File.exist?(html_file)
       Docks.current_render_destination = html_file.dirname
-      FileUtils.mkdir_p(directory)
 
-      File.open(html_file, "w") do |file|
+      file = Tempfile.new(pattern.name)
+
+      begin
         file.write renderer.render template,
                                    layout: layout,
                                    locals: { pattern: pattern, pattern_library: pattern_library }
-      end
 
-      Messenger.file(html_file, update ? :updated : :created)
-      true
+        file.close
+        unless update && FileUtils.identical?(html_file, file.path)
+          FileUtils.mkdir_p(directory)
+          FileUtils.cp_r(file.path, html_file)
+          Messenger.file(html_file, update ? :updated : :created)
+        end
+
+        true
+      ensure
+        file.close
+        file.unlink
+      end
     end
 
     def self.template_details(pattern)
@@ -123,12 +138,6 @@ module Docks
       end
     end
 
-    def self.setup_images
-      images_dir = File.join(@assets_dir, Docks.config.asset_folders.images)
-      FileUtils.mkdir_p(images_dir)
-      FileUtils.cp_r(Dir[File.join(@template_dir, "assets/images/*")], images_dir)
-    end
-
     def self.setup_config(config_type)
       FileUtils.cp(Dir[File.join(@template_dir, "config", config_type, "*")].first, Dir.pwd)
     end
@@ -137,8 +146,7 @@ module Docks
       styles_dir = File.join(@assets_dir, Docks.config.asset_folders.styles)
       FileUtils.mkdir_p(styles_dir)
 
-      FileUtils.cp_r(Dir[File.join(@template_dir, "assets/styles/*.css")], styles_dir)
-      FileUtils.cp_r Dir[File.join(@template_dir, "assets/styles", style_ext, "*")],
+      FileUtils.cp_r Dir[File.join(@template_dir, "styles", style_ext, "*")],
                      styles_dir
     end
 
@@ -146,18 +154,14 @@ module Docks
       script_dir = File.join(@assets_dir, Docks.config.asset_folders.scripts)
       FileUtils.mkdir_p(script_dir)
 
-      FileUtils.cp_r(
-        Dir[File.join(@template_dir, "assets/scripts", script_language, "*")],
-        script_dir
-      )
-
-      FileUtils.cp_r(Dir[File.join(@template_dir, "assets/scripts/*.js")], script_dir)
+      FileUtils.cp_r Dir[File.join(@template_dir, "scripts", script_language, "*")],
+                     script_dir
     end
 
     def self.setup_templates(template_language)
       markup_dir = File.join(@assets_dir, Docks.config.asset_folders.templates)
       FileUtils.mkdir_p(markup_dir)
-      FileUtils.cp_r Dir[File.join(@template_dir, "assets", "templates", template_language, "*")],
+      FileUtils.cp_r Dir[File.join(@template_dir, "templates", template_language, "*")],
                      markup_dir
     end
   end

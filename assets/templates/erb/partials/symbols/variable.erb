@@ -1,0 +1,51 @@
+<div class="section" id="<%= variable.symbol_id %>" data-private="<%= variable.private? %>">
+  <header>
+    <div class="inline-group">
+      <div class="inline-group__item">
+        <h3 class="type type--heading type--heading-3">
+          <span class="type--code"><%= variable.name %></span>
+        </h3>
+      </div>
+
+      <% if variable.private? || variable.deprecated %>
+        <div class="inline-group__item">
+          <div class="badge__container">
+            <% if variable.private? %>
+              <span class="badge badge--standalone badge--secret">private</span>
+            <% end %>
+
+            <% if variable.deprecated %>
+              <span class="badge badge--standalone badge--warning">deprecated</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="type-container"><%= variable.description %></div>
+
+  <% if type = variable.type %>
+    <h4 class="type type--heading type--heading-4">Type</h4>
+
+    <a href="<%= docks_path(type, language: variable.source.language_code) %>"><code class="type--code"><%= type %></code></a>
+  <% end %>
+
+  <% { "properties" => "variable", "methods" => "function" }.each do |prop, partial| %>
+    <% unless (props = variable.send(prop.to_sym)).empty? %>
+      <h4 class="type type--heading type--heading-4"><%= prop.capitalize %></h4>
+
+      <% props.each do |a_prop| %>
+        <% locals = {} %>
+        <% locals[partial.to_sym] = a_prop %>
+
+        <%= render partial: "symbols/#{partial}", locals: locals %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if value = variable.value %>
+    <h4 class="type type--heading type--heading-4">Value</h4>
+    <code class="type--code"><%= value %></code>
+  <% end %>
+</div>

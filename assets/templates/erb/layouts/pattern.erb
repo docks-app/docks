@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= docks_stylesheet %>
+    <%= compiled_style_tags %>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  </head>
+
+  <body>
+    <%= docks_icons %>
+
+    <div class="page">
+      <div class="page__sidebar">
+        <%= render "sidebar" %>
+      </div>
+
+      <div class="page__content">
+        <div class="vertical-stack">
+          <div class="vertical-stack__item vertical-stack__item--fixed">
+            <div class="page-header">
+              <div class="grid grid--vertically-centered">
+                <div class="grid__item grid__item--no-flex">
+                  <button class="sidebar__toggler">
+                    <span class="helper--visually-hidden">Toggle Sidebar</span>
+                    <div class="icon icon--action icon--hamburger">
+                      <div class="icon--hamburger__slice"></div>
+                    </div>
+                  </button>
+                </div>
+
+                <div class="grid__item">
+                  <h1 class="type type--heading type--heading-1"><%= @pattern.title %></h1>
+                </div>
+
+                <% if has_github? %>
+                  <div class="popover__container">
+                    <button class="docks-button docks-button--dark">
+                      Github
+                      <i class="icon icon--disclosure"></i>
+                    </button>
+
+                    <% docks_popover do %>
+                      <div class="list">
+                        <a href="<%= "#{github_root_url}/issues/new?body=#{url_encode(github_issue_message)}" %>" target="_blank" class="list__item">File an issue</a>
+
+                        <div class="list__group">
+                          <h4 class="type type--heading type--heading-4">View source</h4>
+                          <% relative_pattern_files.each do |file| %>
+                            <a href="<%= github_url(file) %>" target="_blank" class="list__item type--code"><%= File.basename(file) %></a>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="vertical-stack__item">
+            <main class="scroll-container"><%= yield %></main>
+          </div>
+        </div>
+
+        <%= docks_xray %>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      window.pattern = <%= json_escape(@pattern.to_json) %>;
+    </script>
+
+    <%= docks_javascript %>
+    <%= compiled_script_tags %>
+  </body>
+</html>

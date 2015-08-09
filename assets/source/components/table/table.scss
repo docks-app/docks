@@ -1,0 +1,236 @@
+//                ___                                  ___
+//        ___    /  /\        _____                   /  /\
+//       /  /\  /  /::\      /  /::\                 /  /:/_
+//      /  /:/ /  /:/\:\    /  /:/\:\  ___     ___  /  /:/ /\
+//     /  /:/ /  /:/~/::\  /  /:/~/::\/__/\   /  /\/  /:/ /:/_
+//    /  /::\/__/:/ /:/\:\/__/:/ /:/\:\  \:\ /  /:/__/:/ /:/ /\
+//   /__/:/\:\  \:\/:/__\/\  \:\/:/~/:/\  \:\  /:/\  \:\/:/ /:/
+//   \__\/  \:\  \::/      \  \::/ /:/  \  \:\/:/  \  \::/ /:/
+//        \  \:\  \:\       \  \:\/:/    \  \::/    \  \:\/:/
+//         \__\/\  \:\       \  \::/      \__\/      \  \::/
+//               \__\/        \__\/                   \__\/
+
+//*
+// @pattern Table
+//
+// Tables are used to present tabular data only — never for layout! These tables
+// are smarter than the average table, however. They will determine their
+// intrinsic size (up to a stylesheet-specified maximum) and, when the space
+// available to them is less than that size, they will begin to scroll.
+//
+// As you scroll, the first column will stay fixed, so you always have context,
+// and the any given column will always be small enough to be fully visible. Not
+// only that, but the table provides both keyboard input and interface elements
+// that allow you to quickly shift to overscrolled columns.
+//
+// @since 1.0.0
+
+
+
+$table--border: 1px solid color(gray-light);
+$table--border-radius: double(default(border-radius));
+$table--box-shadow-size: 3px 0 4px -1px;
+
+
+
+//*
+// A smarter `table` element. The `min-width` placed here will not actually
+// be the minimum width of the rendered table; the provided minimum width will
+// instead be used as the maximum width allowed in determining the preferred/
+// intrinsic size of the table cells. That is, a table whose natural size is
+// less than this amount will not overflow until the space it has is less than
+// its intrinsic size, where a table with large cells will overflow at the
+// provided `min-width` breakpoint.
+//
+// Visually, all tables will be 100% width. As noted above, tables will overflow
+// once the lesser of the `min-width` below or the intrisic size of the table
+// is reached. This overflowing is managed by the JavaScript component.
+//
+// @helper docks_table
+
+.table {
+  width: 100%;
+  min-width: rem(500);
+
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+
+
+//*
+// The outermost wrapper around a table. This wrapper is used to signal to the
+// entire component when the table is in overflow (via the
+// `table__container--is-overflowing` state). Doing so on the outmost container
+// allows adjustments to both the table itself and the `table__actions`.
+//
+// In addition, `table__containers` will automatically create the required
+// space between themselves and other content.
+
+.table__container {
+  margin: default(spacing) auto;
+}
+
+//*
+// Signals to the `table` that it should force the first cell in each row
+// to float about the rest of the rows (the required left padding on the
+// second cell in each row to account for the absolutely-positioned first cell
+// is done automatically by the JavaScript side of things, as is the
+// equalization of all of the first cells' widths). Additionally, this
+// state causes the `table__actions` to be made visible.
+//
+// @set_by Table#check_for_overflow
+// @demo_type none
+
+.table__container--is-overflowing {
+  .table__cell:first-child {
+    position: absolute;
+    @include z-index(cell-persistant, table);
+    left: 0;
+
+    height: 100%;
+
+    // Start box shadow as transparent so it can be animated into view when
+    // the table is actually being scrolled.
+    box-shadow: $table--box-shadow-size rgba(color(black), 0);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .table__actions {
+    transform: translateY(0);
+    max-height: 3rem;
+    padding-bottom: half(default(spacing));
+  }
+}
+
+
+
+//*
+// A wrapper around the `table` that allows it to scroll when the minimum
+// width of its columns (their intrinsic width or their width when the table
+// is larger than the `min-width` set on `table`) is larger than the space
+// available to this container.
+
+.table__scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+//*
+// The state that is added by the JavaScript component when the table is
+// overflowed **and** the scroll position of this subcomponent is not fully
+// pinned to the left.
+//
+// @set_by Table#handle_scroll, Table#shift_table
+
+.table__scroller--is-scrolled {
+  .table__cell:first-child {
+    box-shadow: $table--box-shadow-size rgba(color(black), 0.1);
+  }
+}
+
+
+
+//*
+// The wrapper around a `table` that provides a few visual pieces. Most
+// noticeably, this adds the border and border radius on the outside of the
+// table. These pieces must be on this container rather than the
+// `table__container` subcomponent because it should only wrap around the
+// `table`, and not the `table__actions`. These rules can't be on the
+// `table__scroller` subcomponent, either, because it must be `overflow: hidden`
+// (to hide the parts outside the rounded corners), where the scroller must
+// be allowed to scroll.
+//
+// More importantly, however, this container is `position: relative` and, as
+// such, acts as the element against which the persistant cells are
+// positioned. These rules can't be on the `table__scroller` because it scrolls,
+// where the persistant cells should be fixed even as the rest of the table
+// scrolls.
+
+.table__backdrop {
+  // position
+  position: relative;
+  @include z-index(backdrop, table);
+
+  // box model
+  max-width: 100%;
+  clear: both;
+
+  // backdrop
+  overflow: hidden;
+  border: $table--border;
+  border-radius: $table--border-radius;
+}
+
+
+
+//*
+// A container around the actions that can be performed on the `table`. For now,
+// this includes only the segmented button to shift the table right/ left by
+// one column.
+
+.table__actions {
+  transform: translateY(140%);
+  max-height: 0;
+  float: right;
+
+  transition: transform 0.3s $bouncy-transition,
+              max-height 0.3s ease,
+              padding-bottom 0.3s ease;
+}
+
+
+
+//*
+// The header row of the table.
+
+.table__header {
+  font-weight: 400;
+  padding: 0;
+  text-align: left;
+}
+
+
+
+//*
+// The container around the rows that make up the body of the table.
+
+.table__body {
+  // Striped rows!
+  > .table__row:nth-child(odd) > .table__cell {
+    background-color: color(gray-lighter);
+  }
+}
+
+
+
+//*
+// A row of table cells.
+
+.table__row {
+  // Hide the overflow so that box shadows on persistant cells don't bleed
+  // between rows.
+  overflow: hidden;
+}
+
+
+
+//*
+// An individual table cell.
+
+.table__cell {
+  position: relative;
+  @include z-index(cell, table);
+  vertical-align: top;
+  padding: half(default(spacing));
+  background-color: color(white);
+}
+
+//*
+// A table cell with center-aligned text.
+
+.table__cell--centered {
+  text-align: center;
+}

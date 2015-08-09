@@ -1,0 +1,200 @@
+//        ___                     ___                 ___          ___
+//       /  /\        ___        /  /\        ___    /  /\        /  /\
+//      /  /::\      /__/\      /  /::\      /  /\  /  /::\      /  /::\
+//     /  /:/\:\     \  \:\    /  /:/\:\    /  /:/ /  /:/\:\    /  /:/\:\
+//    /  /:/~/::\     \  \:\  /  /:/~/::\  /  /:/ /  /:/~/::\  /  /:/~/:/
+//   /__/:/ /:/\:\___  \__\:\/__/:/ /:/\:\/  /::\/__/:/ /:/\:\/__/:/ /:/___
+//   \  \:\/:/__\/__/\ |  |:|\  \:\/:/__\/__/:/\:\  \:\/:/__\/\  \:\/:::::/
+//    \  \::/    \  \:\|  |:| \  \::/    \__\/  \:\  \::/      \  \::/~~~~
+//     \  \:\     \  \:\__|:|  \  \:\         \  \:\  \:\       \  \:\
+//      \  \:\     \__\::::/    \  \:\         \__\/\  \:\       \  \:\
+//       \__\/         ~~~~      \__\/               \__\/        \__\/
+
+//*
+// @pattern Avatar
+//
+// A small image representing someone associated with this project. The script
+// part of this component allows it to fetch avatar images from Github, Twitter,
+// or Gravatar, depending on the information provided. If no images are found
+// for the avatar, it will fall back to displaying their initials.
+//
+// @since 1.0.0
+
+//*
+// The size (height and width) of an `avatar`.
+// @type Length
+
+$avatar--size: 3rem;
+
+//*
+// The margin that should appear between two `avatar`s (including those on a
+// new line).
+// @type Length
+
+$avatar--spacing: half(default(spacing));
+
+//*
+// The core container for a single avatar. An avatar supports fetching of the
+// background image through either a [Github](http://github.com) profile name,
+// a [Twitter](http://twitter.com) username, or an email address that is
+// associated with a [Gravatar](http://gravatar.com) account. If any of the
+// above are given, clicking on the avatar will open a tab with the relevant
+// profile page open (or, compose a new email if email was the provided
+// identifier). If none of the above are given, the initials of the user's name
+// will be shown.
+//
+// @helper
+// <% docks_component("avatar:container") do %>
+//   <%= docks_component("avatar", author: OpenStruct.new(name: "Chris Sauve", github: "lemonmade")) %>
+// <% end %>
+
+.avatar {
+  // position
+  @include z-index(avatar, page);
+  position: relative;
+
+  // box model
+  flex: 0 0 auto;
+  display: inline-block;
+
+  // backdrop
+  background-color: color(gray-light);
+  border-radius: default(border-radius);
+  overflow: hidden;
+
+  // type
+  @include font-size(avatar);
+}
+
+//*
+// A container that shows the initals of the user. This will always be present
+// so that it is visible immediately on page load. The avatar image, which is
+// fetched by JavaScript, will be faded in over top of this subcomponent, if
+// available.
+//
+// Every initial of the passed name will be shown. There is enough space for
+// 2–3 initials, but any more than this will overflow the avatar. As such,
+// please restrict names to first and last or first, middle, and last.
+
+.avatar__initials {
+  // position
+  @include z-index(initials, avatar);
+  position: absolute;
+  top: 50%; left: 0;
+
+  // box model
+  width: 100%;
+  transform: translateY(-50%);
+
+  // backdrop
+  color: color(gray);
+
+  // type
+  font-size: 1em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+//*
+// The container for the avatar image. The image will be set by JavaScript as
+// a background image on this subcomponent, so if no image is provided this
+// container will effectively be invisible. Once the background image is
+// fetched (which will be done with a slight delay to prevent too much from
+// happening on page load), it is faded into place using the
+// `avatar__image--is-visible` state.
+
+.avatar__image {
+  // position
+  @include z-index(image, avatar);
+  position: relative;
+
+  // box model
+  height: $avatar--size;
+  width: $avatar--size;
+
+  // backdrop
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+//*
+// The variation that causes the image to be faded into view.
+//
+// @demo_type none
+// @set_by Avatar#show_image
+
+.avatar__image--is-visible {
+  opacity: 1;
+}
+
+//*
+// Creates the rules that are required to restrict an `avatar__container` to
+// a particular number of `avatar`s per line.
+//
+// @param {Number} $n - The maximum number of `avatar`s allowed per line.
+
+@mixin avatar--restrict-to-n-avatars($n) {
+  max-width: (($n * $avatar--size) + ($n * $avatar--spacing));
+}
+
+//*
+// The container around a set of avatars. This container is important because it
+// eliminates the excess margin below and to the right of `avatar`s on the
+// outside edges of the container, but still allows them to be properly spaced
+// out horizontally and vertically. This is accomplished using negative margin
+// on the bottom and right to offset the margin of the contained `avatar`s.
+//
+// This container allows three avatars side-by-side, with additional avatars
+// breaking onto a new line. If you only need a single avatar, this container
+// is not necessary.
+//
+// You can create this component using the `"avatar:container"` helper. this
+// helper allows you to specify the size of the container:
+//
+// ```erb_demo
+// <div>
+//   <% docks_component("avatar:container") do %>
+//     <% 4.times do %>
+//       <%= docks_component("avatar", author: OpenStruct.new(name: "Chris Sauve", github: "lemonmade")) %>
+//     <% end %>
+//   <% end %>
+// </div>
+//
+// <div>
+//   <% docks_component("avatar:container", size: :large) do %>
+//     <% 4.times do %>
+//       <%= docks_component("avatar", author: OpenStruct.new(name: "Chris Sauve", github: "lemonmade")) %>
+//     <% end %>
+//   <% end %>
+// </div>
+// ```
+
+.avatar__container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  margin-right: negative($avatar--spacing) !important;
+  margin-bottom: negative($avatar--spacing) !important;
+  @include avatar--restrict-to-n-avatars(3);
+
+  > .avatar {
+    margin-right: $avatar--spacing;
+    margin-bottom: $avatar--spacing;
+  }
+}
+
+//*
+// A container that can hold more `avatar`s on a single line (four, instead of
+// the base three). Use this for situations in which you have more room
+// available for ancillary information like contributor information.
+//
+// @set_by :size (:large)
+
+.avatar__container--large {
+  @include avatar--restrict-to-n-avatars(4);
+}

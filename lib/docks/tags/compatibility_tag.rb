@@ -3,7 +3,7 @@ module Docks
     class Compatibility < Base
       def initialize
         @name = :compatibility
-        @synonyms = [:compatible_with]
+        @synonyms = [:compatible_with, :support]
         @multiline = false
         @multiple_allowed = true
       end

@@ -1,0 +1,101 @@
+.field {
+  @include default(border-radius);
+  background-color: ui-color(gray, dark);
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0 half(default(spacing));
+}
+
+$field--switch--size: multiply(1.5, default(spacing));
+
+.field--switch {
+  padding: 0;
+  background-color: transparent;
+  position: relative;
+
+  > .label {
+    margin: 0;
+    padding-left: multiply(1.5, $field--switch--size);
+    position: relative;
+    line-height: $field--switch--size;
+    color: ui-color(gray, darkest);
+
+    &:after {
+      content: '';
+      display: block;
+      height: multiply($field--switch--size, 0.7);
+      width: multiply(0.3, $field--switch--size);
+      position: absolute;
+      top: half($field--switch--size);
+      left: half($field--switch--size);
+      border-bottom: 2px solid ui-color(blue, darker);
+      border-right: 2px solid ui-color(blue, darker);
+      transform: translate(-50%, -60%) rotate(45deg);
+      display: none;
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      height: $field--switch--size;
+      width: $field--switch--size;
+      background: ui-color(gray);
+      position: absolute;
+      top: 0; left: 0;
+      @include default(border-radius);
+    }
+  }
+
+  > .field__switch:checked + .label:before {
+    background: ui-color(blue);
+  }
+
+  > .field__switch:checked + .label:after {
+    display: block;
+  }
+
+  > .field__switch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.1;
+  }
+
+  + .field--switch {
+    margin-top: default(spacing);
+  }
+}
+
+.field__icon {
+  flex: 0 0 auto;
+  font-size: 0;
+
+  > .icon {
+    @include icon--recolor(gray, darker);
+  }
+}
+
+.field__input {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  line-height: default(control-size);
+  font-size: 1.1rem;
+  @include type--default-font-family;
+
+  &::-webkit-input-placeholder {
+    color: rgba(ui-color(gray, darker), 0.5);
+  }
+
+  &::placeholder {
+    color: rgba(ui-color(gray, darker), 0.5);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+

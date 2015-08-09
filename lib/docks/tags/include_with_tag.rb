@@ -50,6 +50,7 @@ module Docks
       def initialize
         @name = :included_symbol
         @parseable = false
+        @multiple_allowed = true
       end
     end
   end

@@ -1,0 +1,99 @@
+//        ___          ___          ___                          ___          ___
+//       /  /\        /  /\        /  /\        ___  ___        /  /\        /__/\
+//      /  /:/_      /  /:/_      /  /:/       /  /\/  /\      /  /::\       \  \:\
+//     /  /:/ /\    /  /:/ /\    /  /:/       /  /:/  /:/     /  /:/\:\       \  \:\
+//    /  /:/ /::\  /  /:/ /:/_  /  /:/  ___  /  /:/__/::\    /  /:/  \:\  _____\__\:\
+//   /__/:/ /:/\:\/__/:/ /:/ /\/__/:/  /  /\/  /::\__\/\:\__/__/:/ \__\:\/__/::::::::\
+//   \  \:\/:/~/:/\  \:\/:/ /:/\  \:\ /  /:/__/:/\:\ \  \:\/\  \:\ /  /:/\  \:\~~\~~\/
+//    \  \::/ /:/  \  \::/ /:/  \  \:\  /:/\__\/  \:\ \__\::/\  \:\  /:/  \  \:\  ~~~
+//     \__\/ /:/    \  \:\/:/    \  \:\/:/      \  \:\/__/:/  \  \:\/:/    \  \:\
+//       /__/:/      \  \::/      \  \::/        \__\/\__\/    \  \::/      \  \:\
+//       \__\/        \__\/        \__\/                        \__\/        \__\/
+
+//*
+// @pattern Section
+//
+// Sections are simply ways of grouping related content and provising
+// separation between that contained content and "sibling" content.
+//
+// Smaller variations are available for more condensed content, like content
+// inside of a popover.
+//
+// @since 1.0.0
+
+
+
+//*
+// A container around some content that provides the vertical separation from
+// other `section`s. This will also remove any top/ bottom padding from the
+// first/ last child, respectively, to avoid more vertical padding than
+// necessary.
+
+.section {
+  margin: double(default(spacing)) 0;
+  padding: default(spacing) 0;
+
+  > *:first-child {
+    &,
+    & > *:first-child {
+      margin-top: 0;
+    }
+  }
+
+  > *:last-child {
+    &,
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+//*
+// A smaller section with no border separating content. Use this variant for
+// places where the base amount of vertical padding is excessive (for example,
+// in popovers or other limited-width containers).
+
+.section--small {
+  border: none;
+  padding: 0;
+  margin: default(spacing) 0;
+}
+
+//*
+// A section with a light gray background that separates it visually from the
+// other sections. Use this to differentiate between significantly different
+// groups of content. It is best to only use this with `section--small` —
+// regular `section`s already have sufficient separation in most cases.
+
+.section--subdued {
+  background: color(gray-light);
+  overflow: hidden;
+
+  &.section--small {
+    padding: default(spacing) 0;
+    margin: 0;
+  }
+}
+
+
+
+//*
+// Use this container for when you want a group of sections to have additional
+// vertical separation from the content around it. The amount of additional
+// space depends on whether the container contains regular or `--small`
+// `section`s.
+//
+// This container is not necessary — for example, sections can sit on their own
+// inside a popover.
+
+.section__container {
+  > .section {
+    &:first-child { margin-top: double(default(spacing)); }
+    &:last-child { margin-bottom: double(default(spacing)); }
+  }
+
+  > .section--small {
+    &:first-child { margin-top: default(spacing); }
+    &:last-child { margin-bottom: default(spacing); }
+  }
+}

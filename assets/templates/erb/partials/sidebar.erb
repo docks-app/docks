@@ -1,0 +1,124 @@
+<nav class="sidebar">
+  <div class="vertical-stack">
+    <div class="vertical-stack__item vertical-stack__item--fixed">
+      <header class="page-header">
+        <div class="grid grid--vertically-centered">
+          <div class="grid__item">
+            <label class="label helper--visually-hidden" for="search">Search</label>
+            <div class="field field--text">
+              <div class="field__icon">
+                <%= docks_icon(:search, size: :medium) %>
+              </div>
+              <input id="search" type="search" class="field__input" data-filters="#list--patterns, #list--this-pattern" data-filter-attribute="contents" placeholder="Search">
+            </div>
+          </div>
+
+          <div class="grid__item grid__item--no-flex">
+            <div class="popover__container">
+              <%= docks_icon :eye, size: :large, color: :gray_darker %>
+
+              <% docks_popover do |popover| %>
+                <% popover.pane do %>
+                  <div class="field field--switch">
+                    <input class="field__switch" type="checkbox" id="private-toggle" data-filters="#list--this-pattern, #symbols--structure, #symbols--behavior" data-filter-attribute="data-private" data-checked-value="true|false">
+                    <label class="label" for="private-toggle">Show private symbols</label>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="vertical-stack__item">
+      <% unless @pattern.symbols.empty? %>
+        <div class="list" id="list--this-pattern" data-filter-items=".list__item">
+          <%
+            symbol_contents = { "structure" => @pattern.has_structure?, "behavior" => @pattern.has_behavior? }
+            has_both = symbol_contents["structure"] && symbol_contents["behavior"]
+          %>
+
+          <h3 class="type type--heading type--heading-3">This Pattern</h3>
+          <% %w(structure behavior).each do |group| %>
+            <% if symbol_contents[group] %>
+              <% if group == "structure" && !(demos = @pattern.demos).empty? %>
+                <div class="list__group">
+                  <h4 class="type type--heading type--heading-4">Components</h4>
+                  <% demos.each do |demo| %>
+                    <a class="list__item type--code" href="#<%= demo.component.symbol_id %>" data-private="<%= demo.component.private? %>"><%= demo.name %></a>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <% if group == "behavior" && !(factories = @pattern.factories).empty? %>
+                <div class="list__group">
+                  <h4 class="type type--heading type--heading-4">Factories</h4>
+                  <% factories.each do |factory| %>
+                    <a class="list__item type--code" href="#<%= factory.symbol_id %>" data-private="<%= factory.private? %>"><%= factory.name %></a>
+
+                    <% factory.static_properties.each do |prop| %>
+                      <a href="#<%= prop.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= prop.private? %>">.<%= prop.name %></a>
+                    <% end %>
+
+                    <% factory.static_methods.each do |meth| %>
+                      <a href="#<%= meth.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= meth.private? %>">.<%= meth.name %>()</a>
+                    <% end %>
+
+                    <% factory.instance_properties.each do |prop| %>
+                      <a href="#<%= prop.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= prop.private? %>">#<%= prop.name %></a>
+                    <% end %>
+
+                    <% factory.instance_methods.each do |meth| %>
+                      <a href="#<%= meth.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= meth.private? %>">#<%= meth.name %>()</a>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <% %w(variable function mixin).each do |type| %>
+                <%
+                  symbol_options = {}
+                  symbol_options[group == "behavior" ? :include : :exclude] = Docks::Types::Languages::SCRIPT
+                  symbols = @pattern.send(type.pluralize.to_sym, symbol_options)
+                  unless symbols.empty?
+                %>
+                  <div class="list__group">
+                    <h4 class="type type--heading type--heading-4"><%= type.pluralize.capitalize %></h4>
+                    <% symbols.each do |symbol| %>
+                      <a class="list__item type--code" href="#<%= symbol.symbol_id %>" data-private="<%= symbol.private? %>"><%= symbol.name %></a>
+
+                      <% symbol.methods.each do |meth| %>
+                        <a href="#<%= meth.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= meth.private? %>">.<%= meth.name %>()</a>
+                      <% end %>
+
+                      <% symbol.properties.each do |prop| %>
+                        <a href="#<%= prop.symbol_id %>" class="list__item list__item--indented type--code" data-private="<%= prop.private? %>">.<%= prop.name %></a>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="list" id="list--patterns" data-filter-items=".list__item">
+        <h3 class="type type--heading type--heading-3">Library</h3>
+        <% @pattern_library.groups do |group, patterns| %>
+          <div class="list__group">
+            <h4 class="type type--heading type--heading-4"><%= group.pluralize %></h4>
+
+            <% patterns.sort { |one, two| one.name <=> two.name  }.each do |pattern| %>
+              <% active_pattern = pattern.name == @pattern.name %>
+              <a class="list__item<%= " list__item--is-active" if active_pattern %>" href="<%= active_pattern ? "javascript:" : docks_path(pattern.name) %>">
+                <%= pattern.title %>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>

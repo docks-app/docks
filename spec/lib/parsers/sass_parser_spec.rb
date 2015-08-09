@@ -109,7 +109,7 @@ describe Docks::Parsers::Sass do
       target_name = "clearfix"
       name, type = subject.symbol_details_from_first_line("%#{target_name} {").values
       expect(type).to eq Docks::Types::Symbol::PLACEHOLDER
-      expect(name).to eq target_name
+      expect(name).to eq "%#{target_name}"
     end
 
     it "identifies a mixin" do
@@ -137,7 +137,7 @@ describe Docks::Parsers::Sass do
       target_name = "message-width"
       name, type = subject.symbol_details_from_first_line("$#{target_name}: 40rem;").values
       expect(type).to eq Docks::Types::Symbol::VARIABLE
-      expect(name).to eq target_name
+      expect(name).to eq "$#{target_name}"
     end
 
     describe "states" do

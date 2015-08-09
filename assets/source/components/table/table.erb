@@ -1,0 +1,16 @@
+<div class="table__container">
+  <div class="table__actions">
+    <div class="docks-button__segmented-container">
+      <button class="docks-button" table-action="shift-left" style="font-family: Consolas;">&lt;</button>
+      <button class="docks-button" table-action="shift-right" style="font-family: Consolas;">&gt;</button>
+    </div>
+  </div>
+
+  <div class="table__backdrop">
+    <div class="table__scroller">
+      <table class="table">
+        <%= capture(table, &table.block) %>
+      </table>
+    </div>
+  </div>
+</div>

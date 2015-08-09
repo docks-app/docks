@@ -2,11 +2,11 @@ require "spec_helper"
 
 describe Docks::Containers::Function do
   let(:instance_method) do
-    described_class.new(name: "foo", static: false, method: true)
+    described_class.new(name: "foo", static: false, method: true, for: "Foo")
   end
 
   let(:static_method) do
-    described_class.new(name: "bar", static: true, method: true)
+    described_class.new(name: "bar", static: true, method: true, for: "Foo")
   end
 
   let(:function) do

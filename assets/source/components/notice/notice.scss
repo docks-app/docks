@@ -1,0 +1,48 @@
+//*
+// @pattern Notice
+//
+// A simple, colored container around that emphasizes the contained text. This
+// should be used for important details about a symbol; for example, to
+// indicate that a component is deprecated or experimental.
+//
+// @since 1.0.0
+
+
+//*
+// A regular notice.
+//
+// @markup
+// <div class="notice">
+//   <div class="type-container">
+//     <p>Please don't use this component anymore! It's no good.</p>
+//   </div>
+// </div>
+
+.notice {
+  background-color: ui-color(yellow);
+  width: fit-content;
+  color: ui-color(yellow, dark);
+  padding: 1rem;
+  border-radius: default(border-radius);
+  @include font-size(paragraph-small);
+  position: relative;
+
+  .type, p, code {
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .type--heading {
+    font-weight: 400;
+  }
+}
+
+//*
+// A notice that indicates something is new about the attached symbol.
+//
+// @demo_type joint
+
+.notice--new {
+  background-color: ui-color(blue);
+  color: ui-color(blue, darker);
+}

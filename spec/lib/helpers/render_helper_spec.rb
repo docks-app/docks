@@ -97,7 +97,7 @@ describe Docks::Helpers::Render do
       it "renders @link declarations" do
         allow(subject).to receive(:render) { |opts| opts[:inline] }
         pattern.description = "foo bar <a href='@link Baz'>baz</a>"
-        expect(subject).to receive(:docks_path_to).with("Baz", hash_including(:language)).and_return("/pattern-library/baz")
+        expect(subject).to receive(:docks_path).with("Baz", hash_including(:language)).and_return("/pattern-library/baz")
         subject.render_everything
         expect(pattern.description).to eq "foo bar <a href='/pattern-library/baz'>baz</a>"
       end

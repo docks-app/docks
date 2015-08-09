@@ -1,0 +1,23 @@
+%body
+  %section.section{"data-private" => "#{demo.component.private?}", id: "#{demo.component.symbol_id}"}
+    %header.content
+      .grid
+        .grid__item
+          %h3.type.type--heading.type--heading-2
+            - if title = demo.component.title
+              = title
+            - else
+              %span.type--code= demo.component.name
+        .grid__item.grid__item--no-flex
+          .docks-button__container
+            .docks-button{"data-xray-trigger" => "#{demo.name}"} x-ray
+    - markup = render(inline: (demo.component.markup || demo.component.helper), layout: false)
+    - code_details = []
+    - code_details << { code: demo.component.helper, language: "erb", label: "Helper" } unless demo.component.helper.nil?
+    - code_details << { code: markup, language: "html", label: "Markup" }
+    - options = [demo.name].concat demo.joint_variations.map { |variant| variant.name }
+    = docks_code_block(code: code_details, hideable?: true, full_width?: true, hidden?: true, options: options, id: demo.name, demo: demo)
+    - if demo.component.description
+      .content
+        .type-container
+          = demo.component.description

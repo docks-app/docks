@@ -1,0 +1,14 @@
+$inline-group--spacing: half(default(spacing));
+
+.inline-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-right: negative($inline-group--spacing);
+  margin-bottom: negative($inline-group--spacing);
+}
+
+.inline-group__item {
+  margin-right: $inline-group--spacing;
+  margin-bottom: $inline-group--spacing;
+}

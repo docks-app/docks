@@ -1,0 +1,81 @@
+| <div class="section" id="
+= function.symbol_id
+| " data-private="
+= function.private?
+| "> 
+header
+  .inline-group
+    .inline-group__item
+      h3.type.type--heading.type--heading-3
+        span.type--code
+          = function.name
+    - if function.private? || function.deprecated
+      .inline-group__item
+        .badge__container
+          - if function.private?
+            span.badge.badge--standalone.badge--secret
+              | private
+          - if function.deprecated
+            span.badge.badge--standalone.badge--warning
+              | deprecated
+.type-container
+  = function.description
+= docks_code_block code: function.signature, language: function.source.language_code, id: "function--#{function.name}", full_width?: true
+- unless (aliases = function.fetch(:aliases, [])).empty?
+  h4.type.type--heading.type--heading-4
+    | Aliases
+  - aliases.each do |an_alias|
+    code.type--code
+      = an_alias
+- unless (params = function.fetch(:params, [])).empty?
+  h4.type.type--heading.type--heading-4
+    | Parameters
+  - params.each do |param|
+    h5.type.type--heading.type--heading-5
+      span.type--code
+        = param.name
+      span.badge
+        = param.types.first
+    .type-container.type-container--small
+      = param.description
+    - unless (properties = param.properties || []).empty?
+      - docks_table do
+        thead.table__header
+          tr.table__row
+            th.table__cell
+              | Name
+            th.table__cell
+              | Description
+            th.table__cell
+              | Types
+            th.table__cell.table__cell--centered
+              | Default
+        tbody.table__body
+          - properties.each do |property|
+            tr.table__row
+              td.table__cell
+                code.type--code
+                  = property.name
+              td.table__cell
+                .type-container.type-container--small
+                  = property.description
+              td.table__cell
+                = (type = !property.types && property.types.first) ? "<span class='type--code'>#{type}</span>" : "Anything"
+              td.table__cell.table__cell--centered
+                = (default = property.default) ? "<span class='type--code'>#{default}</span>" : "—"
+h4.type.type--heading.type--heading-4
+  | Returns
+- if return_types = function.returns && function.returns.types
+  |  <a href="
+  = docks_path(return_types.first, language: function.source.language_code)
+  | ">
+  code.type--code
+    = return_types.first
+- else
+  p.type.type--paragraph
+    | Nothing
+- unless (examples = function.fetch(:examples, [])).empty?
+  h4.type.type--heading.type--heading-4
+    = "Example".pluralize(examples.length)
+  - examples.each do |example|
+    = docks_code_block code: example.code, language: example.language, condensed?: true
