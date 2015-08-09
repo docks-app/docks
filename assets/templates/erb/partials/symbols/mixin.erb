@@ -1,0 +1,58 @@
+<div class="section" id="<%= mixin.symbol_id %>" data-private="<%= mixin.private? %>">
+  <header>
+    <div class="inline-group">
+      <div class="inline-group__item">
+        <h3 class="type type--heading type--heading-3">
+          <span class="type--code"><%= mixin.name %></span>
+        </h3>
+      </div>
+
+      <% if mixin.private? || mixin.deprecated %>
+        <div class="inline-group__item">
+          <div class="badge__container">
+            <% if mixin.private? %>
+              <span class="badge badge--standalone badge--secret">private</span>
+            <% end %>
+
+            <% if mixin.deprecated %>
+              <span class="badge badge--standalone badge--warning">deprecated</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="type-container"><%= mixin.description %></div>
+
+  <%= docks_code_block code: mixin.signature, language: mixin.source.language_code, id: "mixin--#{mixin.name}", full_width?: true %>
+
+  <% unless (aliases = mixin.fetch(:aliases, [])).empty? %>
+    <h4 class="type type--heading type--heading-4">Aliases</h4>
+
+    <% aliases.each do |an_alias| %>
+      <code class="type--code"><%= an_alias %></code>
+    <% end %>
+  <% end %>
+
+  <% unless (params = mixin.fetch(:params, [])).empty? %>
+    <h4 class="type type--heading type--heading-4">Parameters</h4>
+
+    <% params.each do |param| %>
+      <h5 class="type type--heading type--heading-5">
+        <span class="type--code"><%= param.name %></span>
+        <span class="badge"><%= param.types.first %></span>
+      </h5>
+
+      <div class="type-container type-container--small"><%= param.description %></div>
+    <% end %>
+  <% end %>
+
+  <% unless (examples = mixin.fetch(:examples, [])).empty? %>
+    <h4 class="type type--heading type--heading-4"><%= "Example".pluralize(examples.length) %></h4>
+
+    <% examples.each do |example| %>
+      <%= docks_code_block code: example.code, language: example.language, condensed?: true %>
+    <% end %>
+  <% end %>
+</div>

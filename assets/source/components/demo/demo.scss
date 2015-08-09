@@ -1,0 +1,90 @@
+//       _____         ___          ___          ___
+//      /  /::\       /  /\        /__/\        /  /\
+//     /  /:/\:\     /  /:/_      |  |::\      /  /::\
+//    /  /:/  \:\   /  /:/ /\     |  |:|:\    /  /:/\:\
+//   /__/:/ \__\:| /  /:/ /:/_  __|__|:|\:\  /  /:/  \:\
+//   \  \:\ /  /://__/:/ /:/ /\/__/::::| \:\/__/:/ \__\:\
+//    \  \:\  /:/ \  \:\/:/ /:/\  \:\~~\__\/\  \:\ /  /:/
+//     \  \:\/:/   \  \::/ /:/  \  \:\       \  \:\  /:/
+//      \  \::/     \  \:\/:/    \  \:\       \  \:\/:/
+//       \__\/       \  \::/      \  \:\       \  \::/
+//                    \__\/        \__\/        \__\/
+//
+//*
+// @pattern Demo
+//
+// A container around a demo (or set of demos) of a component. The styles for
+// this component are very light — they are meant not to interfere with the
+// components being demonstrated. The JavaScript component, however, controls
+// much of the child-`iframe`-side communication, including communicating
+// height changes, updating classes, sending markup, and running registered
+// event handlers.
+//
+// @since 1.0.0
+
+
+
+$demo--min-height: rem(160);
+
+
+
+//*
+// A container for a demo of a component and, optionally, variations on that
+// component that the developer has specified to display jointly.
+//
+// @helper
+// <% markup = "<div class='foo' style='height: 2rem;'></div>" %>
+// <%= docks_demo ::OpenStruct.new(
+//   name: "foo",
+//   component: ::OpenStruct.new(name: "foo", markup: markup),
+//   joint_variations: [
+//     ::OpenStruct.new(name: "foo--bar", markup: markup),
+//     ::OpenStruct.new(name: "foo--baz", markup: markup)
+//   ]
+// ) %>
+
+.demo {
+  background-color: color(white);
+  min-height: $demo--min-height;
+}
+
+
+
+//*
+// A single demo within the resizable iframe. Spacing styles are only applied to
+// siblings of another demo section so that the separation only applies to the
+// second through last element of a joint demo.
+//
+// The JavaScript component will ensure that the minimum height noted above
+// will be evenly allocated among the `demo__section`s within a `demo`.
+//
+// You can make use of the helpers in `demo-helpers.scss` to provide custom
+// styles for sections containing given components. The JavaScript component
+// will find the last section and assign its background color to the
+// background of the entire demo so that there is no flash of white on the
+// bottom of the demo during resizes.
+
+.demo__section {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: color(white);
+
+  ~ .demo__section {
+    border-top: 1px solid color(gray-light);
+  }
+}
+
+
+
+//*
+// A descriptor for the current section's demo. This is provided in order to
+// distinguish variants within a joint demo.
+
+.demo__header {
+  box-sizing: border-box;
+  margin-right: negative(half(default(spacing)));
+  padding: half(default(spacing)) default(spacing) 0;
+
+  text-align: right;
+}

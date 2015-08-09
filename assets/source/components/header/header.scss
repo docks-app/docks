@@ -1,0 +1,33 @@
+//*
+// @pattern Page Header
+// @group Partials
+//
+// A group of headings and other page-level information that appears at the
+// top of a given page or section.
+//
+// @since 1.0.0
+
+//*
+// @markup
+// <header class="page-header">
+//   <div class="grid grid--vertically-centered">
+//     <div class="grid__item">
+//       <h1 class="type type--heading type--heading-1">The title</h1>
+//     </div>
+//
+//     <div class="grid__item grid__item--no-flex">
+//       <button class="docks-button docks-button--dark">Action</button>
+//     </div>
+//   </div>
+// </header>
+
+.page-header {
+  background-color: ui-color(gray);
+  padding: default(spacing);
+  padding-bottom: default(spacing);
+  min-height: rem(66);
+
+  .type--heading-1 {
+    margin: -0.5em 0;
+  }
+}

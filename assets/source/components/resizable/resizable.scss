@@ -1,0 +1,245 @@
+//        ___          ___          ___                     ___          ___
+//       /  /\        /  /\        /  /\       ___         /  /\        /  /\
+//      /  /::\      /  /:/_      /  /:/_     /  /\       /  /::|      /  /:/_
+//     /  /:/\:\    /  /:/ /\    /  /:/ /\   /  /:/      /  /:/:|     /  /:/ /\
+//    /  /:/~/:/   /  /:/ /:/_  /  /:/ /::\ /__/::\     /  /:/|:|__  /  /:/ /:/_
+//   /__/:/ /:/___/__/:/ /:/ /\/__/:/ /:/\:\\__\/\:\__ /__/:/ |:| /\/__/:/ /:/ /\
+//   \  \:\/:::::/\  \:\/:/ /:/\  \:\/:/~/:/   \  \:\/\\__\/  |:|/:/\  \:\/:/ /:/
+//    \  \::/~~~~  \  \::/ /:/  \  \::/ /:/     \__\::/    |  |:/:/  \  \::/ /:/
+//     \  \:\       \  \:\/:/    \__\/ /:/      /__/:/     |  |::/    \  \:\/:/
+//      \  \:\       \  \::/       /__/:/       \__\/      |  |:/      \  \::/
+//       \__\/        \__\/        \__\/                   |__|/        \__\/
+
+//*
+// @pattern Resizable
+//
+// A container that can be resized by dragging on a handle
+// (`.resizable__handle`) with a contained iframe that shows the actual demo
+// content. This allows the user to see how the design would actually behave
+// at different viewport widths, and allows for fixed and absolute positioned
+// elements to be displayed in a reasonable way.
+//
+// The JavaScript portion of this component manages the communication of
+// height changes from the `iframe` to make sure that the demo is entirely
+// visible and shows the current width and allows the user to see a small
+// number of preset widths.
+//
+// @since 1.0.0
+
+
+
+$resizable--min-width: 18rem;
+$resizable--border: 1px solid ui-color(gray, darker);
+$resizable--default-transition-timing: 0.3s ease;
+
+$resizable__handle--width: 1.25rem;
+$resizable__handle--groove-height: double(default(spacing));
+$resizable__handle--groove-percentage-width: 0.35;
+
+$resizable__size-button__icon--size: 1.8rem;
+
+
+
+//*
+// The core component of a `Resizable`. This part of the component contains
+// the handle and `iframe`, and is the part of the component that is actually
+// resized when dragging the handle/ using the size buttons. The `min-width`
+// specified here should account for both the `min-width` of the content *and*
+// the width of the handle (which will be positioned absolutely over the right
+// side).
+//
+// @helper docks_resizable
+
+.resizable {
+  // position
+  position: relative;
+
+  // box model
+  margin: 0 auto;
+  width: 100%;
+  min-width: ($resizable--min-width + $resizable__handle--width);
+
+  // backdrop
+  @include default(border-radius);
+
+  // type
+  line-height: 0;
+
+  > .card {
+    position: relative;
+    padding-right: $resizable__handle--width;
+  }
+
+  .iframe {
+    width: 100%;
+    min-height: 10rem;
+    transition: height $resizable--default-transition-timing;
+    overflow: hidden;
+  }
+}
+
+//*
+// Provides a transition that smoothly moves the resizable container from one
+// width to the next. This is not done by default as dragging the handle would
+// appear broken.
+
+.resizable--is-transitioning-width {
+  transition: width $resizable--default-transition-timing;
+}
+
+
+
+//*
+// The handle by which to resize the container. Default style gives two small
+// grooves in the middle of the handle that affords its draggability.
+
+.resizable__handle {
+  // position
+  position: absolute;
+  top: 0; right: 0;
+
+  // box model
+  width: $resizable__handle--width;
+  height: 100%;
+
+  // backdrop
+  cursor: col-resize;
+  background: ui-color(gray, dark);
+  border-radius: 0 default(border-radius) default(border-radius) 0;
+
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+
+  &:after {
+    $resizable__handle--groove-width: $resizable__handle--groove-percentage-width * $resizable__handle--width;
+
+    content: "";
+
+    // position
+    position: absolute;
+    top: 50%; left: 50%;
+
+    // box model
+    display: block;
+    height: $resizable__handle--groove-height;
+    width: $resizable__handle--groove-width;
+    margin-top: negative(half($resizable__handle--groove-height));
+    margin-left: negative(half($resizable__handle--groove-width));
+
+    // backdrop
+    border-right: $resizable--border;
+    border-left: $resizable--border;
+  }
+}
+
+
+
+//*
+// A container for all of the information and acions available for the
+// component.
+
+.resizable__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: half(default(spacing));
+}
+
+
+
+
+//*
+// A small notice that shows the current width of the (content of the) resizable
+// module. This indicator slides in when the size changes (through the use of
+// the `resizable__width-indicator--is-visible` variant).
+//
+// The indicator shows the width in both `px` and `em` values which are
+// contained in the submodules `resizable__width-indicator__px` and
+// `resizable__width-indicator__em`, respectively.
+//
+// @state --is-visible - The indicator is currently being shown.
+
+.resizable__width-indicator {
+  // type
+  color: color(gray-dark);
+  font: 300 1rem/1 Consolas, monospace;;
+
+  // backdrop
+  opacity: 0.4;
+  transition: opacity $resizable--default-transition-timing;
+}
+
+.resizable__width-indicator--is-visible { opacity: 1; }
+
+
+
+//*
+// A vertically-oriented set of buttons that resize the resizable module to
+// predetermined widths. These widths have been set in the Javascript part of
+// this module.
+
+.resizable__size-buttons {
+  display: flex;
+}
+
+
+
+//*
+// A single button that resizes the module.
+//
+// @state --is-active (select)
+// Indicates that this button has been pressed and that the user has not
+// subsequently resized the module in some other way.
+//
+// @state --is-hidden (none)
+// Indicates that the button should be hidden because not enough screen space
+// exists for its resize.
+//
+// @variant --small  (none) - Resizes to a roughly smartphone-sized width.
+// @variant --medium (none) - Resizes to a roughly tablet-sized width.
+// @variant --large  (none) - Resizes to a roughly desktop-sized width.
+
+.resizable__size-button {
+  position: relative;
+  margin-left: half(default(spacing));
+  cursor: pointer;
+
+  opacity: 0.5;
+  transition: opacity $resizable--default-transition-timing;
+
+  > .icon {
+    height: $resizable__size-button__icon--size;
+    width: $resizable__size-button__icon--size;
+
+    @include icon--recolor(gray);
+    transition: fill $resizable--default-transition-timing;
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.resizable__size-button--is-active {
+    outline: none;
+  }
+
+  &:hover,
+  &:focus {
+    opacity: 0.8;
+  }
+
+  &.resizable__size-button--is-active,
+  &:active {
+    opacity: 1;
+
+    > .icon {
+      fill: color(blue);
+      stroke: color(blue);
+    }
+  }
+}
+
+.resizable__size-button--is-hidden {
+  display: none;
+}

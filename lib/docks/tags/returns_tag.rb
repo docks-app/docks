@@ -3,6 +3,7 @@ module Docks
     class Returns < Base
       def initialize
         @name = :returns
+        @synonyms = [:return]
       end
 
       def process(symbol)

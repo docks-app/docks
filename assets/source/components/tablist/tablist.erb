@@ -1,0 +1,13 @@
+<%
+  tablist.configure do |config|
+    config.defaults(manage_url?: false, size: :regular)
+    config.classes(base: "tablist")
+
+    config.conditional_classes(from: :size, large: { base: "tablist--large" })
+    config.conditional_classes(if: :manage_url?, base: "tablist--manages-url")
+  end
+%>
+
+<div class="<%= tablist.classes_for(:base) %>" role="tablist">
+  <%= capture(tablist, &tablist.block) %>
+</div>

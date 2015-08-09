@@ -99,47 +99,51 @@ describe Docks::Parsers::JavaScript do
   end
 
   describe "#symbol_details_from_first_line" do
-    it "identifies a class" do
-      target_name = "Tab"
-      name, type = subject.symbol_details_from_first_line(" class #{target_name}  ").values
-      expect(type).to eq Docks::Types::Symbol::CLASS
-      expect(name).to eq target_name
-    end
-
     describe "functions" do
-      it "identifies a function with the single arrow" do
+      it "identifies a function literal" do
         target_name = "activateTab"
-        name, type = subject.symbol_details_from_first_line("#{target_name} = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("function #{target_name}($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
       end
 
-      it "identifies a function with the fat arrow" do
+      it "identifies a function variable" do
         target_name = "activateTab"
-        name, type = subject.symbol_details_from_first_line("#{target_name} = => $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("var #{target_name} = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
       end
 
-      it "identifies a function declared in a class definition" do
+      it "identifies an arrow function" do
         target_name = "activateTab"
-        name, type = subject.symbol_details_from_first_line("  #{target_name} : ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("var #{target_name} = ($tab) => { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
+      end
+
+      it "identifies a function declared in an object literal" do
+        target_name = "activateTab"
+
+        ["  #{target_name} : function($tab) { $tab.activate() }",
+         "  #{target_name}: function($tab) { $tab.activate() }"].each do |example|
+          name, type = subject.symbol_details_from_first_line(example).values
+          expect(type).to eq Docks::Types::Symbol::FUNCTION
+          expect(name).to eq target_name
+        end
       end
 
       it "identifies a function declared using dot notation" do
         target_name = "activateTab"
 
-        name, type = subject.symbol_details_from_first_line("  foo.#{target_name} = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo.#{target_name} = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
 
-        name, type = subject.symbol_details_from_first_line("  foo.bar.#{target_name} = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo.bar.#{target_name} = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
 
-        name, type = subject.symbol_details_from_first_line("  foo['bar'].#{target_name} = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo['bar'].#{target_name} = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
       end
@@ -147,19 +151,19 @@ describe Docks::Parsers::JavaScript do
       it "identifies a function declared using bracket notation" do
         target_name = "activateTab"
 
-        name, type = subject.symbol_details_from_first_line("  foo['#{target_name}'] = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo['#{target_name}'] = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
 
-        name, type = subject.symbol_details_from_first_line("  foo[\"#{target_name}\"] = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo[\"#{target_name}\"] = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
 
-        name, type = subject.symbol_details_from_first_line("  foo['bar']['#{target_name}'] = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo['bar']['#{target_name}'] = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
 
-        name, type = subject.symbol_details_from_first_line("  foo.bar['#{target_name}'] = ($tab) -> $tab.activate()").values
+        name, type = subject.symbol_details_from_first_line("  foo.bar['#{target_name}'] = function($tab) { $tab.activate() }").values
         expect(type).to eq Docks::Types::Symbol::FUNCTION
         expect(name).to eq target_name
       end
@@ -168,12 +172,19 @@ describe Docks::Parsers::JavaScript do
     describe "variables" do
       it "identifies a variable" do
         target_name = "newTab"
-        name, type = subject.symbol_details_from_first_line("  #{target_name} = @newTab()").values
-        expect(type).to eq Docks::Types::Symbol::VARIABLE
-        expect(name).to eq target_name
+
+        [
+          "var #{target_name} = @newTab()",
+          "const #{target_name} = @newTab()",
+          "#{target_name} = @newTab()"
+        ].each do |example|
+          name, type = subject.symbol_details_from_first_line(example).values
+          expect(type).to eq Docks::Types::Symbol::VARIABLE
+          expect(name).to eq target_name
+        end
       end
 
-      it "identifies a variable declared in a class definition" do
+      it "identifies a variable declared in an object literal" do
         target_name = "val"
         name, type = subject.symbol_details_from_first_line("  #{target_name} : (2 * 3) / 4").values
         expect(type).to eq Docks::Types::Symbol::VARIABLE
@@ -182,21 +193,21 @@ describe Docks::Parsers::JavaScript do
 
       it "identifies a variable that is declared without assignment" do
         target_name = "val"
-        name, type = subject.symbol_details_from_first_line(target_name).values
+        name, type = subject.symbol_details_from_first_line("var #{target_name}").values
         expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end
 
       it "identifies the first variable in a comma-separated list without assignment" do
         target_name = "val"
-        name, type = subject.symbol_details_from_first_line("  #{target_name}, foo, bar , baz").values
+        name, type = subject.symbol_details_from_first_line("var #{target_name}, foo, bar , baz").values
         expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end
 
       it "identifies the first variable in a comma-separated list with assignment" do
         target_name = "val"
-        name, type = subject.symbol_details_from_first_line("  #{target_name}, foo, bar , baz = 'qux'").values
+        name, type = subject.symbol_details_from_first_line("#{target_name}, foo, bar , baz = 'qux'").values
         expect(type).to eq Docks::Types::Symbol::VARIABLE
         expect(name).to eq target_name
       end

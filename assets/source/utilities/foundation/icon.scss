@@ -1,0 +1,114 @@
+@mixin icon--recolor($color, $variant: base) {
+  fill: ui-color($color, $variant);
+  stroke: ui-color($color, $variant);
+}
+
+
+.icon {
+  display: inline-block;
+  stroke-width: 2;
+}
+
+$icon--size-medium: rem(24);
+$icon--size-large: rem(28);
+
+.icon--medium {
+  height: $icon--size-medium;
+  width: $icon--size-medium;
+}
+
+.icon--large {
+  height: $icon--size-large;
+  width: $icon--size-large;
+}
+
+
+$icon-action--size: 1.65rem;
+
+.icon--action {
+  height: $icon-action--size;
+  width: $icon-action--size;
+}
+
+$icon-hamburger--width: 2rem;
+$icon-hamburger--slice-height: 4px;
+
+.icon--hamburger {
+  height: $icon-action--size;
+  width: $icon-hamburger--width;
+  position: relative;
+  cursor: pointer;
+  opacity: 0.6;
+  top: 0.2em;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: $icon-hamburger--slice-height;
+    width: 100%;
+    border-radius: ($icon-hamburger--slice-height / 2);
+    background: ui-color(gray, darkest);
+  }
+
+  &:before { top: 0; }
+  &:after { bottom: 0; }
+}
+
+.icon--hamburger__slice {
+  height: $icon-hamburger--slice-height;
+  width: 100%;
+  border-radius: ($icon-hamburger--slice-height / 2);
+  background: ui-color(gray, darkest);
+  position: absolute;
+  top: 50%; left: 0;
+  margin-top: (-0.5 * $icon-hamburger--slice-height);
+}
+
+.icon--gray-darker {
+  @include icon--recolor(gray, darker);
+}
+
+.icon--close {
+  position: relative;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: $icon-hamburger--slice-height;
+    width: 140%;
+    border-radius: ($icon-hamburger--slice-height / 2);
+    background: ui-color(gray, darkest);
+    top: 50%;
+    left: 50%;
+    margin-left: -70%;
+    margin-top: ($icon-hamburger--slice-height / -2);
+  }
+
+  &:before { transform: rotate(45deg); }
+  &:after { transform: rotate(-45deg); }
+}
+
+.icon--disclosure {
+  height: half(default(spacing));
+  width: half(default(spacing));
+  transform: rotate(45deg) translateY(-50%);
+  border-right: 2px solid ui-color(gray, darkest);
+  border-bottom: 2px solid ui-color(gray, darkest);
+  margin-left: quarter(default(spacing));
+}

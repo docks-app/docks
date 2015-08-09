@@ -1,9 +1,12 @@
+require_relative "member_tag.rb"
+
 module Docks
   module Tags
-    class Property < Base
+    class Property < Member
       def initialize
         @name = :property
         @multiline = false
+        @multiple_allowed = false
       end
 
       def process(symbol)

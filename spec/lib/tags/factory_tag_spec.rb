@@ -18,7 +18,7 @@ describe Docks::Tags::Factory do
       expect(symbol[subject.name]).to be true
     end
 
-    it "converts the symbol to be a class container" do
+    it "converts the symbol to be a factory container" do
       symbol = Docks::Containers::Function.new(factory: "", name: "foo")
       symbol = Docks::Process.process(symbol)
 

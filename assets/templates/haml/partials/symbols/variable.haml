@@ -1,0 +1,22 @@
+%body
+  .section{"data-private" => "#{variable.private?}", id: "#{variable.symbol_id}"}
+    %header
+      .inline-group
+        .inline-group__item
+          %h3.type.type--heading.type--heading-3
+            %span.type--code= variable.name
+        - if variable.private? || variable.deprecated
+          .inline-group__item
+            .badge__container
+              - if variable.private?
+                %span.badge.badge--standalone.badge--secret private
+              - if variable.deprecated
+                %span.badge.badge--standalone.badge--warning deprecated
+    .type-container= variable.description
+    - if type = variable.type
+      %h4.type.type--heading.type--heading-4 Type
+      %a{href: "#{docks_path_to(type, language: variable.source.language_code)}"}
+        %code.type--code= type
+    - if value = variable.value
+      %h4.type.type--heading.type--heading-4 Value
+      %code.type--code= value

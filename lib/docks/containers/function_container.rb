@@ -7,9 +7,9 @@ module Docks
     class Function < Symbol
       def self.type; Docks::Types::Symbol::FUNCTION end
 
-      def static?; !!self[:static] end
+      def static?; fetch(:static, false) end
       def instance?; !static? end
-      def method?; !!self[:method] end
+      def method?; fetch(:method, false) end
 
       def symbol_id
         return super unless method?
@@ -18,8 +18,9 @@ module Docks
 
       def summary
         summary = super
-        summary.static = fetch(:static, nil)
-        summary.method = fetch(:method, nil)
+        summary.static = static?
+        summary.method = method?
+        summary.for = fetch(:for, nil)
         summary
       end
 

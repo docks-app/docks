@@ -1,0 +1,68 @@
+%body
+  %nav.sidebar
+    .vertical-stack
+      .vertical-stack__item.vertical-stack__item--fixed
+        %header.page-header
+          .grid.grid--vertically-centered
+            .grid__item
+              %label.label.helper--visually-hidden{for: "search"} Search
+              .field.field--text
+                .field__icon
+                  = docks_icon(:search, size: :medium)
+                %input#search.field__input{"data-filter-attribute" => "contents", "data-filters" => "#list--patterns, #list--this-pattern", placeholder: "Search", type: "search"}/
+            .grid__item.grid__item--no-flex
+              .popover__container
+                = docks_icon :eye, size: :large, color: :gray_darker
+                - docks_popover do |popover|
+                  - popover.pane do
+                    .field.field--switch
+                      %input#private-toggle.field__switch{"data-checked-value" => "true|false", "data-filter-attribute" => "data-private", "data-filters" => "#list--this-pattern, #symbols--structure, #symbols--behavior", type: "checkbox"}/
+                      %label.label{for: "private-toggle"} Show private symbols
+      .vertical-stack__item
+        - unless @pattern.symbols.empty?
+          #list--this-pattern.list{"data-filter-items" => ".list__item"}
+            - symbol_contents = { "structure" => @pattern.has_structure?, "behavior" => @pattern.has_behavior? }
+            - has_both = symbol_contents["structure"] && symbol_contents["behavior"]
+            %h3.type.type--heading.type--heading-3 This Pattern
+            - %w(structure behavior).each do |group|
+              - if symbol_contents[group]
+                - if group == "structure" && !(demos = @pattern.demos).empty?
+                  .list__group
+                    %h4.type.type--heading.type--heading-4 Components
+                    - demos.each do |demo|
+                      %a.list__item.type--code{"data-private" => "#{demo.component.private?}", href: "##{demo.component.symbol_id}"}= demo.name
+                - if group == "behavior" && !(factories = @pattern.factories).empty?
+                  .list__group
+                    %h4.type.type--heading.type--heading-4 Factories
+                    - factories.each do |factory|
+                      %a.list__item.type--code{"data-private" => "#{factory.private?}", href: "##{factory.symbol_id}"}= factory.name
+                      - factory.static_properties.each do |prop|
+                        %a.list__item.list__item--indented.type--code{"data-private" => "#{prop.private?}", href: "##{prop.symbol_id}"}
+                          \.#{prop.name}
+                      - factory.static_methods.each do |meth|
+                        %a.list__item.list__item--indented.type--code{"data-private" => "#{meth.private?}", href: "##{meth.symbol_id}"}
+                          \.#{meth.name}()
+                      - factory.instance_properties.each do |prop|
+                        %a.list__item.list__item--indented.type--code{"data-private" => "#{prop.private?}", href: "##{prop.symbol_id}"}
+                          \##{prop.name}
+                      - factory.instance_methods.each do |meth|
+                        %a.list__item.list__item--indented.type--code{"data-private" => "#{meth.private?}", href: "##{meth.symbol_id}"}
+                          \##{meth.name}()
+                - %w(variable function mixin).each do |type|
+                  - symbol_options = {}
+                  - symbol_options[group == "behavior" ? :include : :exclude] = Docks::Types::Languages::SCRIPT
+                  - symbols = @pattern.send(type.pluralize.to_sym, symbol_options)
+                  - unless symbols.empty?
+                    .list__group
+                      %h4.type.type--heading.type--heading-4= type.pluralize.capitalize
+                      - symbols.each do |symbol|
+                        %a.list__item.type--code{"data-private" => "#{symbol.private?}", href: "##{symbol.symbol_id}"}= symbol.name
+        #list--patterns.list{"data-filter-items" => ".list__item"}
+          %h3.type.type--heading.type--heading-3 Library
+          - @pattern_library.groups do |group, patterns|
+            .list__group
+              %h4.type.type--heading.type--heading-4= group.pluralize
+              - patterns.sort { |one, two| one.name <=> two.name  }.each do |pattern|
+                - active_pattern = pattern.name == @pattern.name
+                %a{class: "list__item#{" list__item--is-active" if active_pattern}", href: "#{active_pattern ? "javascript:" : docks.pattern_path(pattern.name)}"}
+                  = pattern.title

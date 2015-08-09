@@ -1,0 +1,30 @@
+<%
+  toggle_container.configure do |config|
+    config.defaults variations: {},
+                    base_class: "class",
+                    group_by: :base_class
+  end
+%>
+
+<% unless toggle_container.variations.empty? %>
+  <div class="toggle__container" data-iframe-id="<%= toggle_container.base_class %>">
+    <% toggle_container.variations.each do |base_class, variations| %>
+      <% if toggle_container.group_by == :base_class %>
+        <div class="toggle__toggle_container-group">
+          <h3 class="toggle__heading"><%= base_class %></h3>
+
+          <section class="toggle__scroller">
+            <% variations.each do |variation| %>
+              <%= docks_toggle(variation: variation) %>
+            <% end %>
+          </section>
+        </div>
+
+      <% else %>
+        <% variations.each do |variation| %>
+          <%= docks_toggle(variation: variation) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

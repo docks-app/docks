@@ -14,7 +14,6 @@ module Docks
     ROOT_DEPENDENT_PATHS = [
       :sources,
       :destination,
-      :compiled_assets,
       :cache_location,
       :library_assets,
       :helpers
@@ -28,7 +27,7 @@ module Docks
 
     # Random assortment of other stuff
     attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
-                  :naming_convention, :pattern_id
+                  :naming_convention, :pattern_id, :copy_bundled_assets
 
     # Stateful stuff
     attr_reader :configured
@@ -115,6 +114,7 @@ module Docks
 
     def reset
       @configured = false
+      @copy_bundled_assets = true
       @sources = []
       @compiled_assets = []
       @github_repo = nil

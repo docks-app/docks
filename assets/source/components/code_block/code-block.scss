@@ -1,0 +1,353 @@
+//        ___          ___        _____        ___
+//       /  /\        /  /\      /  /::\      /  /\
+//      /  /:/       /  /::\    /  /:/\:\    /  /:/_
+//     /  /:/       /  /:/\:\  /  /:/  \:\  /  /:/ /\
+//    /  /:/  ___  /  /:/  \:\/__/:/ \__\:|/  /:/ /:/_
+//   /__/:/  /  /\/__/:/ \__\:\  \:\ /  /:/__/:/ /:/ /\
+//   \  \:\ /  /:/\  \:\ /  /:/\  \:\  /:/\  \:\/:/ /:/
+//    \  \:\  /:/  \  \:\  /:/  \  \:\/:/  \  \::/ /:/
+//     \  \:\/:/    \  \:\/:/    \  \::/    \  \:\/:/
+//      \  \::/      \  \::/      \__\/      \  \::/
+//       \__\/        \__\/                   \__\/
+
+//*
+// @pattern Code Block
+//
+// This component provides a full-featured container for code demos, including
+// support for multiple languages being shown in a single code block, a
+// rendered demo of the code in the code block, hiding the markup, and
+// switching between different components. The component can be scaled to
+// include as much or as little of these features as desired.
+//
+// This thing needs he following components:
+//
+// - [`button`](@link)
+//
+// - [`resizable::focus_size_button`](@link)
+//
+// - [`exploded::Exploded#set_markup`](@link)
+//
+// The JavaScript part of this component also supports communication with an
+// `iframe`ed demo, in-place updating of helper and rendered markup for
+// components, and, through [highlight.js](https://highlightjs.org/), syntax
+// highlighting of many common languages.
+//
+// @since 1.0.0
+
+
+
+//*
+// @title Code Block
+//
+// This is he overall container for the code block. It's primary purpose is to
+// provide margin above and below the code block, and to provide a hook to
+// make adjustments to many subcomponents through variations such as
+// `code-block--condensed` and `code-block--hidden`.
+//
+// Code blocks can go from the incredibly complex (see the demo above), to
+// more moderate levels of detail — such as a code block that gets rendered
+// inline based on a templating language and a stub, and that outputs an
+// attached demo:
+//
+// ```erb_demo
+// <%= docks_code_block code: "<p style='color: gray;'>Hello world!</p>",
+//                      language: "erb",
+//                      demo?: true,
+//                      hidden?: true %>
+// ```
+//
+// All the way to an incredibly simple code block:
+//
+// ```erb_demo
+// <%= docks_code_block code: "<p class='type type--paragraph'>Hello world!</p>" %>
+// ```
+//
+// @helper
+// <%= docks_code_block code: "<p style='color: gray;'>Hello world!</p>",
+//                      language: "erb",
+//                      demo?: true,
+//                      hidden?: true %>
+
+.code-block {
+  margin: default(spacing) 0;
+  overflow: hidden;
+  background: ui-color(gray, light);
+  @include default(border-radius);
+
+  .docks-button { display: none; }
+}
+
+
+//*
+// A code block with less internal padding and a smaller font size. Use this
+// variant for situations in which the code is secondary or would clash with
+// a more important code block.
+//
+// @set_by :condensed?
+
+.code-block--condensed {
+  margin-top: half(default(spacing));
+
+  .code-block__code {
+    padding-bottom: half(default(spacing));
+    @include font-size(code-block--condensed);
+  }
+
+  &:not(.code-block--with-header) {
+    .code-block__code {
+      padding-top: half(default(spacing));
+    }
+  }
+}
+
+//*
+// A code block that is full-bleed within the viewport. This will remove any
+// unnecessary border radius and side padding/ borders.
+//
+// @set_by :full_width?
+
+.code-block--full-width {
+  margin-right: 0;
+  margin-left: 0;
+  border-radius: 0;
+
+  .content & {
+    margin-left: negative(default(spacing));
+    margin-right: negative(default(spacing));
+  }
+}
+
+//*
+// A code block that has hidden the contained markup and most of its UI. Use
+// this for the initial state of a code block only when it has a demo attached
+// to it, otherwise the code block will appear as a strange strip of color
+// with no indication of its purpose. Hideable code blocks (as set by
+// `:hideable?`) can have this state toggled by clicking on the contained
+// button.
+//
+// When the code block is hidden, all of the UI in the header except for the
+// button to toggle visibility is hidden (that is, tabs to switch between
+// languages and the `select` to switch between demos, if they exist).
+//
+// @set_by :hidden?, CodeBlock#toggle
+// @javascript_action Docks.CodeBlock.for(this).toggle()
+
+.code-block--is-hidden {
+  &:not(.code-block--with-demo) {
+    .code-block__toggler {
+      background-color: ui-color(gray, light);
+    }
+  }
+
+  .code-block__content {
+    height: 0;
+  }
+}
+
+
+
+//*
+// This component sits in the `code-block__header` and wraps around both the
+// button to hide the code block and a `select` to switch between sets of
+// code that may be shown in this code block, if either or both are required.
+
+.code-block__actions {
+  display: flex;
+  align-items: center;
+}
+
+
+
+//*
+// The container for all actions related to this code block. If the code block
+// includes both helper and compiled markup, the header will contain the
+// tablist required to switch between them. If the code block is hideable,
+// the header will also include a button to hide it. Finally, if there are
+// multiple sets of code that may be shown in this code block, the header will
+// contain a `select` to switch between them.
+
+.code-block__header {
+  // box model
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: half(default(spacing)) default(spacing);
+  flex: 0 0 auto !important;
+
+  // backdrop
+  background: ui-color(gray, light);
+
+  .select,
+  .tablist {
+    transition: transform 0.2s ease
+  }
+
+  .tablist {
+    padding: 0;
+  }
+}
+
+
+
+//*
+// This component allows the code to scroll both vertically and horizontally.
+
+.code-block__code-container {
+  overflow: auto;
+  max-height: 100%;
+}
+
+
+//*
+// The thing that toggles.
+
+.code-block__toggler {
+  background-color: ui-color(gray);
+  width: 100%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include font-size(control);
+  padding: half(default(spacing)) 0;
+  color: ui-color(gray, darker);
+  transition: background-color 0.2s ease;
+
+  &:focus,
+  &:active {
+    background-color: ui-color(gray);
+    outline: none;
+  }
+
+  > .icon {
+    // @include icon--recolor(gray, darker);
+    margin-right: half(default(spacing));
+    opacity: 0.5;
+  }
+}
+
+//*
+// Container around the code and header.
+
+.code-block__content {
+  overflow: hidden;
+  transition: height 0.3s ease;
+  max-height: 15rem;
+}
+
+
+
+//*
+// The actual code for the associated demo. This is where all of the styles
+// for the syntax highlighting should go. This subcomponent wraps around the
+// code and provides the required side padding so that the code is scrollable
+// when it overflows.
+
+.code-block__code {
+  // box model
+  margin: 0;
+  display: inline-block;
+
+  // Only provide half spacing on the top (with matching half spacing on the
+  // bottom of the header).
+  padding: half(default(spacing)) default(spacing) default(spacing);
+
+  // type
+  @include font-size(code-block);
+  line-height: 1.3;
+
+  &:focus {
+    outline: none;
+  }
+
+  // Needs full padding top when there is no header.
+  .code-block:not(.code-block--with-header):not(.code-block--condensed):not(.code-block--with-demo) & {
+    padding-top: default(spacing);
+  }
+
+  .code-block--with-demo:not(.code-block--with-header) & {
+    padding-top: 0;
+  }
+
+  // Ensure very basic styles for code.
+  > code {
+    @include type--monospace-font-family;
+    padding: 0;
+    background-color: transparent;
+    font-size: inherit !important;
+    border: none;
+  }
+}
+
+
+
+// Syntax highlighting styles.
+
+.hljs-value,
+.hljs-string,
+.hljs-preprocessor {
+  color: color(blue)
+}
+
+.hljs-symbol {
+  color: color(blue-darker);
+}
+
+.hljs-at_rule,
+.hljs-attribute,
+.hljs-keyword {
+  color: color(gray-darker);
+}
+
+.hljs-comment {
+  color: rgba(color(gray-dark), 0.5);
+  font-style: italic
+}
+
+.hljs-tag,
+.hljs-variable {
+  color: color(gray-dark);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.code-block--with-demo {
+  .code-block__content {
+    padding-top: 0;
+
+    > .code-block__header {
+      padding-top: 0;
+    }
+  }
+}
+
+.code-block__demo {
+  padding: default(spacing);
+}
+
+.code-block__demo__content {
+  display: none;
+}
+
+.code-block__iframe {
+  height: 10em;
+  background-color: color(white);
+  border: none;
+  width: 100%;
+  margin: 0;
+  @include default(border-radius);
+}

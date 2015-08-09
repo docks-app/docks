@@ -1,0 +1,39 @@
+$context: z-index-stacking-context(global,
+  (
+    content: 10,
+    sidebar: 20
+  )
+);
+
+body {
+  background-color: ui-color(gray);
+}
+
+.page {
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+}
+
+.page__content,
+.page__sidebar {
+  position: relative;
+}
+
+.page__content {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex: 1 1 0px;
+  @include z-index(content, global);
+  background: color(white);
+
+  > * {
+    flex: 0 0 100%;
+  }
+}
+
+.page__sidebar {
+  @include z-index(sidebar, global);
+  flex: 0 0 auto;
+}

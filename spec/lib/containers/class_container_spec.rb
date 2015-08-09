@@ -67,20 +67,6 @@ describe Docks::Containers::Klass do
     end
   end
 
-  describe "#methods" do
-    it "returns an empty array when there are no methods" do
-      expect(subject.methods).to be_empty
-    end
-
-    it "returns all of the methods of the class" do
-      subject.add_members(method, private_method)
-      all_methods = subject.methods
-      expect(all_methods.length).to be 2
-      expect(all_methods).to include method
-      expect(all_methods).to include private_method
-    end
-  end
-
   describe "#public_methods" do
     it "returns an empty array when there are no public methods" do
       subject.add_member(private_method)
@@ -135,20 +121,6 @@ describe Docks::Containers::Klass do
       expect(instance_methods.length).to be 2
       expect(instance_methods).to include method
       expect(instance_methods).to include private_method
-    end
-  end
-
-  describe "#properties" do
-    it "returns an empty array when there are no properties" do
-      expect(subject.properties).to be_empty
-    end
-
-    it "returns all of the properties of the class" do
-      subject.add_members(property, private_property)
-      all_properties = subject.properties
-      expect(all_properties.length).to be 2
-      expect(all_properties).to include property
-      expect(all_properties).to include private_property
     end
   end
 
@@ -209,22 +181,6 @@ describe Docks::Containers::Klass do
     end
   end
 
-  describe "#members" do
-    it "returns all members, of any type" do
-      subject.add_members(method, private_method, static_method)
-      subject.add_members(property, private_property, static_property)
-
-      members = subject.members
-      expect(members.length).to be 6
-      expect(members).to include method
-      expect(members).to include property
-      expect(members).to include private_method
-      expect(members).to include private_property
-      expect(members).to include static_method
-      expect(members).to include static_property
-    end
-  end
-
   describe "#instance_members" do
     it "includes all instance methods and properties" do
       subject.add_members(method, private_method, static_method)
@@ -248,53 +204,6 @@ describe Docks::Containers::Klass do
       expect(members.length).to be 2
       expect(members).to include static_method
       expect(members).to include static_property
-    end
-  end
-
-  describe "#add_member" do
-    context "when a variable is added" do
-      it "adds all the relevant details" do
-        subject.add_member(property)
-        expect(property.for).to eq subject.name
-        expect(property.belongs_to).to be subject
-        expect(property.property?).to be true
-      end
-
-      it "adds the property to the class's properties" do
-        subject.add_member(property)
-        expect(subject.properties).to include property
-      end
-    end
-
-    context "when a function is added" do
-      it "adds all the relevant details" do
-        subject.add_member(static_method)
-        expect(static_method.for).to eq subject.name
-        expect(static_method.belongs_to).to be subject
-        expect(static_method.method?).to be true
-      end
-
-      it "adds the function to the class's methods" do
-        subject.add_member(static_method)
-        expect(subject.methods).to include static_method
-      end
-    end
-  end
-
-  describe "#summary" do
-    before(:each) do
-      subject.add_members(method, private_method, static_method)
-      subject.add_members(property, private_property, static_property)
-    end
-
-    let(:summary) { subject.summary }
-
-    it "preserves the symbol_id, name, properties, and methods" do
-      expect(summary).to be_a described_class
-      expect(summary.name).to eq subject.name
-      expect(summary.symbol_id).to eq subject.symbol_id
-      expect(summary.properties).to eq subject.properties.map(&:summary)
-      expect(summary.methods).to eq subject.methods.map(&:summary)
     end
   end
 end

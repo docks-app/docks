@@ -1,4 +1,8 @@
-# Docks [![Build Status](https://travis-ci.org/lemonmade/docks.svg?branch=master)](https://travis-ci.org/lemonmade/docks)
+# Docks
+
+[![Build Status](https://travis-ci.org/lemonmade/docks.svg?branch=master)](https://travis-ci.org/lemonmade/docks)
+[![Dependency Status](https://david-dm.org/lemonmade/docks.svg?style=flat)](https://david-dm.org/lemonmade/docks)
+[![devDependency Status](https://david-dm.org/lemonmade/docks/dev-status.svg?style=flat)](https://david-dm.org/lemonmade/docks#info=devDependencies)
 
 Docks is for creating beautiful, live, styleguides.
 

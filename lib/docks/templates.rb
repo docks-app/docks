@@ -47,7 +47,6 @@ module Docks
 
     def self.template_for(id)
       id = id.name if id.kind_of?(Containers::Pattern)
-      return demo if id.to_sym == :demo
 
      @templates.reverse_each do |template|
         return template if template.matches?(id)
@@ -69,6 +68,13 @@ module Docks
       return in_specific unless in_specific.nil?
 
       raise Docks::NoTemplateError, "No #{options[:must_be] || "template"} matching '#{template}' was found. Make sure that you have a template by that name in the '#{options[:must_be].nil? ? Docks.config.asset_folders.templates : options[:must_be].to_s.pluralize}' folder of your pattern library's assets (or in a subdirectory of that folder), or provide a full path to the desired file."
+    end
+
+    def self.last_template_update
+      @last_modified ||= begin
+        templates = Dir[Docks.config.library_assets + Docks.config.asset_folders.templates + "**/*.*"]
+        templates.map { |template| File.mtime(template) }.sort.last
+      end
     end
 
     private

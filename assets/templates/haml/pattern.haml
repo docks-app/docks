@@ -1,0 +1,54 @@
+.content
+  - if deprecation = @pattern.deprecated
+    .notice
+      %h3.type.type--heading.type--heading-3
+        Deprecated as of
+        %strong= deprecation.version
+      .type-container= deprecation.description
+  %pre
+  %pre
+  - if description = @pattern.description
+    .type-container
+      = description
+- if @pattern.has_structure? && @pattern.has_behavior?
+  - docks_tablist(size: :large, manage_url?: true) do |tablist|
+    = tablist.tab(text: "Structure", active?: true, id: "page__content__tab--markup", panel_id: "page__content--markup", icon: :code)
+    = tablist.tab(text: "Behavior", id: "page__content__tab--behavior", panel_id: "page__content--behavior", icon: :script)
+.tablist__panel-container
+  - docks_component("tablist:panel", active?: true, id: "page__content--markup", tab_id: "page__content__tab--markup") do
+    #symbols--structure{"data-filter-items" => ".section"}
+      - @pattern.demos.each do |demo|
+        = render partial: "symbols/demo", locals: { demo: demo }
+      - unless (variables = @pattern.variables(exclude: :script)).empty?
+        .content.content--extra-vertical-spacing
+          %h2.type.type--heading.type--heading-2.type--heading-bordered Variables
+          - variables.each do |variable|
+            = render partial: "symbols/variable", locals: { variable: variable }
+      - unless (functions = @pattern.functions(exclude: :script)).empty?
+        .content.content--extra-vertical-spacing
+          %h2.type.type--heading.type--heading-2.type--heading-bordered Functions
+          - functions.each_with_index do |func, index|
+            = render partial: "symbols/function", locals: { function: func }
+      - unless (mixins = @pattern.mixins(exclude: :script)).empty?
+        .content.content--extra-vertical-spacing
+          %h2.type.type--heading.type--heading-2.type--heading-bordered Mixins
+          - mixins.each do |mixin|
+            = render partial: "symbols/mixin", locals: { mixin: mixin }
+  - docks_component("tablist:panel", id: "page__content--behavior", tab_id: "page__content__tab--behavior") do
+    #symbols--behavior{"data-filter-items" => ".section"}
+      - unless (factories = @pattern.factories(include: :script)).empty?
+        - factories.each do |factory|
+          = render partial: "symbols/factory", locals: { factory: factory }
+      - unless (classes = @pattern.classes(include: :script)).empty?
+        - classes.each do |klass|
+          = render partial: "symbols/class", locals: { klass: klass }
+      - unless (variables = @pattern.variables(include: :script)).empty?
+        .content.content--extra-vertical-spacing
+          %h2.type.type--heading.type--heading-2.type--heading-bordered Variables
+          - variables.each do |variable|
+            = render partial: "symbols/variable", locals: { variable: variable }
+      - unless (functions = @pattern.functions(include: :script)).empty?
+        .content.content--extra-vertical-spacing
+          %h2.type.type--heading.type--heading-2.type--heading-bordered Functions
+          - functions.each do |func|
+            = render partial: "symbols/function", locals: { function: func }

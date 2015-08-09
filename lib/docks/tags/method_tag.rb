@@ -1,9 +1,12 @@
+require_relative "member_tag.rb"
+
 module Docks
   module Tags
-    class Method < Base
+    class Method < Member
       def initialize
         @name = :method
         @multiline = false
+        @multiple_allowed = false
       end
 
       def process(symbol)

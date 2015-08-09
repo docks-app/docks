@@ -1,0 +1,25 @@
+<% exploded.configure { |config| config.defaults(markup: nil) } %>
+
+<div class="exploded">
+  <div class="exploded__source">
+    <div class="exploded__source__content">
+      <%= exploded.markup %>
+    </div>
+  </div>
+
+  <div class="exploded__structure">
+    <div class="exploded__structure__content"></div>
+
+    <div class="exploded__control-container">
+      <div class="exploded__control">
+        <label class="label" for="range--perspective">Perspective</label>
+        <input type="range" class="range" id="range--perspective" data-explosion-attribute="perspective">
+      </div>
+
+      <div class="exploded__control">
+        <label class="label" for="range--pane-gap">Gap between panes</label>
+        <input type="range" class="range" id="range--pane-gap" data-explosion-attribute="pane-gap">
+      </div>
+    </div>
+  </div>
+</div>

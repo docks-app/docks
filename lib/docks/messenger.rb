@@ -52,8 +52,6 @@ module Docks
       @@header = header
     end
 
-
-
     def self.puts(str)
       return if @@quiet
       super(str)

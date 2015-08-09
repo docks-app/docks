@@ -38,27 +38,6 @@ describe Docks::Tags::For do
       end
     end
 
-    context "when there are classlike objects with methods and properties" do
-      let(:method) { Docks::Containers::Function.new(name: "toggle", method: true) }
-      let(:property) { Docks::Containers::Variable.new(name: "is_active", property: true) }
-      let(:klass) { Docks::Containers::Klass.new(name: "Foo") }
-      let(:factory) { Docks::Containers::Factory.new(name: "Bar") }
-
-      it "adds the class's name to its methods and properties" do
-        pattern.add(:script, [factory, klass, method, property])
-        post_process
-        expect(method.for).to eq klass.name
-        expect(property.for).to eq klass.name
-      end
-
-      it "adds the factory's name to its methods and properties" do
-        pattern.add(:script, [klass, factory, method, property])
-        post_process
-        expect(method.for).to eq factory.name
-        expect(property.for).to eq factory.name
-      end
-    end
-
     def post_process
       Docks::Process.process(pattern)
     end

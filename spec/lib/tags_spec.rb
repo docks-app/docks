@@ -4,7 +4,7 @@ class Example1 < Docks::Tags::Base
   def initialize
     @name = :name
     @synonyms = [:nom, :nome]
-    @post_processors = %w(foo bar)
+    @multiple_allowed = true
   end
 end
 
@@ -54,6 +54,7 @@ describe Docks::Tags do
   describe ".base_tag_name" do
     before :each do
       subject.register(Example1)
+      subject.register(Example2)
     end
 
     it "returns the passed name if it is a base tag name" do
@@ -70,6 +71,22 @@ describe Docks::Tags do
 
     it "returns the name if the tag class is passed" do
       expect(subject.base_tag_name(example)).to be example.name
+    end
+
+    it "returns the singularized name if the tag allows multiple" do
+      expect(subject.base_tag_name(example)).to be example.name
+    end
+
+    it "returns nil for a pluralized name with multiples prevented" do
+      expect(subject.base_tag_name(Example2.instance.name.to_s.pluralize)).to be nil
+    end
+
+    it "returns the singularized name of a pluralized synonym" do
+      expect(subject.base_tag_name(example.synonyms.first.to_s.pluralize)).to be example.name
+    end
+
+    it "doesn't return anything for the pluralized name of a synonym for a tag that has no multiples" do
+      expect(subject.base_tag_name(Example2.instance.synonyms.first.to_s.pluralize)).to be nil
     end
   end
 

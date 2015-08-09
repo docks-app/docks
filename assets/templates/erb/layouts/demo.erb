@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= docks_stylesheet(:demo) %>
+    <%= compiled_style_tags %>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  </head>
+
+  <body>
+    <%= docks_icons %>
+
+    <div class="wrapper"><%= yield %></div>
+
+    <%= docks_javascript(:demo) %>
+    <%= compiled_script_tags %>
+  </body>
+</html>

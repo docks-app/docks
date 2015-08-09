@@ -1,0 +1,163 @@
+//        ___          ___                     ___          ___
+//       /  /\        /  /\                   /  /\        /  /\        ___
+//      /  /:/_      /  /:/_                 /  /:/_      /  /:/       /  /\
+//     /  /:/ /\    /  /:/ /\  ___     ___  /  /:/ /\    /  /:/       /  /:/
+//    /  /:/ /::\  /  /:/ /:/_/__/\   /  /\/  /:/ /:/_  /  /:/  ___  /  /:/
+//   /__/:/ /:/\:\/__/:/ /:/ /\  \:\ /  /:/__/:/ /:/ /\/__/:/  /  /\/  /::\
+//   \  \:\/:/~/:/\  \:\/:/ /:/\  \:\  /:/\  \:\/:/ /:/\  \:\ /  /:/__/:/\:\
+//    \  \::/ /:/  \  \::/ /:/  \  \:\/:/  \  \::/ /:/  \  \:\  /:/\__\/  \:\
+//     \__\/ /:/    \  \:\/:/    \  \::/    \  \:\/:/    \  \:\/:/      \  \:\
+//       /__/:/      \  \::/      \__\/      \  \::/      \  \::/        \__\/
+//       \__\/        \__\/                   \__\/        \__\/
+
+//*
+// @pattern Select
+//
+// A custom `select` element. In order to present these in the same way across
+// browsers, most of the styling is done on a node wrapped around an actual
+// `select` element, and a bit of JavaScript that translates the focus/ blur
+// on the contained `select` into a state class.
+//
+// @since 1.0.0
+
+
+
+$select--font-size: (font-size(control) * 0.9);
+$select--horizontal-padding: default(control-padding);
+$select--line-height: default(control-size);
+$select--icon-size: $select--font-size / 1.6;
+
+
+
+//*
+// The wrapper around a `select`. This wrapper provides most of the visual
+// styling, including the focus styling. This part of the component also
+// creates a triangle icon in place of the browser-supplied one.
+//
+// @helper
+// <%= docks_select options: %w(Super_long_option_that_is_quite_long normal_size SMALL) %>
+
+.select {
+  // position
+  position: relative;
+
+  // box model
+  display: inline-block;
+
+  // backdrop
+  border-radius: default(border-radius);
+  background-color: ui-color(gray);
+
+  &:after {
+    content: "";
+
+    // position
+    position: absolute;
+    right: $select--horizontal-padding;
+    top: 50%;
+    transform: rotate(45deg);
+
+    // box model
+    display: block;
+    height: $select--icon-size;
+    width: $select--icon-size;
+    margin-top: (-0.75 * $select--icon-size);
+
+    // backdrop
+    border: solid rgba(ui-color(gray, darker), 0.5);
+    border-width: 0 2px 2px 0;
+    pointer-events: none;
+  }
+
+  + .docks-button {
+    margin-left: half(default(spacing));
+  }
+}
+
+//*
+// This state is applied to a `select` whose contained input is focused.
+
+.select--is-focused {
+  border-color: color(blue);
+}
+
+//*
+// A select that should be displayed in a monospace font (for example, because
+// it is choosing a class name).
+
+.select--code {
+  > .select__input {
+    @include type--monospace-font-family;
+  }
+}
+
+
+
+//*
+// The actual `select`. Most of the styles here go to undoing the default
+// browser styles for `select`s. All of the font sizing for the component must
+// be placed here for those styles to display correctly.
+
+.select__input {
+  // box model
+  @include remove-browser-styling;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  padding: 0 (double($select--horizontal-padding) + $select--icon-size) 0 $select--horizontal-padding;
+
+  // backdrop
+  background: transparent;
+  border: none;
+
+  // type
+  font-size: $select--font-size;
+  line-height: default(control-size);
+  font-family: inherit;
+  color: ui-color(gray, darker);
+  // font-family: Consolas, monospace;
+
+  &:focus {
+    outline: none;
+    border: none;
+  }
+
+  > option {
+    color: color(slate);
+  }
+}
+
+// All of the below hacks courtesy of Todd Parker's fine worK here:
+// http://jsbin.com / yaruh / 49 / edit
+
+// Hides native select arrow in IE 10+
+_:-ms-input-placeholder, :root .select__input::-ms-expand {
+  display: none;
+}
+
+// Hides blue background on focus in IE 10+
+_:-ms-input-placeholder, :root .select__input:focus::-ms-value {
+  background: transparent;
+}
+
+// Crazy hacks to target FF and clip the native select arrow
+@supports (-moz-appearance:meterbar) and (background-blend-mode:difference,normal) {
+
+  _::-moz-progress-bar,
+  body:last-child .select__input__wrapper {
+    overflow: hidden;
+  }
+
+  _::-moz-progress-bar,
+  body:last-child .select__input {
+    width: calc(100% + 30px);
+  }
+}
+
+// Kills the stupid focus ring in FF
+.select__input:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 black;
+}

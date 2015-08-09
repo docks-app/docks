@@ -1,13 +1,4 @@
 module Docks
-  module Types
-    module Tags
-      ONE_PER_BLOCK      = :opb
-      ONE_PER_FILE       = :opf
-      MULTIPLE_PER_BLOCK = :mpb
-      MULTIPLE_PER_LINE  = :mpl
-    end
-  end
-
   module Tags
     def self.tag_for(tag)
       @tags[base_tag_name(tag)]
@@ -17,7 +8,14 @@ module Docks
       tag = tag.instance.name if tag.instance_of?(Class)
       tag = tag.name if tag.kind_of?(Base)
       tag = tag.to_sym
-      @synonyms[tag] || @synonyms[tag.to_s.singularize.to_sym]
+
+      found = @synonyms[tag]
+      return found if found
+
+      found = @synonyms[tag.to_s.singularize.to_sym]
+      return unless found
+
+      tag_for(found).multiple_allowed? ? found : nil
     end
 
     def self.register_bundled_tags

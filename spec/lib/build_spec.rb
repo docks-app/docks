@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-template_dir = File.expand_path("../../../lib/template", __FILE__)
+template_dir = File.expand_path("../../../assets", __FILE__)
 empty_dir = File.expand_path("../../fixtures/build/empty", __FILE__)
 existing_dir = File.expand_path("../../fixtures/build/existing", __FILE__)
 
@@ -46,13 +46,6 @@ describe Docks::Builder do
       expect(Dir.exists?(assets_dir)).to be true
     end
 
-    it "copies the images directory to the new directory" do
-      subject.setup(default_options)
-      copied_images = Dir[File.join(assets_dir, "images", "**/*")].map { |file| File.basename(file) }
-      original_images = Dir[File.join(template_dir, "assets", "images", "**/*")].map { |file| File.basename(file) }
-      expect(copied_images).to eq original_images
-    end
-
     %w(yaml json ruby).each do |config_type|
       it "copies the #{config_type} config file to the current directory" do
         default_options[:config_type] = config_type
@@ -61,16 +54,6 @@ describe Docks::Builder do
         config_file = Dir[File.join(empty_dir, "*.*")].first
         config = File.read(config_file)
         expect(config).to eq File.read(Dir[File.join(template_dir, "config", config_type, "*.*")].first)
-      end
-    end
-
-    it "copies the core stylesheet to the pattern library folder" do
-      subject.setup(default_options)
-      copied_stylesheets = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "*.css")].map { |file| File.basename(file) }
-      original_stylesheets = Dir[File.join(template_dir, "assets", "styles", "*.css")].map { |file| File.basename(file) }
-
-      original_stylesheets.each do |stylesheet|
-        expect(copied_stylesheets).to include stylesheet
       end
     end
 
@@ -94,19 +77,9 @@ describe Docks::Builder do
         subject.setup(default_options)
 
         copied_templates = Dir[File.join(assets_dir, Docks.config.asset_folders.templates, "**/*")].map { |file| File.basename(file) }
-        original_templates = Dir[File.join(template_dir, "assets", "templates", template_language, "**/*")].map { |file| File.basename(file) }
+        original_templates = Dir[File.join(template_dir, "templates", template_language, "**/*")].map { |file| File.basename(file) }
 
         expect(copied_templates).to eq original_templates
-      end
-    end
-
-    it "copies the core scripts to the pattern library folder" do
-      subject.setup(default_options)
-      copied_scripts = Dir[File.join(assets_dir, Docks.config.asset_folders.scripts, "*.js")].map { |file| File.basename(file) }
-      original_scripts = Dir[File.join(template_dir, "assets", "scripts", "*.js")].map { |file| File.basename(file) }
-
-      original_scripts.each do |script|
-        expect(copied_scripts).to include script
       end
     end
 
@@ -200,23 +173,52 @@ describe Docks::Builder do
       expect(Dir.exists?(File.join(existing_dir, destination, mount_at))).to be true
     end
 
-    it "copies only the compiled assets from the source directory" do
-      expect(Docks::Grouper).to receive(:group).and_return(Hash.new)
+    it "copies and renames the bundled stylesheets to the destination" do
+      allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
       subject.build
 
-      compiled_assets_selector = "**/*.{css,html,js,svg,png,jpg}"
-      uncompiled_assets_selector = "**/*.{erb,coffee,scss}"
+      original_stylesheets = Docks::Assets.styles.map { |file| File.basename(file).sub("pattern-library", "docks") }
+      copied_stylesheets = Dir[File.join(Docks.config.destination, Docks.config.asset_folders.styles, "*.css")].map { |file| File.basename(file) }
 
-      assets_dir = File.join(existing_dir, "pattern_library_assets")
-      Dir[File.join(assets_dir, "*")].each do |src_dir|
-        src_files = Dir[File.join(src_dir, compiled_assets_selector)].map { |file| file.gsub(assets_dir, "") }
-        copied_files = Dir[File.join(dest_dir, src_dir.split("/").last, compiled_assets_selector)].map { |file| file.gsub(dest_dir, "") }
+      original_stylesheets.each do |stylesheet|
+        expect(copied_stylesheets).to include stylesheet
+      end
+    end
 
-        expect(src_files).to eq copied_files
+    it "copies and renames the bundled javascripts to the destination" do
+      allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
+      subject.build
+
+      original_scripts = Docks::Assets.scripts.map { |file| File.basename(file).sub("pattern_library", "docks") }
+      copied_scripts = Dir[File.join(Docks.config.destination, Docks.config.asset_folders.scripts, "*.js")].map { |file| File.basename(file) }
+
+      original_scripts.each do |script|
+        expect(copied_scripts).to include script
+      end
+    end
+
+    it "copies bundled assets only when changed" do
+      allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
+      subject.build
+
+      assets = Dir[File.join(Docks.config.destination + "**/*.{css,js}")]
+
+      first, rest = assets.first, assets[1..-1]
+      File.open(first, "a") { |file| file.puts("foo") }
+      expect(FileUtils).to receive(:cp).with(anything, first)
+      rest.each { |other| expect(FileUtils).not_to receive(:cp).with(anything, other) }
+
+      subject.build
+    end
+
+    it "copies bundled assets only when config.copy_bundled_assets is true" do
+      allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
+      Docks.configure_with(copy_bundled_assets: false)
+      (Docks::Assets.scripts + Docks::Assets.styles).each do |asset|
+        expect(FileUtils).not_to receive(:cp).with(asset, anything)
       end
 
-      expect(Dir[File.join(assets_dir, uncompiled_assets_selector)]).not_to be_empty
-      expect(Dir[File.join(dest_dir, uncompiled_assets_selector)]).to be_empty
+      subject.build
     end
 
     it "writes a file for each pattern" do
@@ -241,8 +243,35 @@ describe Docks::Builder do
       end
     end
 
-    # Gross test, must refactor
-    it "removes pattens that are no longer part of the pattern group" do
+    # Gross tests, must refactor
+    it "only writes a file for each pattern on change" do
+      allow(Docks::Grouper).to receive(:group).and_return(patterns)
+
+      patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+        renderer = double(render: group, :ivars= => nil)
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+      end
+
+      subject.build
+
+      patterns.each do |id, group|
+        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+        renderer = double(render: group, :ivars= => nil)
+        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+        expect(FileUtils).not_to receive(:cp).with(anything, File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"))
+      end
+
+      subject.build
+    end
+
+    it "removes patterns that are no longer part of the pattern group" do
       files = {}
       expect(Docks::Grouper).to receive(:group).and_return(patterns)
 

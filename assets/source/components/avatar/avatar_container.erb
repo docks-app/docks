@@ -1,0 +1,13 @@
+<%
+  component.configure do |config|
+    config.defaults(size: :medium)
+    config.classes(container: "avatar__container")
+    config.conditional_classes(with: :size) do |size|
+      size == :medium ? {} : { container: "avatar__container--#{size}" }
+    end
+  end
+%>
+
+<div class="<%= component.classes_for(:container) %>">
+  <%= capture(&component.block) %>
+</div>

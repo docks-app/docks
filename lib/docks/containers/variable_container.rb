@@ -8,9 +8,9 @@ module Docks
     class Variable < Symbol
       def self.type; Docks::Types::Symbol::VARIABLE end
 
-      def static?; !!self[:static] end
+      def static?; fetch(:static, false) end
       def instance?; !static? end
-      def property?; !!self[:property] end
+      def property?; fetch(:property, false) end
 
       def symbol_id
         return super unless property?
@@ -19,8 +19,9 @@ module Docks
 
       def summary
         summary = super
-        summary.static = fetch(:static, nil)
-        summary.property = fetch(:property, nil)
+        summary.static = static?
+        summary.property = property?
+        summary.for = fetch(:for, nil)
         summary
       end
 
@@ -28,11 +29,11 @@ module Docks
 
       def matches_exactly?(descriptor)
         name = fetch(:name, nil)
-        is_property = property?
 
-        matches = (!is_property && super) ||
-          (is_property && instance? && descriptor.instance_member == name) ||
-          (is_property && static? && descriptor.static_member == name)
+        return super unless property?
+
+        matches = (instance? && descriptor.instance_member == name) ||
+          (static? && descriptor.static_member == name)
 
         matches && self
       end

@@ -1,0 +1,88 @@
+//        ___                     ___         _____         ___          ___
+//       /  /\       ___         /__/\       /  /::\       /  /\        /__/|
+//      /  /::|     /  /\        \  \:\     /  /:/\:\     /  /:/_      |  |:|
+//     /  /:/:|    /  /:/         \  \:\   /  /:/  \:\   /  /:/ /\     |  |:|
+//    /  /:/|:|__ /__/::\     _____\__\:\ /__/:/ \__\:| /  /:/ /:/_  __|__|:|
+//   /__/:/ |:| /\\__\/\:\__ /__/::::::::\\  \:\ /  /://__/:/ /:/ /\/__/::::\____
+//   \__\/  |:|/:/   \  \:\/\\  \:\~~\~~\/ \  \:\  /:/ \  \:\/:/ /:/   ~\~~\::::/
+//       |  |:/:/     \__\::/ \  \:\  ~~~   \  \:\/:/   \  \::/ /:/     |~~|:|~~
+//       |  |::/      /__/:/   \  \:\        \  \::/     \  \:\/:/      |  |:|
+//       |  |:/       \__\/     \  \:\        \__\/       \  \::/       |  |:|
+//       |__|/                   \__\/                     \__\/        |__|/
+//
+//*
+// @pattern Z-Index
+// @tagline Stack it up!
+// @group Helper
+//
+// `z-index` is managed in this centralized stylesheet to create a manageable
+// and self-documenting system. The process to add z-indexes is as follows:
+//
+// 1. For each stacking context (a set of elements for which you would like
+//    to maintain the stacking order), create a new map with a descriptive
+//    variable name.
+//
+// 2. Add entries to the map for each element that you would like to control the
+//    stacking context of. The delta between elements should not matter, only
+//    the numeric order. Elements with higher numbers will stack on top of
+//    elements with lower z-indexes.
+//
+// 3. `@include z-index` in your stylesheet with the name of the component you are
+//    setting z-index for and the map name defined in step 1.
+//
+// 4. Profit.
+
+
+
+$Z_INDEXES: (
+  global: (
+    content: 10,
+    sidebar: 20
+  ),
+
+  page: (
+    avatar: 10,
+    popover-resting: 20,
+    popover-deactivating: 30,
+    popover-active: 40
+  ),
+
+  avatar: (
+    initials: 10,
+    image: 20
+  ),
+
+  table: (
+    cell: 10,
+    cell-persistant: 20,
+    backdrop: 30
+  )
+);
+
+
+
+//*
+// This mixin creates a z-index declaration based on the element and context
+// passed in. The mixin will attempt to retrieve the `$context` as a key from
+// the global `$Z-INDEXES` map, and will then try to retrieve the `$element`
+// from that map. If this is successful, the z-index declaration is included.
+//
+// @param {String} $element - The element within the stacking context you are
+//                            adding the rule for.
+// @param {String} $context - The stacking context you want to search in for
+//                            `$element`.
+
+@mixin z-index($element, $context) {
+  $index: map-get(map-get($Z_INDEXES, $context), $element);
+
+  @if $index {
+    z-index: $index;
+  }
+}
+
+@function z-index-stacking-context($name, $stack-order) {
+  $new-stack-order: ( $name: $stack-order );
+  $Z_INDEXES: map-merge($Z_INDEXES, $new-stack-order);
+
+  @return true;
+}

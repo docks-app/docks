@@ -1,0 +1,38 @@
+%body
+  - render_everything
+  = stylesheet_link_tag "pattern-library"
+  = docks_icons
+  .page
+    .page__sidebar
+      = render "sidebar"
+    .page__content
+      .vertical-stack
+        .vertical-stack__item.vertical-stack__item--fixed
+          .page-header
+            .grid.grid--vertically-centered
+              .grid__item.grid__item--no-flex
+                %button.sidebar__toggler
+                  %span.helper--visually-hidden Toggle Sidebar
+                  .icon.icon--action.icon--hamburger
+                    .icon--hamburger__slice
+              .grid__item
+                %h1.type.type--heading.type--heading-1= @pattern.title
+              - if has_github?
+                .popover__container
+                  %button.docks-button.docks-button--dark
+                    Github
+                    %i.icon.icon--disclosure
+                  - docks_popover do
+                    .list
+                      %a.list__item{href: "#{github_root_url}/issues/new?body=#{url_encode(github_issue_message)}", target: "_blank"} File an issue
+                      .list__group
+                        %h4.type.type--heading.type--heading-4 View source
+                        - relative_pattern_files.each do |file|
+                          %a.list__item.type--code{href: "#{github_url(file)}", target: "_blank"}= File.basename(file)
+        .vertical-stack__item
+          %main.scroll-container= yield
+      = docks_details_sheet
+      = docks_xray
+  :javascript
+    window.pattern = #{CGI.unescapeHTML(@pattern.to_json)};
+  = javascript_include_tag "pattern_library"

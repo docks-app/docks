@@ -1,0 +1,38 @@
+.content.content--extra-vertical-spacing
+  .section{"data-private" => "#{factory.private?}", id: "#{factory.symbol_id}"}
+    %h2.type.type--heading.type--heading-2.type--heading-bordered
+      %span.type--code= factory.name
+    .type-container= factory.description
+    = docks_code_block(code: factory.signature, language: factory.source.language_code)
+    - unless (params = factory.fetch(:params, [])).empty?
+      %h4.type.type--heading.type--heading-4 Parameters
+      - params.each do |param|
+        %h5.type.type--heading.type--heading-5
+          %span.type--code= param.name
+          %span.badge= param.types.first
+        .type-container.type-container--small= param.description
+        - unless (properties = param.properties || []).empty?
+          - docks_table do
+            %thead.table__header
+              %tr.table__row
+                %th.table__cell Name
+                %th.table__cell Description
+                %th.table__cell Types
+                %th.table__cell.table__cell--centered Default
+            %tbody.table__body
+              - properties.each do |property|
+                %tr.table__row
+                  %td.table__cell
+                    %code.type--code= property.name
+                  %td.table__cell
+                    .type-container.type-container--small= property.description
+                  %td.table__cell= (type = property.types.try(:first)) ? "<span class='type--code'>#{type}</span>".html_safe : "Anything"
+                  %td.table__cell.table__cell--centered= (default = property.default) ? "<span class='type--code'>#{default}</span>".html_safe : "&mdash;".html_safe
+    - unless (examples = factory.fetch(:examples, [])).empty?
+      %h4.type.type--heading.type--heading-4= "Example".pluralize(examples.length)
+      - examples.each do |example|
+        = docks_code_block(code: example.code, language: example.language, condensed?: true)
+  - factory.properties.each do |property|
+    = render "docks/partials/variable", variable: property
+  - factory.methods.each do |method|
+    = render "docks/partials/function", function: method

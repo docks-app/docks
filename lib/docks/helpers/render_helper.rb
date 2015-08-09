@@ -1,6 +1,11 @@
+require "erb"
+require "active_support/core_ext/string/output_safety"
+
 module Docks
   module Helpers
     module Render
+      include ::ERB::Util
+
       def render_everything
         render_everything_for(@pattern)
         @pattern.symbols.each { |symbol| render_everything_for(symbol) }
@@ -22,6 +27,10 @@ module Docks
             else
               symbol[k] = render_everything_for(v, options)
             end
+          end
+
+          if symbol.respond_to?(:members)
+            symbol.members.each { |member| render_everything_for(member, options) }
           end
 
         when Array
@@ -51,7 +60,7 @@ module Docks
       def render_description(description, options = {})
         @example_count ||= 0
         description.gsub! /(href\s*=\s*['"])@link\s([^'"]*)(.)/ do |match|
-          "#{$1}#{docks_path_to($2, options)}#{$3}"
+          "#{$1}#{docks_path($2, options)}#{$3}"
         end
 
         render(layout: false, inline: description.gsub(/<fenced_code_block[^>]*>(.*?)<\/fenced_code_block>/m) { |match|
@@ -72,7 +81,6 @@ module Docks
                            id: "code-block--example-#{@example_count}",
                            demo?: has_demo
         })
-        # html_safe!
       end
     end
   end

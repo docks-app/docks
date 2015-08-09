@@ -1,0 +1,21 @@
+<%
+  popover.configure do |config|
+    config.defaults(align: :center, relative_to: nil)
+    config.classes(base: "popover")
+
+    config.conditional_classes with: :align do |alignment|
+      { base: "popover--align-to-#{alignment}" }
+    end
+  end
+%>
+
+<div class="<%= popover.classes_for(:base) %>"<% unless popover.relative_to.nil? %> data-popover-horizontally-relative-to-closest="<%= popover.relative_to %>"<% end %>>
+  <div class="popover__tooltip"></div>
+  <div class="popover__content-wrapper">
+    <div class="popover__content">
+      <% if popover.block %>
+        <%= capture(popover, &popover.block) %>
+      <% end %>
+    </div>
+  </div>
+</div>

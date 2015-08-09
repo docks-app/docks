@@ -6,5 +6,11 @@ rvm:
   - 2.2
   - rbx-2
   - ruby-head
+install:
+  - bundle install
+  - npm install
+script:
+  - rake spec
+  - gulp spec
 notifications:
   slack: lemon:SeSji4OVQ1qGtQ2Gg2iTLCge

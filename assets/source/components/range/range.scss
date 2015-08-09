@@ -1,0 +1,78 @@
+//        ___                              _____        ___          ___
+//       /  /\                   ___      /  /::\      /  /\        /  /\
+//      /  /:/_                 /  /\    /  /:/\:\    /  /:/_      /  /::\
+//     /  /:/ /\  ___     ___  /  /:/   /  /:/  \:\  /  /:/ /\    /  /:/\:\
+//    /  /:/ /::\/__/\   /  /\/__/::\  /__/:/ \__\:|/  /:/ /:/_  /  /:/~/:/
+//   /__/:/ /:/\:\  \:\ /  /:/\__\/\:\_\  \:\ /  /:/__/:/ /:/ /\/__/:/ /:/___
+//   \  \:\/:/~/:/\  \:\  /:/    \  \:\/\  \:\  /:/\  \:\/:/ /:/\  \:\/:::::/
+//    \  \::/ /:/  \  \:\/:/      \__\::/\  \:\/:/  \  \::/ /:/  \  \::/~~~~
+//     \__\/ /:/    \  \::/       /__/:/  \  \::/    \  \:\/:/    \  \:\
+//       /__/:/      \__\/        \__\/    \__\/      \  \::/      \  \:\
+//       \__\/                                         \__\/        \__\/
+
+//*
+// @pattern Slider
+//
+// A simple range slider. Use this component for situations where the user has
+// to select from a continuous range of values with a minimum and maximum. For
+// example, this component is used to change the perspective and pane gap for
+// the `Exploded` component.
+//
+// @since 1.0.0
+
+//*
+// @markup
+// <label class="label" for="range">Try something in range</label>
+// <input class="range" name="range" id="range" type="range">
+
+.range {
+  width: 100%;
+  margin: 0;
+
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+$range__track--size: default(control-size--large);
+$range__thumb--spacing: (0.1 * default(control-size--large));
+$range__thumb--size: ($range__track--size - double($range__thumb--spacing));
+
+@mixin range__track {
+  // box model
+  width: 100%;
+  height: $range__track--size;
+
+  // backdrop
+  cursor: pointer;
+  background-color: ui-color(gray, dark);
+  border-radius: half($range__track--size);
+  padding: $range__thumb--spacing;
+}
+
+@mixin range__thumb {
+  // box model
+  height: $range__thumb--size;
+  width: $range__thumb--size;
+
+  // backdrop
+  box-shadow: 1px 1px 3px rgba(color(black), 0.15);
+  border-radius: half($range__thumb--size);
+  background: ui-color(gray, light);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.range::-webkit-slider-runnable-track { @include range__track; }
+.range:focus::-webkit-slider-runnable-track { outline: none; }
+.range::-moz-range-track { @include range__track; }
+.range::-ms-track { @include range__track; }
+
+.range::-webkit-slider-thumb { @include range__thumb; }
+.range::-moz-range-thumb { @include range__thumb; }
+.range::-ms-thumb { @include range__thumb; }

@@ -1,0 +1,34 @@
+//*
+// This mixin allows you to specify custom styling for items that should be
+// hidden based on the attached filters. By default, filtered items are set to
+// `display: none;` — use this mixin to provide custom styles.
+//
+// Note that this mixin can't be used at the root level — it must be nested
+// under another selector.
+//
+// @example
+// .foo {
+//   @include when-filtered {
+//     background: red;
+//   }
+// }
+//
+// // yields:
+//
+// .foo[data-filtered-status = "hidden"] {
+//   display: block !important; // overrides the default hidden state
+//   background: red;
+// }
+
+@mixin when-filtered {
+  &[data-filtered-status = "hidden"] {
+    display: block !important;
+    @content;
+  }
+}
+
+.filter--highlight {
+  background-color: color(yellow);
+}
+
+[data-filtered-status = "hidden"] { display: none !important; }

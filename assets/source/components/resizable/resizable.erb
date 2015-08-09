@@ -1,0 +1,30 @@
+<%
+  resizable.configure { |config| config.defaults(id: unique_iframe_id) }
+  id = resizable.id
+%>
+
+<div class="resizable" data-iframe-id="<%= id %>">
+  <div class="resizable__actions">
+    <div class="resizable__width-indicator">
+      <span class="resizable__width-indicator__px"></span>px / <span class="resizable__width-indicator__em"></span>em
+    </div>
+
+    <div class="resizable__size-buttons">
+      <% %w(small medium large full).each_with_index do |size, index| %>
+        <div class="resizable__size-button resizable__size-button--<%= size %>" role="button" tabindex="<%= index == 0 ? '0' : '-1' %>" data-resizable-size-button-size="<%= size %>">
+          <span class="helper--visually-hidden">Set the resizable demo window to size: <%= size %>.</span>
+          <%= docks_icon(size) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <%= docks_iframe id: id, demo: resizable.demo %>
+
+    <div class="resizable__handle" tabindex="0">
+      <span class="helper--visually-hidden">Use the arrow keys to resize the resizable demo window.</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<%
+  panel.configure do |config|
+    config.defaults active?: false,
+                    id: "panel",
+                    tab_id: "tab"
+
+    config.classes(base: "tablist__panel")
+    config.conditional_classes(if: :active?, base: "tablist__panel--is-active")
+  end
+%>
+
+<div class="<%= panel.classes_for(:base) %>" role="tab-panel" id="<%= panel.id %>" aria-hidden="<%= !panel.active? %>" aria-labelledby="<%= panel.tab_id %>">
+  <%= capture(panel, &panel.block) %>
+</div>

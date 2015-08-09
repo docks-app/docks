@@ -1,0 +1,166 @@
+//        ___          ___         ___                   ___        _____        ___        _____
+//       /  /\        /__/|       /  /\                 /  /\      /  /::\      /  /\      /  /::\
+//      /  /:/_      |  |:|      /  /::\               /  /::\    /  /:/\:\    /  /:/_    /  /:/\:\
+//     /  /:/ /\     |  |:|     /  /:/\:\___     ___  /  /:/\:\  /  /:/  \:\  /  /:/ /\  /  /:/  \:\
+//    /  /:/ /:/_  __|__|:|    /  /:/~/:/__/\   /  /\/  /:/  \:\/__/:/ \__\:|/  /:/ /:/_/__/:/ \__\:|
+//   /__/:/ /:/ /\/__/::::\___/__/:/ /:/\  \:\ /  /:/__/:/ \__\:\  \:\ /  /:/__/:/ /:/ /\  \:\ /  /:/
+//   \  \:\/:/ /:/   ~\~~\::::|  \:\/:/  \  \:\  /:/\  \:\ /  /:/\  \:\  /:/\  \:\/:/ /:/\  \:\  /:/
+//    \  \::/ /:/     |~~|:|~~ \  \::/    \  \:\/:/  \  \:\  /:/  \  \:\/:/  \  \::/ /:/  \  \:\/:/
+//     \  \:\/:/      |  |:|    \  \:\     \  \::/    \  \:\/:/    \  \::/    \  \:\/:/    \  \::/
+//      \  \::/       |  |:|     \  \:\     \__\/      \  \::/      \__\/      \  \::/      \__\/
+//       \__\/        |__|/       \__\/                 \__\/                   \__\/
+
+//*
+// @pattern Exploded
+//
+// An exploded view of a given DOM structure that can be freely rotated. It
+// allows the user to see the structure of the component as it is rendered,
+// helping them learn about subcomponents that make up the overall structure.
+//
+// @since 1.0.0
+
+
+
+//*
+// This is the base component for an explosion. It contains the source markup
+// and the exploded representation, as well as communicates overall states of
+// the component to subcomponents.
+//
+// @helper
+// <%= docks_exploded markup: %Q(
+//   <div class="foo" style="padding: 1em;">
+//     <div class="foo__bar" style="height: 5em; position: relative;">
+//       <div class="foo__bar__baz" style="width: 50%; height: 100%; position: absolute; top: 0; left: 0;"></div>
+//       <div class="foo__bar__baz" style="width: 50%; height: 100%; position: absolute; top: 0; left: 50%;"></div>
+//     </div>
+//   </div>
+// ) %>
+
+.exploded {}
+
+.exploded--is-being-initialized {
+  .exploded__pane {
+    transition: transform 0.25s ease;
+  }
+}
+
+
+
+.exploded__source,
+.exploded__structure {
+  padding: default(spacing) double(default(spacing));
+}
+
+
+
+//*
+// The container for the original source markup for the component. This is
+// kept around so that each pane can be associated to a source DOM node for
+// any consumer of the explosion pane selection to display source structure
+// details.
+
+.exploded__source {}
+
+//*
+// A container that wraps exactly around the source markup. This extra
+// container (corresponding to the structure's `exploded__structure__content`)
+// is required to simplify absolute positioning calculations for the
+// JavaScript component.
+
+.exploded__source__content {}
+
+
+
+//*
+// The container around the exploded representation. This container provides
+// the perspective required to make the component three-dimensional.
+
+.exploded__structure {
+  position: relative;
+  perspective: 2000px;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+
+
+//*
+// The container that wraps exactly around the exploded structure. This extra
+// container exists so that `exploded__structure` can provide some padding/
+// horizontal centering of the exploded structure while also providing a
+// simple relative container (this subcomponent) from which to make absolute
+// positioning calculations.
+
+.exploded__structure__content {
+  position: relative;
+  z-index: 0;
+  margin: 0 auto;
+}
+
+
+
+//*
+// The container for all controls (range sliders) that can be used to
+// manipulate the component.
+
+.exploded__control-container {
+  display: flex;
+  align-items: flex-end;
+  margin: 3rem negative(default(spacing)) 0;
+}
+
+//*
+// A container for a single control that manipulates the component.
+
+.exploded__control {
+  flex: 1 1 0;
+  margin-left: default(spacing);
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+
+
+//*
+// A single pane representing a DOM node in the source markup. These panes are
+// absolutely positioned by the JavaScript part of this components and,
+// likewise, are rotated in three-dimensional space as the user drags over the
+// component.
+
+.exploded__pane {
+  // position
+  position: absolute;
+
+  // box model
+  box-sizing: content-box;
+
+  // backdrop
+  @include default(border-radius);
+  background-color: rgba(ui-color(gray, darker), 0.6);
+  border: 1px solid rgba(ui-color(gray), 0.5);
+
+  // transition
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: ui-color(blue);
+  }
+}
+
+//*
+// The JavaScript adds this state to panes that have been clicked/ tapped by
+// the user. The actual representation of the active pane is deferred to other
+// components (this is done by firing an event with a reference to this
+// selected pane).
+//
+// @demo_type none
+// @set_by Exploded.click
+
+.exploded__pane--is-selected {
+  &, &:hover {
+    background: ui-color(blue, dark);
+    opacity: 1;
+  }
+}

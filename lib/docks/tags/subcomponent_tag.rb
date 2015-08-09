@@ -3,6 +3,7 @@ module Docks
     class Subcomponent < Base
       def initialize
         @name = :subcomponent
+        @multiple_allowed = true
         @parseable = false
       end
 
