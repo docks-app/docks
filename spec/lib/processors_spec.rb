@@ -170,7 +170,7 @@ describe Docks::Processors do
   end
 
   describe ".split_types" do
-    let(:target_array) { %w(Array String) }
+    let(:target_array) { %w(Array String).map { |type| OpenStruct.new(name: type, array: false) } }
 
     it "breaks apart commas" do
       expect(subject.split_types("{Array, String}")).to eq target_array
@@ -189,6 +189,14 @@ describe Docks::Processors do
     it "breaks apart spaces alone" do
       expect(subject.split_types("{Array String}")).to eq target_array
       expect(subject.split_types("{Array  String}")).to eq target_array
+    end
+
+    it "identifies arrays" do
+      expect(subject.split_types("{String[]}").first).to eq OpenStruct.new(name: "String", array: true)
+    end
+
+    it "converts '*' to 'Anything'" do
+      expect(subject.split_types("{*}").first).to eq OpenStruct.new(name: "Anything", array: false)
     end
   end
 

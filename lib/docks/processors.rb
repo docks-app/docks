@@ -70,13 +70,27 @@ module Docks
     #
     # Examples
     #
-    #   split_types("{String, Array |Object}")
-    #   # => ["String", "Array", "Object"]
+    #   split_types("{String, Number |Object[]}")
+    #   # => [
+    #          OpenStruct.new(name: "String", array: false),
+    #          OpenStruct.new(name: "Number", array: false),
+    #          OpenStruct.new(name: "Object", array: true)
+    #        ]
     #
     # Returns an Array of types.
 
     def split_types(content)
-      split_on_commas_spaces_and_pipes(content.gsub(/[\{\}]/, "").strip)
+      split_on_commas_spaces_and_pipes(content.gsub(/[\{\}]/, "").strip).map do |type|
+        array, type = if /\[\]/ =~ type
+          [true, type.split("[").first]
+        else
+          [false, type]
+        end
+
+        type = "Anything" if type == "*"
+
+        OpenStruct.new(name: type, array: array)
+      end
     end
 
     # Public: Processes the passed content splitting it on type-delimitting

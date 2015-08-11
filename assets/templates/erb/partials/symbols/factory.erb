@@ -14,7 +14,11 @@
       <% params.each do |param| %>
         <h5 class="type type--heading type--heading-5">
           <span class="type--code"><%= param.name %></span>
-          <span class="badge"><%= param.types.first %></span>
+          <span class="badge"><%= param.types.first.name %><%= "[]" if param.types.first.array %></span>
+
+          <% if param.multiple %>
+            <span class="badge">Multiple</span>
+          <% end %>
         </h5>
 
         <div class="type-container type-container--small"><%= param.description %></div>
