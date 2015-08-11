@@ -22,6 +22,7 @@ describe Docks::Tags::Param do
     it "creates the param when only the name is provided" do
       result = process_param_with([name]).first
       expect(result.name).to eq name
+      expect(result.multiple).to be false
     end
 
     it "creates the param when special characters exist in the name" do
@@ -30,6 +31,20 @@ describe Docks::Tags::Param do
 
       result = process_param_with(["$$with-dollars"]).first
       expect(result.name).to eq "$$with-dollars"
+    end
+
+    context "when this param represents multiple params" do
+      it "is not multiple when no spread operator is used" do
+        result = process_param_with([name]).first
+        expect(result.name).to eq name
+        expect(result.multiple).to be false
+      end
+
+      it "indicates that the param is a multiple param when the spread operator is used" do
+        result = process_param_with(["...#{name}"]).first
+        expect(result.name).to eq name
+        expect(result.multiple).to be true
+      end
     end
 
     context "when types provided" do
@@ -144,12 +159,51 @@ describe Docks::Tags::Param do
         expect(result.default).to eq default
         expect(result.description).to eq description
       end
+
+      it "processes lines with a name, types, spread param, and description" do
+        result = process_param_with(["{#{types}} ...#{name}  #{description}"]).first
+        expect(result.name).to eq name
+        expect(result.types).to eq processed_types
+        expect(result.optional).to be false
+        expect(result.multiple).to be true
+        expect(result.default).to be nil
+        expect(result.description).to eq description
+
+        result = process_param_with([" {#{types}}  ...#{name}   -#{description}"]).first
+        expect(result.name).to eq name
+        expect(result.types).to eq processed_types
+        expect(result.optional).to be false
+        expect(result.multiple).to be true
+        expect(result.default).to be nil
+        expect(result.description).to eq description
+      end
+
+      it "processes lines with a name, types, spread param, default value, and description" do
+        result = process_param_with(["{#{types}} [...#{name}= #{default}] #{description}"]).first
+        expect(result.name).to eq name
+        expect(result.types).to eq processed_types
+        expect(result.optional).to be true
+        expect(result.multiple).to be true
+        expect(result.default).to eq default
+        expect(result.description).to eq description
+
+        ap result
+
+        result = process_param_with([" {#{types}}  [...#{name}   = #{default}]   -#{description}"]).first
+        expect(result.name).to eq name
+        expect(result.types).to eq processed_types
+        expect(result.optional).to be true
+        expect(result.multiple).to be true
+        expect(result.default).to eq default
+        expect(result.description).to eq description
+      end
     end
 
     context "when there are properties" do
       let(:base_param) { "foo" }
       let(:prop_one) { "{String} foo.bar" }
       let(:prop_two) { "{Number} foo['baz']" }
+      let(:prop_three) { "{String} foo[].qux" }
       let(:unrelated) { "qux" }
 
       it "joins a property using dot syntax" do
@@ -168,6 +222,16 @@ describe Docks::Tags::Param do
         expect(param.name).to eq base_param
         expect(param.properties.length).to be 1
         expect(param.properties.first.name).to eq "baz"
+      end
+
+      it "joins a property with another property that is an array" do
+        params = process_param_with([base_param, prop_three])
+        param = params.first
+
+        expect(params.length).to be 1
+        expect(param.name).to eq base_param
+        expect(param.properties.length).to be 1
+        expect(param.properties.first.name).to eq "qux"
       end
 
       it "creates a base param when none exists" do

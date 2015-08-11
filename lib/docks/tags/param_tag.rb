@@ -21,22 +21,32 @@ module Docks
       private
 
       PROP_MATCHER = /(?<base>\w+)(?:\.(?<name>\w+)|\[\s*['"](?<name>\w+))/
+      NAME_MATCHER = /(?<optional>\[)?(?<name>[^\s=\]]*)[\s=\]]*/
 
       def proccess_first_line_of_param(first_line)
         first_line = first_line.strip
-        result = Hash.new
+        result = {
+          multiple: false,
+          types: Array.new,
+          optional: false,
+          description: nil
+        }
 
         if type_match = first_line.match(/^\{([^\}]*)\}\s*/)
           result[:types] = split_types(type_match.captures.first)
           first_line = first_line.sub(type_match.to_s, "")
-        else
-          result[:types] = Array.new
         end
 
-        name_match = first_line.match(/(?<optional>\[)?(?<name>[^\s=\]]*)[\s=\]]*/)
+        first_line.sub!(/([^=\s])\[\]/, '\1')
+        name_match = first_line.match(NAME_MATCHER)
         result[:optional] = !name_match[:optional].nil?
         result[:name] = name_match[:name]
         first_line = first_line.sub(name_match.to_s, "")
+
+        result[:name].sub!(/^\.{3}/) do
+          result[:multiple] = true
+          ""
+        end
 
         description_match = first_line.match(/\s*\-\s*(.*)/)
         result[:description] = description_match.nil? ? nil : description_match.captures.first
