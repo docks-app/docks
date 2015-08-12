@@ -29,7 +29,6 @@ describe Docks::Containers::Base do
     context "when the method is a plural of a recognized tag" do
       it "normalizes the singular version of the hash name" do
         expect(Docks::Tags).to receive(:base_tag_name).at_least(:once).with(:params).and_call_original
-        expect(Docks::Tags).to receive(:base_tag_name).at_least(:once).with(:param).and_call_original
         container.params
       end
 

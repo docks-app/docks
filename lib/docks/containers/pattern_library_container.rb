@@ -69,7 +69,7 @@ module Docks
 
       def summary!
         @summary = true
-        @patterns = Hash[@patterns.map { |name, pattern| pattern.summary }]
+        @patterns = Hash[@patterns.map { |name, pattern| [name, pattern.summary] }]
       end
       alias_method :summarize!, :summary!
     end

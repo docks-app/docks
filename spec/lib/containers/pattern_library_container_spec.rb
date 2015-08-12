@@ -119,7 +119,7 @@ describe Docks::Containers::PatternLibrary do
   describe "#summary!" do
     it "returns a pattern library with all patterns summarized" do
       subject << pattern_two
-      subject.summary!
+      expect { subject.summary! }.not_to change { subject.patterns.keys.length }
       expect(subject).to be_summarized
 
       subject.patterns.each do |name, pattern|
