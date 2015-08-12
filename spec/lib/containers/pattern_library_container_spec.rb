@@ -102,4 +102,29 @@ describe Docks::Containers::PatternLibrary do
       expect(subject.find("#{pattern_two.name}::CodeBlock")).to eq OpenStruct.new(pattern: pattern_two, symbol: factory)
     end
   end
+
+  describe "#summary" do
+    it "returns a pattern library with all patterns summarized" do
+      subject << pattern_two
+      summary = subject.summary
+      expect(subject).not_to be_summarized
+      expect(summary).to be_summarized
+
+      summary.patterns.each do |name, pattern|
+        expect(pattern).to be_summarized
+      end
+    end
+  end
+
+  describe "#summary!" do
+    it "returns a pattern library with all patterns summarized" do
+      subject << pattern_two
+      subject.summary!
+      expect(subject).to be_summarized
+
+      subject.patterns.each do |name, pattern|
+        expect(pattern).to be_summarized
+      end
+    end
+  end
 end

@@ -69,6 +69,10 @@ module Docks
       "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
     end
 
+    def paginate?
+      !!@paginate
+    end
+
     def pattern_id(*args)
       Docks.pattern_id(*args)
     end

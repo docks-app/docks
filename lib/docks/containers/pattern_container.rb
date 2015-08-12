@@ -112,6 +112,8 @@ module Docks
       alias_method :demo, :demos
 
       def summary
+        return self if summarized?
+
         summary = super
         summary.group = group
         summary.title = title
