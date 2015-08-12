@@ -31,6 +31,14 @@
     <a href="<%= docks_path(type, language: variable.source.language_code) %>"><code class="type--code"><%= type %></code></a>
   <% end %>
 
+  <% unless (used_by = variable.fetch(:used_by, [])).empty? %>
+    <h4 class="type type--heading type--heading-4">Used By</h4>
+
+    <% used_by.each do |user| %>
+      <a href="<%= docks_path(user, language: variable.source.language_code) %>"><code class="type--code"><%= user %></code></a>
+    <% end %>
+  <% end %>
+
   <% { "properties" => "variable", "methods" => "function" }.each do |prop, partial| %>
     <% unless (props = variable.send(prop.to_sym)).empty? %>
       <h4 class="type type--heading type--heading-4"><%= prop.capitalize %></h4>

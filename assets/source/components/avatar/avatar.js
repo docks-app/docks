@@ -130,7 +130,9 @@ Avatar = (node) => {
 // @method
 // @static
 //
-// @param {HTMLElement} [context = document] - The context in which to search
+// @requires builder::Builder
+//
+// @arg {HTMLElement} [context = document] - The context in which to search
 // for DOM nodes that should be used as the root of an [`Avatar`](@link)
 // component.
 
