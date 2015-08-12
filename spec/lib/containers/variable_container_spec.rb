@@ -6,11 +6,19 @@ describe Docks::Containers::Variable do
   end
 
   let(:static_property) do
-    described_class.new(name: "bar", static: true, property: true, for: "Foo")
+    described_class.new(name: "bar", static: true, property: true)
   end
 
   let(:instance_property) do
-    described_class.new(name: "baz", static: false, property: true, for: "Foo")
+    described_class.new(name: "baz", static: false, property: true)
+  end
+
+  let(:factory) do
+    Docks::Containers::Factory.new(name: "Foo")
+  end
+
+  before(:each) do
+    factory.add_members(instance_property, static_property)
   end
 
   describe "#static?" do
@@ -35,22 +43,37 @@ describe Docks::Containers::Variable do
   end
 
   describe "#symbol_id" do
-    let(:property) { described_class.new(name: "foo") }
-    let(:factory) { Docks::Containers::Factory.new(name: "Foo") }
-
-    it "returns the default if the property is not a property" do
-      expect(property.symbol_id).to eq "variable-#{property.name}"
+    it "returns the default if the variable is not a property" do
+      expect(variable.symbol_id).to eq "variable-#{variable.name}"
     end
 
     it "indicates it's a property and adds the classlike's name if it is a property" do
-      factory.add_member(property)
-      expect(property.symbol_id).to eq "property-#{factory.name}-#{property.name}"
+      expect(instance_property.symbol_id).to eq "property-#{factory.name}-#{instance_property.name}"
     end
 
     it "indicates that it's static if appropriate" do
-      property.static = true
-      factory.add_member(property)
-      expect(property.symbol_id).to eq "property-static-#{factory.name}-#{property.name}"
+      expect(static_property.symbol_id).to eq "property-static-#{factory.name}-#{static_property.name}"
+    end
+  end
+
+  describe "#to_descriptor" do
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
+
+    it "returns the super descriptor if not a property" do
+      expect(variable.to_descriptor).to eq variable.name
+
+      pattern.add(:script, variable)
+      expect(variable.to_descriptor).to eq "#{pattern.name}::#{variable.name}"
+    end
+
+    it "returns the proper instance property descriptor" do
+      pattern.add(:script, factory)
+      expect(instance_property.to_descriptor).to eq "#{factory.to_descriptor}##{instance_property.name}"
+    end
+
+    it "returns the proper static property descriptor" do
+      pattern.add(:script, factory)
+      expect(static_property.to_descriptor).to eq "#{factory.to_descriptor}.#{static_property.name}"
     end
   end
 

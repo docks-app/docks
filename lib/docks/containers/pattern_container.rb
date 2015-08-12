@@ -27,7 +27,12 @@ module Docks
       end
 
       def add(source, symbols)
-        pattern_symbol, regular_symbols = Array(symbols).partition { |symbol| !symbol.pattern.nil? }
+        symbols = [symbols].flatten
+        symbols.each do |symbol|
+          symbol.belongs_to = self
+        end
+
+        pattern_symbol, regular_symbols = symbols.partition { |symbol| !symbol.pattern.nil? }
 
         unless pattern_symbol.empty?
           pattern_symbol = pattern_symbol.first

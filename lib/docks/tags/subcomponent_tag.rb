@@ -33,7 +33,7 @@ module Docks
       end
 
       def find_parent_component(component)
-        parent_component_name = Naming.convention.parent_component(component.name)
+        parent_component_name = Docks.config.naming_convention.parent_component(component.name)
         return if parent_component_name == component.name
 
         created_component = false

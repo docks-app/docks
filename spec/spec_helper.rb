@@ -18,6 +18,10 @@ RSpec.configure do |config|
 
     example.run
 
+    # Forces any partially-run, multi-stage processing to finish
+    Docks::Process.process(Docks::Containers::Pattern.new)
+    Docks::Process.process(Docks::Containers::PatternLibrary.new)
+
     Docks.config.restore_defaults
     Docks::Languages.send(:clean)
     Docks::Tags.send(:clean)

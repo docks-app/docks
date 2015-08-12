@@ -125,8 +125,8 @@ module Docks
       @compiled_assets = []
       @github_repo = nil
       @paginate = :pattern
-      @naming_convention = NamingConventions::BEM
-      @theme = Themes::API
+      @naming_convention = NamingConventions::BEM.instance
+      @theme = Themes::API.instance
 
       @root = Pathname.pwd
       @cache_location = ".#{Docks::Cache::DIR}"

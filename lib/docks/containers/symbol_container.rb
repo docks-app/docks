@@ -31,7 +31,7 @@ module Docks
       def has_members?; !members.empty? end
 
       def add_member(symbol)
-        symbol.for = self[:name]
+        symbol.for = fetch(:name)
         symbol.belongs_to = self
         symbol.static = true
 
@@ -57,6 +57,13 @@ module Docks
 
       def symbol_id
         "#{fetch(:symbol_type)}-#{fetch(:name)}"
+      end
+
+      def to_descriptor
+        descriptor = ""
+        descriptor << "#{belongs_to.name}::" unless belongs_to.nil?
+        descriptor << fetch(:name)
+        descriptor
       end
 
       def summary

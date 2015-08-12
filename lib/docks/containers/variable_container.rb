@@ -14,7 +14,12 @@ module Docks
 
       def symbol_id
         return super unless property?
-        "property-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
+        "property-#{"static-" if static?}#{fetch(:for)}-#{fetch(:name)}"
+      end
+
+      def to_descriptor
+        return super unless property?
+        "#{belongs_to.to_descriptor}#{static? ? "." : "#"}#{fetch(:name)}"
       end
 
       def summary

@@ -45,10 +45,10 @@ module Docks
       def clean_component_variation_names(component)
         component.variations.each do |variation|
           component_name = component.name
-          variation.name = Naming.convention.clean_variation_name(variation.name, component_name)
+          variation.name = Docks.config.naming_convention.clean_variation_name(variation.name, component_name)
 
           [:activate_with, :precludes].each do |need_name_fix|
-            variation[need_name_fix].map! { |item| Naming.convention.clean_variation_name(item, component_name) }
+            variation[need_name_fix].map! { |item| Docks.config.naming_convention.clean_variation_name(item, component_name) }
           end
         end
 
@@ -72,7 +72,7 @@ module Docks
       end
 
       def component_for_variation(pattern, variation)
-        component_name = Naming.convention.component(variation.name)
+        component_name = Docks.config.naming_convention.component(variation.name)
 
         component = nil
         (@components + @new_components).each do |check_component|

@@ -147,6 +147,14 @@ describe Docks::Containers::Pattern do
       expect(pattern.behavior_symbols.length).to be 2
       expect(pattern.behavior_symbols).to eq [dummy_symbol_1, dummy_symbol_2]
     end
+
+    it "adds the belongs_to attribute to all contained symbols" do
+      pattern.add(:script, [dummy_symbol_1, dummy_symbol_2])
+
+      pattern.symbols.each do |symbol|
+        expect(symbol.belongs_to).to be pattern
+      end
+    end
   end
 
   describe "#remove" do

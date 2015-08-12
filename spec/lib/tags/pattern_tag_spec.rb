@@ -17,4 +17,33 @@ describe Docks::Tags::Pattern do
       expect(subject.process(content)).to eq content
     end
   end
+
+  describe "post processing" do
+    let(:symbols) do
+      [
+        Docks::Containers::Klass.new(name: "Foo"),
+        Docks::Containers::Factory.new(name: "Bar"),
+        Docks::Containers::Function.new(name: "fooBar"),
+        Docks::Containers::Variable.new(name: "baz")
+      ]
+    end
+
+    let(:pattern) do
+      pattern = Docks::Containers::Pattern.new(name: "foo")
+      pattern.add(:script, symbols)
+      pattern
+    end
+
+    before(:each) do
+      Docks::Tags.register(described_class)
+    end
+
+    it "adds the pattern name to all contained symbols" do
+      Docks::Process.process(pattern)
+
+      pattern.symbols.each do |symbol|
+        expect(symbol[subject]).to eq pattern.name
+      end
+    end
+  end
 end

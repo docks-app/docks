@@ -60,14 +60,14 @@ describe Docks::Tags::Subcomponent do
       expect(pattern.components.length).to be 1
 
       component = pattern.components.first
-      expect(component.name).to eq Docks::Naming.convention.base_component(orphan_subcomponent_one.name)
+      expect(component.name).to eq Docks.config.naming_convention.base_component(orphan_subcomponent_one.name)
 
       subcomponents = component.subcomponents
       expect(subcomponents.length).to be 2
       expect(subcomponents).to include orphan_subcomponent_one
 
       orphan_two_parent = subcomponents.find do |subcomponent|
-        subcomponent.name == Docks::Naming.convention.parent_component(orphan_subcomponent_two.name)
+        subcomponent.name == Docks.config.naming_convention.parent_component(orphan_subcomponent_two.name)
       end
 
       expect(subcomponents).to include orphan_two_parent

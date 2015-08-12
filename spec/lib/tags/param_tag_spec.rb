@@ -187,8 +187,6 @@ describe Docks::Tags::Param do
         expect(result.default).to eq default
         expect(result.description).to eq description
 
-        ap result
-
         result = process_param_with([" {#{types}}  [...#{name}   = #{default}]   -#{description}"]).first
         expect(result.name).to eq name
         expect(result.types).to eq processed_types
