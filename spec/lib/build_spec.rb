@@ -221,128 +221,167 @@ describe Docks::Builder do
       subject.build
     end
 
-    it "writes a file for each pattern" do
-      files = {}
-      expect(Docks::Grouper).to receive(:group).and_return(patterns)
+    context "when pagination is specified" do
+      it "writes a file for each pattern" do
+        files = {}
+        expect(Docks::Grouper).to receive(:group).and_return(patterns)
 
-      patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+        patterns.each do |id, group|
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
 
-        renderer = double(render: group, :ivars= => nil)
-        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+          renderer = double(render: group, :ivars= => nil)
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+          files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+        end
+
+        subject.build
+
+        files.each do |id, details|
+          expect(File.exists?(details[:file])).to be true
+          expect(File.read(details[:file]).strip).to eq details[:content]
+        end
       end
 
-      subject.build
+      # Gross tests, must refactor
+      it "only writes a file for each pattern on change" do
+        allow(Docks::Grouper).to receive(:group).and_return(patterns)
 
-      files.each do |id, details|
-        expect(File.exists?(details[:file])).to be true
-        expect(File.read(details[:file]).strip).to eq details[:content]
+        patterns.each do |id, group|
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+          renderer = double(render: group, :ivars= => nil)
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+        end
+
+        subject.build
+
+        patterns.each do |id, group|
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+          renderer = double(render: group, :ivars= => nil)
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+          expect(FileUtils).not_to receive(:cp).with(anything, File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"))
+        end
+
+        subject.build
+      end
+
+      it "removes patterns that are no longer part of the pattern group" do
+        files = {}
+        expect(Docks::Grouper).to receive(:group).and_return(patterns)
+
+        patterns.each do |id, group|
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+          renderer = double(render: group, :ivars= => nil)
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+          files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+        end
+
+        subject.build
+
+        files = {}
+        excluded_pattern = patterns.keys.first
+        patterns.delete(excluded_pattern)
+        expect(Docks::Grouper).to receive(:group).and_return(patterns)
+
+        patterns.each do |id, group|
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+
+          renderer = double(render: group, :ivars= => nil)
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+          files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
+        end
+
+        subject.build
+
+        files.each do |id, details|
+          expect(File.exists?(details[:file])).to be true
+          expect(File.read(details[:file]).strip).to eq details[:content]
+        end
+
+        expect(File.exists?(File.join(dest_dir, Docks.config.mount_at, excluded_pattern.to_s, "index.html"))).to be false
+      end
+
+      it "provides the pattern and pattern library to every render call as locals and ivars" do
+        pattern_library = Docks::Containers::PatternLibrary.new
+
+        expect(Docks::Grouper).to receive(:group).and_return(patterns)
+        expect(Docks::Cache).to receive(:pattern_library).and_return(pattern_library)
+        expect(pattern_library).to receive(:summarize!)
+        patterns.each do |id, group|
+          pattern = OpenStruct.new(name: id)
+
+          default_template = Docks::Templates.fallback
+          expect(Docks::Templates).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
+          expect(Docks::Templates).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
+          expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
+          expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
+
+          renderer = double()
+          expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
+          expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+          expect(renderer).to receive(:ivars=).with pattern_library: pattern_library, pattern: pattern
+          expect(renderer).to receive(:render).with anything, hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
+        end
+
+        subject.build
+      end
+
+      it "doesn't die when there are no cache results matching a pattern" do
+        expect(Docks::Grouper).to receive(:group).and_return(patterns)
+        patterns.each do |id, group|
+          expect { Docks::Cache.pattern_for(id) }.to raise_error(Docks::NoPatternError)
+        end
+
+        subject.build
       end
     end
 
-    # Gross tests, must refactor
-    it "only writes a file for each pattern on change" do
-      allow(Docks::Grouper).to receive(:group).and_return(patterns)
+    context "when no pagination is specified" do
+      before(:each) do
+        Docks.configure_with(paginate: false)
+      end
 
-      patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
+      let(:expected_file) do
+        Docks.config.destination + "#{Docks.config.mount_at}/index.html"
+      end
 
-        renderer = double(render: group, :ivars= => nil)
+      it "writes the pattern library file" do
+        renderer = double(render: "foo", :ivars= => nil)
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
+
+        subject.build
+
+        expect(File.exists?(expected_file)).to be true
+        expect(File.read(expected_file)).to eq "foo"
       end
 
-      subject.build
+      it "receives the full pattern library as ivars and locals" do
+        pattern_library = Docks::Containers::PatternLibrary.new
+        renderer = double(render: "foo", :ivars= => nil)
+        locals = { pattern_library: pattern_library, pattern: nil }
 
-      patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
-
-        renderer = double(render: group, :ivars= => nil)
+        expect(pattern_library).not_to receive(:summarize!)
+        expect(Docks::Cache).to receive(:pattern_library).and_return(pattern_library)
         expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
         expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        expect(FileUtils).not_to receive(:cp).with(anything, File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"))
+        expect(renderer).to receive(:ivars=).with(locals)
+        expect(renderer).to receive(:render).with anything, hash_including(locals: locals)
+
+        subject.build
       end
-
-      subject.build
-    end
-
-    it "removes patterns that are no longer part of the pattern group" do
-      files = {}
-      expect(Docks::Grouper).to receive(:group).and_return(patterns)
-
-      patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
-
-        renderer = double(render: group, :ivars= => nil)
-        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
-      end
-
-      subject.build
-
-      files = {}
-      excluded_pattern = patterns.keys.first
-      patterns.delete(excluded_pattern)
-      expect(Docks::Grouper).to receive(:group).and_return(patterns)
-
-      patterns.each do |id, group|
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(OpenStruct.new(name: id))
-
-        renderer = double(render: group, :ivars= => nil)
-        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        files[id] = { file: File.join(dest_dir, Docks.config.mount_at, id.to_s, "index.html"), content: group }
-      end
-
-      subject.build
-
-      files.each do |id, details|
-        expect(File.exists?(details[:file])).to be true
-        expect(File.read(details[:file]).strip).to eq details[:content]
-      end
-
-      expect(File.exists?(File.join(dest_dir, Docks.config.mount_at, excluded_pattern.to_s, "index.html"))).to be false
-    end
-
-    it "provides the pattern and pattern library to every render call as locals and ivars" do
-      pattern_library = Docks::Containers::PatternLibrary.new
-
-      expect(Docks::Grouper).to receive(:group).and_return(patterns)
-      expect(Docks::Cache).to receive(:pattern_library).and_return(pattern_library)
-      patterns.each do |id, group|
-        pattern = OpenStruct.new(name: id)
-
-        default_template = Docks::Templates.fallback
-        expect(Docks::Templates).to receive(:search_for_template).with(default_template.layout, must_be: :layout).and_return "application.erb"
-        expect(Docks::Templates).to receive(:search_for_template).with(default_template.path).and_return "pattern.erb"
-        expect(Docks::Cache).to receive(:pattern_for?).with(id).and_return true
-        expect(Docks::Cache).to receive(:pattern_for).with(id).and_return(pattern)
-
-        renderer = double()
-        expect(Docks::Renderers::ERB).to receive(:new).and_return(renderer)
-        expect(Docks::Helpers).to receive(:add_helpers_to).with(renderer)
-        expect(renderer).to receive(:ivars=).with pattern_library: pattern_library, pattern: pattern
-        expect(renderer).to receive(:render).with anything, hash_including(locals: { pattern_library: pattern_library, pattern: pattern })
-      end
-
-      subject.build
-    end
-
-    it "doesn't die when there are no cache results matching a pattern" do
-      expect(Docks::Grouper).to receive(:group).and_return(patterns)
-      patterns.each do |id, group|
-        expect { Docks::Cache.pattern_for(id) }.to raise_error(Docks::NoPatternError)
-      end
-
-      subject.build
     end
   end
 end

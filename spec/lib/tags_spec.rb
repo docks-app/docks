@@ -91,40 +91,55 @@ describe Docks::Tags do
   end
 
   describe ".supported_tags" do
-    it "lists all supported tags" do
+    it "lists all supported tags, including synonyms and plurals" do
       expect(subject.supported_tags).to eq []
 
-      subject.register(Example1)
-      tag_count = 1 + example.synonyms.length
-      supported_tags = subject.supported_tags
-      expect(supported_tags.length).to be tag_count
-      expect(supported_tags).to include example.name
+      tags = [Example1, Example2, Example3]
+      tags.each { |tag| subject.register(tag) }
 
-      subject.register(Example2)
-      tag_count += (1 + Example2.instance.synonyms.length)
       supported_tags = subject.supported_tags
-      expect(supported_tags.length).to be tag_count
-      expect(supported_tags).to include Example2.instance.name
 
-      subject.register(Example3)
-      tag_count += 1
-      supported_tags = subject.supported_tags
-      expect(supported_tags.length).to be tag_count
-      expect(supported_tags).to include Example3.instance.name
+      tags.each do |tag|
+        tag = tag.instance
+        expect(supported_tags).to include tag.name
+        expect(supported_tags.include?(tag.name.to_s.pluralize.to_sym)).to be tag.multiple_allowed?
+
+        tag.synonyms.each do |synonym|
+          expect(supported_tags).to include synonym
+          expect(supported_tags.include?(synonym.to_s.pluralize.to_sym)).to be tag.multiple_allowed?
+        end
+      end
     end
   end
 
   describe ".supported_parseable_tags" do
     it "lists only tags that are parseable" do
-      subject.register(Example1)
-      subject.register(Example2)
-      subject.register(Example3)
+      expect(subject.supported_parseable_tags).to eq []
 
-      parseable_tags = subject.supported_parseable_tags
-      expect(parseable_tags.length).to be 2 + Example1.instance.synonyms.length + Example2.instance.synonyms.length
-      expect(parseable_tags).to include Example1.instance.name
-      expect(parseable_tags).to include Example2.instance.name
-      expect(parseable_tags).to_not include Example3.instance.name
+      [Example1, Example2, Example3].each { |tag| subject.register(tag) }
+
+      supported_tags = subject.supported_parseable_tags
+
+      [Example1, Example2].each do |tag|
+        tag = tag.instance
+        expect(supported_tags).to include tag.name
+        expect(supported_tags.include?(tag.name.to_s.pluralize.to_sym)).to be tag.multiple_allowed?
+
+        tag.synonyms.each do |synonym|
+          expect(supported_tags).to include synonym
+          expect(supported_tags.include?(synonym.to_s.pluralize.to_sym)).to be tag.multiple_allowed?
+        end
+      end
+
+      tag = Example3.instance
+
+      expect(supported_tags).not_to include tag.name
+      expect(supported_tags).not_to include tag.name.to_s.pluralize.to_sym
+
+      tag.synonyms.each do |synonym|
+        expect(supported_tags).not_to include synonym.name
+        expect(supported_tags).not_to include synonym.name.to_s.pluralize.to_sym
+      end
     end
   end
 

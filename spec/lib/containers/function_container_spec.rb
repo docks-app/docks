@@ -13,6 +13,14 @@ describe Docks::Containers::Function do
     described_class.new(name: "baz")
   end
 
+  let(:factory) do
+    Docks::Containers::Factory.new(name: "Foo")
+  end
+
+  before(:each) do
+    factory.add_members(instance_method, static_method)
+  end
+
   describe "#static?" do
     it "returns true for a static method" do
       expect(instance_method.static?).to be false
@@ -35,22 +43,37 @@ describe Docks::Containers::Function do
   end
 
   describe "#symbol_id" do
-    let(:function) { described_class.new(name: "foo") }
-    let(:factory) { Docks::Containers::Factory.new(name: "Foo") }
-
     it "returns the default if the function is not a method" do
       expect(function.symbol_id).to eq "function-#{function.name}"
     end
 
     it "indicates it's a method and adds the classlike's name if it is a method" do
-      factory.add_member(function)
-      expect(function.symbol_id).to eq "method-#{function.for}-#{function.name}"
+      expect(instance_method.symbol_id).to eq "method-#{factory.name}-#{instance_method.name}"
     end
 
     it "indicates that it's static if appropriate" do
-      factory.add_member(function)
-      function.static = true
-      expect(function.symbol_id).to eq "method-static-#{function.for}-#{function.name}"
+      expect(static_method.symbol_id).to eq "method-static-#{factory.name}-#{static_method.name}"
+    end
+  end
+
+  describe "#to_descriptor" do
+    let(:pattern) { Docks::Containers::Pattern.new(name: "foo") }
+
+    it "returns the super descriptor if not a property" do
+      expect(function.to_descriptor).to eq function.name
+
+      pattern.add(:script, function)
+      expect(function.to_descriptor).to eq "#{pattern.name}::#{function.name}"
+    end
+
+    it "returns the proper instance property descriptor" do
+      pattern.add(:script, factory)
+      expect(instance_method.to_descriptor).to eq "#{factory.to_descriptor}##{instance_method.name}"
+    end
+
+    it "returns the proper static property descriptor" do
+      pattern.add(:script, factory)
+      expect(static_method.to_descriptor).to eq "#{factory.to_descriptor}.#{static_method.name}"
     end
   end
 

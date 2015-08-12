@@ -5,10 +5,10 @@ module Docks
 
       def initialize
         @patterns = {}
+        @summary = false
       end
 
       def <<(pattern)
-        pattern = pattern.summary unless pattern.summarized?
         @patterns[pattern.name.to_s] ||= pattern
       end
 
@@ -53,6 +53,25 @@ module Docks
         symbol = nil if !symbol || symbol == pattern
         ::OpenStruct.new(pattern: pattern, symbol: symbol)
       end
+
+      def summarized?; @summary end
+      alias_method :summary?, :summarized?
+
+      def summary
+        return self if summarized?
+
+        summary = self.class.new
+        summary.instance_variable_set(:@summary, true)
+        summary.instance_variable_set(:@patterns, Hash[@patterns.map { |name, pattern| [name, pattern.summary] }])
+        summary
+      end
+      alias_method :summarize, :summary
+
+      def summary!
+        @summary = true
+        @patterns = Hash[@patterns.map { |name, pattern| [name, pattern.summary] }]
+      end
+      alias_method :summarize!, :summary!
     end
   end
 end

@@ -57,6 +57,18 @@ describe Docks::Containers::Symbol do
     end
   end
 
+  describe "#to_descriptor" do
+    it "returns the name of the symbol" do
+      expect(subject.to_descriptor).to eq subject.name
+    end
+
+    it "returns the pattern and name of the symbol when the symbol is part of a pattern" do
+      pattern = Docks::Containers::Pattern.new(name: subject.name)
+      pattern.add(:style, subject)
+      expect(subject.to_descriptor).to eq "#{pattern.name}::#{subject.name}"
+    end
+  end
+
   describe "#member?" do
     it "is a member when it is a property or method" do
       expect(Docks::Containers::Variable.new(property: true)).to be_member

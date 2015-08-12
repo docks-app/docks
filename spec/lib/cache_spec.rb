@@ -29,6 +29,7 @@ describe Docks::Cache do
   describe ".pattern_for" do
     it "sends the cached parse patterns back when it exists" do
       subject << pattern
+      subject.dump
       expect(described_class.pattern_for(name)).to eq pattern
     end
 
@@ -118,8 +119,9 @@ describe Docks::Cache do
   end
 
   describe "#<<" do
-    it "writes the contents of a parse pattern to the corresponding cache file" do
+    it "writes the contents of a parse pattern to the corresponding cache file on dump" do
       subject << pattern
+      subject.dump
       expect(Marshal::load(File.read(cache_file))).to eq pattern
     end
 
@@ -136,6 +138,11 @@ describe Docks::Cache do
     it "collects the sumarized details for each pattern added to the cache" do
       expect_any_instance_of(Docks::Containers::PatternLibrary).to receive(:<<).with(pattern).and_call_original
       subject << pattern
+    end
+
+    it "calls the final processors on the pattern library" do
+      expect(Docks::Process).to receive(:process).with an_instance_of(Docks::Containers::PatternLibrary)
+      subject.dump
     end
 
     it "adds the summarized details to the pattern library" do

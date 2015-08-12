@@ -24,7 +24,7 @@ module Docks
       copy_library_assets
 
       Messenger.file_header("Pages:")
-      rendered_patterns = render_patterns
+      rendered_patterns = render_pattern_library
       remove_unused_directories(rendered_patterns)
     end
 
@@ -39,16 +39,23 @@ module Docks
       setup_templates(options[:template_language])
     end
 
+    private
+
     def self.prepare_destination
       FileUtils.mkdir_p(Docks.config.destination + Docks.config.mount_at)
     end
 
-    def self.render_patterns
+    def self.render_pattern_library
       pattern_library = Cache.pattern_library
+      pattern_library.summarize! if Docks.config.paginate?
       rendered_patterns = Set.new
 
-      Grouper.group(Docks.config.sources).each do |id, _group|
-        rendered_patterns << id if render_pattern(id, pattern_library)
+      if Docks.config.paginate?
+        Grouper.group(Docks.config.sources).each do |id, _group|
+          rendered_patterns << id if render(id, pattern_library)
+        end
+      else
+        rendered_patterns << Docks.config.mount_at if render(nil, pattern_library)
       end
 
       rendered_patterns
@@ -85,26 +92,30 @@ module Docks
       File.basename(asset).sub(/pattern[\-_]library/, "docks")
     end
 
-    def self.render_pattern(pattern, pattern_library)
-      return false unless Cache.pattern_for?(pattern)
-      pattern = Cache.pattern_for(pattern)
+    def self.render(pattern, pattern_library)
+      unless pattern.nil?
+        return false unless Cache.pattern_for?(pattern)
+        pattern = Cache.pattern_for(pattern)
+      end
+
+      locals = { pattern: pattern, pattern_library: pattern_library }
 
       template, layout, renderer = template_details(pattern)
       Helpers.add_helpers_to(renderer)
-      renderer.ivars = { pattern: pattern, pattern_library: pattern_library }
+      renderer.ivars = locals
       Docks.current_renderer = renderer
 
-      directory = Docks.config.destination + "#{Docks.config.mount_at}/#{pattern.name}"
+      directory = Docks.config.destination + "#{Docks.config.mount_at}#{"/#{pattern.name}" unless pattern.nil?}"
       html_file = directory + "index.html"
       update = File.exist?(html_file)
       Docks.current_render_destination = html_file.dirname
 
-      file = Tempfile.new(pattern.name)
+      file = Tempfile.new(pattern.nil? ? "pattern_library" : pattern.name)
 
       begin
         file.write renderer.render template,
                                    layout: layout,
-                                   locals: { pattern: pattern, pattern_library: pattern_library }
+                                   locals: locals
 
         file.close
         unless update && FileUtils.identical?(html_file, file.path)
@@ -120,8 +131,8 @@ module Docks
       end
     end
 
-    def self.template_details(pattern)
-      template = Templates.template_for(pattern)
+    def self.template_details(pattern = nil)
+      template = pattern.nil? ? Templates.fallback : Templates.template_for(pattern)
       layout = Templates.search_for_template(template.layout, must_be: :layout)
       template = Templates.search_for_template(template.path)
       renderer = Languages.language_for(template).renderer
@@ -130,7 +141,7 @@ module Docks
     end
 
     def self.remove_unused_directories(rendered_patterns)
-      Dir[Docks.config.destination + Docks.config.mount_at + "*"].each do |pattern_dir|
+      Dir[Docks.config.destination + Docks.config.mount_at + "*/"].each do |pattern_dir|
         next if rendered_patterns.include?(File.basename(pattern_dir))
         deleted_file = Dir[File.join(pattern_dir, "*")].first
         FileUtils.rm_rf(pattern_dir)

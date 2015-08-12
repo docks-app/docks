@@ -64,6 +64,7 @@ module Docks
 
     def initialize
       FileUtils.mkdir_p(Docks.config.cache_location)
+      @patterns_needing_caches = []
       load_metadata
       load_pattern_library
     end
@@ -75,10 +76,7 @@ module Docks
     def <<(pattern)
       return unless pattern.valid?
 
-      File.open(Docks.config.cache_location + pattern.name.to_s, "wb") do |file|
-        file.write Marshal::dump(pattern)
-      end
-
+      @patterns_needing_caches << pattern.name
       @pattern_library << pattern
     end
 
@@ -89,12 +87,20 @@ module Docks
     end
 
     def dump
+      Process.process(@pattern_library)
+
       File.open(self.class.pattern_library_cache_file, "wb") do |file|
         file.write Marshal::dump(@pattern_library)
       end
 
       File.open(self.class.meta_file, "wb") do |file|
         file.write Marshal::dump(@metadata)
+      end
+
+      @patterns_needing_caches.each do |pattern|
+        File.open(Docks.config.cache_location + pattern, "wb") do |file|
+          file.write Marshal::dump(@pattern_library[pattern])
+        end
       end
 
       # Clear out anything that didn't get written to the new cache

@@ -16,6 +16,11 @@ module Docks
         "method-#{"static-" if static?}#{self[:for]}-#{self[:name]}"
       end
 
+      def to_descriptor
+        return super unless method?
+        "#{belongs_to.to_descriptor}#{static? ? "." : "#"}#{fetch(:name)}"
+      end
+
       def summary
         summary = super
         summary.static = static?

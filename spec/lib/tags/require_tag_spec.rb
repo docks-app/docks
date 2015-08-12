@@ -28,4 +28,106 @@ describe Docks::Tags::Require do
       expect(symbol[subject.name]).to eq requires.map { |alias_line| Docks::Processors.split_on_commas_spaces_and_pipes(alias_line) }.flatten
     end
   end
+
+  describe "post processing" do
+    before(:each) do
+      Docks::Tags.register_bundled_tags
+    end
+
+    let(:method_one) do
+      Docks::Containers::Function.new(name: "foo", method: true)
+    end
+
+    let(:method_two) do
+      Docks::Containers::Function.new(name: "bar", method: true, static: true)
+    end
+
+    let(:klass) do
+      Docks::Containers::Klass.new(name: "Baz")
+    end
+
+    let(:factory) do
+      Docks::Containers::Factory.new(name: "Qux")
+    end
+
+    let(:pattern_one) do
+      pattern = Docks::Containers::Pattern.new(name: klass.name.downcase)
+      pattern.add(:script, [klass, method_one])
+      pattern
+    end
+
+    let(:pattern_two) do
+      pattern = Docks::Containers::Pattern.new(name: factory.name.downcase)
+      pattern.add(:script, [factory, method_two])
+      pattern
+    end
+
+    let(:pattern_library) do
+      library = Docks::Containers::PatternLibrary.new
+      library << pattern_one
+      library << pattern_two
+      library
+    end
+
+    it "adds used_by associations in the corresponding symbol" do
+      requires = "#{pattern_two.name}::#{factory.name}"
+
+      method_one.requires = requires
+      process_library
+
+      expect(method_one.requires).to eq [requires]
+      expect(factory.used_by).to eq [method_one.to_descriptor]
+    end
+
+    it "adds multiple associations to a single symbol" do
+      requires = "#{pattern_two.name}::#{factory.name}.#{method_two.name}"
+
+      method_one.requires = requires
+      klass.requires = requires
+
+      process_library
+
+      expect(method_one.requires).to eq [requires]
+      expect(klass.requires).to eq [requires]
+
+      expect(method_two.used_by).to eq [
+        method_one.to_descriptor,
+        klass.to_descriptor
+      ]
+    end
+
+    it "adds a single symbol with multiple requires" do
+      pattern_require = pattern_two.name
+      method_require = "#{pattern_two.name}::#{factory.name}.#{method_two.name}"
+
+      klass.requires = "#{pattern_require}, #{method_require}"
+
+      process_library
+
+      expect(klass.requires).to eq [pattern_require, method_require]
+      expect(pattern_two.used_by).to eq [klass.to_descriptor]
+      expect(method_two.used_by).to eq [klass.to_descriptor]
+    end
+
+    private
+
+    def process_symbols
+      [method_one, method_two, klass, factory].each do |symbol|
+        Docks::Process.process(symbol)
+      end
+    end
+
+    def process_patterns
+      process_symbols
+
+      [pattern_one, pattern_two].each do |pattern|
+        Docks::Process.process(pattern)
+      end
+    end
+
+    def process_library
+      process_patterns
+      Docks::Process.process(pattern_library)
+    end
+  end
 end

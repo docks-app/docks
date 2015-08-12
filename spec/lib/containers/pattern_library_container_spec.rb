@@ -34,8 +34,8 @@ describe Docks::Containers::PatternLibrary do
     it "returns a pattern whose name matches the passed name" do
       subject << pattern_two
       subject << pattern_one
-      expect(subject[pattern_one.name]).to eq pattern_one.summary
-      expect(subject[pattern_two.name.split("_").join("-")]).to eq pattern_two.summary
+      expect(subject[pattern_one.name]).to be pattern_one
+      expect(subject[pattern_two.name.split("_").join("-")]).to be pattern_two
     end
   end
 
@@ -62,7 +62,7 @@ describe Docks::Containers::PatternLibrary do
         result[name] = group
       end
 
-      expect(result).to eq "button" => [pattern_one.summary], "code_block" => [pattern_two.summary]
+      expect(result).to eq("button" => [pattern_one], "code_block" => [pattern_two])
     end
   end
 
@@ -78,7 +78,7 @@ describe Docks::Containers::PatternLibrary do
         result[group_name] = group
       end
 
-      expect(result).to eq "foo" => [pattern_one.summary, pattern_two.summary]
+      expect(result).to eq("foo" => [pattern_one, pattern_two])
     end
   end
 
@@ -95,11 +95,36 @@ describe Docks::Containers::PatternLibrary do
     end
 
     it "finds a pattern with a name matching the passed descriptor" do
-      expect(subject.find(pattern_two.name)).to eq OpenStruct.new(pattern: pattern_two.summary, symbol: nil)
+      expect(subject.find(pattern_two.name)).to eq OpenStruct.new(pattern: pattern_two, symbol: nil)
     end
 
     it "finds a pattern with a contained symbol" do
-      expect(subject.find("#{pattern_two.name}::CodeBlock")).to eq OpenStruct.new(pattern: pattern_two.summary, symbol: factory.summary)
+      expect(subject.find("#{pattern_two.name}::CodeBlock")).to eq OpenStruct.new(pattern: pattern_two, symbol: factory)
+    end
+  end
+
+  describe "#summary" do
+    it "returns a pattern library with all patterns summarized" do
+      subject << pattern_two
+      summary = subject.summary
+      expect(subject).not_to be_summarized
+      expect(summary).to be_summarized
+
+      summary.patterns.each do |name, pattern|
+        expect(pattern).to be_summarized
+      end
+    end
+  end
+
+  describe "#summary!" do
+    it "returns a pattern library with all patterns summarized" do
+      subject << pattern_two
+      expect { subject.summary! }.not_to change { subject.patterns.keys.length }
+      expect(subject).to be_summarized
+
+      subject.patterns.each do |name, pattern|
+        expect(pattern).to be_summarized
+      end
     end
   end
 end

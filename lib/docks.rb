@@ -14,13 +14,14 @@ end
 
 require File.join(File.dirname(__FILE__), "docks", "types.rb")
 require File.join(File.dirname(__FILE__), "docks", "configuration.rb")
-require File.join(File.dirname(__FILE__), "docks", "naming.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "parsers/base_parser.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "parsers/*.rb")].each { |file| require file }
 
 Dir[File.join(File.dirname(__FILE__), "docks", "renderers/*.rb")].each { |file| require file }
+
+Dir[File.join(File.dirname(__FILE__), "docks", "themes/*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "languages/base_language.rb")
 Dir[File.join(File.dirname(__FILE__), "docks", "languages/*.rb")].each { |file| require file }
@@ -34,5 +35,3 @@ require File.join(File.dirname(__FILE__), "docks", "descriptor.rb")
 require File.join(File.dirname(__FILE__), "docks", "assets.rb")
 
 Dir[File.join(File.dirname(__FILE__), "docks", "helpers.rb")].each { |file| require file }
-
-require "docks/rails/engine.rb" if defined?(Rails)

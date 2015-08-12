@@ -93,7 +93,7 @@
   // You can either pass a string with the name of the desired naming convention
   // (capitalization is important) or pass an instance of a naming convention
   // class. If creating your own naming convention, make sure to inherit and
-  // override all methods in `Docks::Naming::Conventions::Base`.
+  // override all methods in `Docks::NamingConventions::Base`.
   "naming_convention": "BEM",
 
   // A list of file names that contain helper modules needed to render your
@@ -101,5 +101,8 @@
   // module in each of these files will be included in the renderer so that you
   // have access to them in all of your templates. These files should be relative
   // to the root of your project.
-  "helpers": []
+  "helpers": [],
+
+  "theme": "API",
+  "paginate": "pattern"
 }

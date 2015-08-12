@@ -80,7 +80,7 @@ module Docks
       end
 
       def update_markup_for_variation(markup, variation)
-        variation.markup = markup.gsub(/class\s*=\s*['"][^'"]*#{Naming.convention.component(variation.name)}[\s'"]/) do |match|
+        variation.markup = markup.gsub(/class\s*=\s*['"][^'"]*#{Docks.config.naming_convention.component(variation.name)}[\s'"]/) do |match|
           "#{match[0...-1]} #{variation.name}#{match[-1]}"
         end
       end

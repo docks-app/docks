@@ -50,7 +50,7 @@ describe Docks::Tags::Variation do
         expect(pattern.style_symbols.length).to be 1
         expect(pattern.components.length).to be 1
 
-        component = pattern.find(Docks::Naming::Conventions::BEM.instance.component(subcomponent_variant.name))
+        component = pattern.find(Docks::NamingConventions::BEM.instance.component(subcomponent_variant.name))
         expect(component.variants.length).to be 1
         expect(component.variants.first).to be subcomponent_variant
       end

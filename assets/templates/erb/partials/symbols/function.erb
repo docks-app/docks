@@ -35,6 +35,14 @@
     <% end %>
   <% end %>
 
+  <% unless (requires = function.fetch(:requires, [])).empty? %>
+    <h4 class="type type--heading type--heading-4">Requires</h4>
+
+    <% requires.each do |a_require| %>
+      <a href="<%= docks_path(a_require) %>"><code class="type--code"><%= a_require %></code></a>
+    <% end %>
+  <% end %>
+
   <% unless (params = function.fetch(:params, [])).empty? %>
     <h4 class="type type--heading type--heading-4">Parameters</h4>
 

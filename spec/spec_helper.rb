@@ -7,10 +7,7 @@ Docks::Messenger.quiet
 RSpec.configure do |config|
   config.include RSpecHtmlMatchers
 
-  # config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
-
-  # config.run_all_when_everything_filtered = true
 
   config.mock_with :rspec do |c|
     c.syntax = :expect
@@ -21,7 +18,11 @@ RSpec.configure do |config|
 
     example.run
 
-    Docks.config.send(:reset)
+    # Forces any partially-run, multi-stage processing to finish
+    Docks::Process.process(Docks::Containers::Pattern.new)
+    Docks::Process.process(Docks::Containers::PatternLibrary.new)
+
+    Docks.config.restore_defaults
     Docks::Languages.send(:clean)
     Docks::Tags.send(:clean)
     Docks::Process.send(:clean)

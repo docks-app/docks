@@ -64,7 +64,7 @@ module Docks
 
       def parse_comment_block(comment_block, symbol = Containers::Symbol.new)
         if @tag_pattern.nil?
-          supported_tags = Tags.supported_tags.sort! { |a, b| b.length <=> a.length }
+          supported_tags = Tags.supported_parseable_tags.sort! { |a, b| b.length <=> a.length }
           @tag_pattern = /(?:\s*@(?<tag>#{supported_tags.join("|")}) ?)?(?<text>.*)/
         end
 

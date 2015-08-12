@@ -5,7 +5,8 @@ require_relative "cache.rb"
 require_relative "templates.rb"
 require_relative "tags.rb"
 require_relative "symbol_sources.rb"
-require_relative "naming.rb"
+require_relative "naming_conventions.rb"
+require_relative "themes.rb"
 
 module Docks
   class Configuration
@@ -20,20 +21,21 @@ module Docks
     ]
 
     # Key details — these are required
-    attr_accessor :sources, :destination
+    attr_accessor :sources, :destination, :theme
 
     # Locations
     attr_accessor :root, :cache_location, :library_assets, :asset_folders
 
     # Random assortment of other stuff
     attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
-                  :naming_convention, :pattern_id, :copy_bundled_assets
+                  :naming_convention, :pattern_id, :copy_bundled_assets,
+                  :paginate
 
     # Stateful stuff
     attr_reader :configured
 
     def initialize
-      reset
+      restore_defaults
     end
 
     def root=(new_root)
@@ -53,16 +55,22 @@ module Docks
     end
 
     def naming_convention=(new_naming_convention)
-      Docks::Naming.convention = new_naming_convention
+      @naming_convention = NamingConventions.for(new_naming_convention)
+      @naming_convention
     end
 
-    def naming_convention
-      Docks::Naming.convention
+    def theme=(new_theme)
+      @theme = Themes.for(new_theme)
+      @theme
     end
 
     def github_repo
       return nil if @github_repo.nil? || @github_repo.empty?
       "https://github.com/#{@github_repo.split("/")[-2..-1].join("/")}"
+    end
+
+    def paginate?
+      !!@paginate
     end
 
     def pattern_id(*args)
@@ -110,19 +118,18 @@ module Docks
       end
     end
 
-    private
-
-    def reset
+    def restore_defaults
       @configured = false
       @copy_bundled_assets = true
       @sources = []
       @compiled_assets = []
       @github_repo = nil
+      @paginate = :pattern
+      @naming_convention = NamingConventions::BEM.instance
+      @theme = Themes::API.instance
 
-      rails = defined?(::Rails)
-
-      @root = rails ? ::Rails.root : Pathname.pwd
-      @cache_location = rails ? "tmp/cache/#{Docks::Cache::DIR}" : ".#{Docks::Cache::DIR}"
+      @root = Pathname.pwd
+      @cache_location = ".#{Docks::Cache::DIR}"
 
       # These options only apply for static site generation — Rails handles
       # these details when it's being used
@@ -132,6 +139,8 @@ module Docks
 
       @mount_at = "pattern-library"
     end
+
+    private
 
     def make_path_absolute(path)
       pathname = path.kind_of?(Pathname) ? path : Pathname.new(path)

@@ -11,11 +11,6 @@ module Docks
 
       found = @synonyms[tag]
       return found if found
-
-      found = @synonyms[tag.to_s.singularize.to_sym]
-      return unless found
-
-      tag_for(found).multiple_allowed? ? found : nil
     end
 
     def self.register_bundled_tags
@@ -32,6 +27,7 @@ module Docks
 
       [tag_name, tag.synonyms].flatten.each do |synonym|
         @synonyms[synonym.to_sym] = tag_name
+        @synonyms[synonym.to_s.pluralize.to_sym] = tag_name if tag.multiple_allowed?
       end
 
       true
