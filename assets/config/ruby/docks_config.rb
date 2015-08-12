@@ -97,8 +97,8 @@ Docks.configure do |config|
   # You can either pass a string with the name of the desired naming convention
   # (capitalization is important) or pass an instance of a naming convention
   # class. If creating your own naming convention, make sure to inherit and
-  # override all methods in `Docks::Naming::Conventions::Base`.
-  config.naming_convention = "BEM"
+  # override all methods in `Docks::NamingConventions::Base`.
+  config.naming_convention = Docks::NamingConventions::BEM
 
   # A list of file names or Modules that contain helper modules needed to render
   # your components, or that you want available to be used inside your views.
@@ -158,4 +158,7 @@ Docks.configure do |config|
   # config.custom_symbol_sources { |symbol_sources| symbol_sources << MyCustomSourceClass }
   config.custom_symbol_sources do |symbol_sources|
   end
+
+  config.theme = Docks::Themes::API
+  config.paginate = :pattern
 end

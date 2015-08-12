@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Docks::Naming::Conventions::SUIT do
+describe Docks::NamingConventions::SUIT do
   subject { described_class.instance }
 
   describe "#base_component" do

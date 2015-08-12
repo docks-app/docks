@@ -8,7 +8,6 @@ module Docks
       end
 
       def <<(pattern)
-        pattern = pattern.summary unless pattern.summarized?
         @patterns[pattern.name.to_s] ||= pattern
       end
 
