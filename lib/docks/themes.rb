@@ -1,6 +1,4 @@
-Dir[File.expand_path("../themes/*.rb", __FILE__)].each do |theme|
-  require theme
-end
+require "docks_theme_api"
 
 module Docks
   module Themes
@@ -15,7 +13,7 @@ module Docks
         theme = theme.instance if theme.kind_of?(Class)
       end
 
-      theme.kind_of?(Base) ? theme : nil
+      theme
     end
   end
 end
