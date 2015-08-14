@@ -5,8 +5,16 @@ module Docks
     class Base
       include Singleton
 
-      def configure(config)
+      attr_reader :scripts, :styles
+
+      def initialize
+        @scripts = []
+        @styles = []
       end
+
+      def setup(builder); end
+
+      def configure(config); end
     end
   end
 end

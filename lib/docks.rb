@@ -32,6 +32,5 @@ Dir[File.join(File.dirname(__FILE__), "docks", "tags/*.rb")].each { |file| requi
 Dir[File.join(File.dirname(__FILE__), "docks", "containers/*.rb")].each { |file| require file }
 
 require File.join(File.dirname(__FILE__), "docks", "descriptor.rb")
-require File.join(File.dirname(__FILE__), "docks", "assets.rb")
 
 Dir[File.join(File.dirname(__FILE__), "docks", "helpers.rb")].each { |file| require file }

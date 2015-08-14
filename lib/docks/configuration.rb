@@ -16,7 +16,7 @@ module Docks
       :sources,
       :destination,
       :cache_location,
-      :library_assets,
+      :templates,
       :helpers
     ]
 
@@ -24,12 +24,11 @@ module Docks
     attr_accessor :sources, :destination, :theme
 
     # Locations
-    attr_accessor :root, :cache_location, :library_assets, :asset_folders
+    attr_accessor :root, :cache_location, :templates, :asset_folders
 
     # Random assortment of other stuff
     attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
-                  :naming_convention, :pattern_id, :copy_bundled_assets,
-                  :paginate
+                  :naming_convention, :pattern_id, :paginate, :use_theme_assets
 
     # Stateful stuff
     attr_reader :configured
@@ -40,10 +39,6 @@ module Docks
 
     def root=(new_root)
       @root = new_root.kind_of?(Pathname) ? new_root : Pathname.new(new_root)
-    end
-
-    def templates=(special_templates)
-      Templates.register(special_templates)
     end
 
     def asset_folders=(new_asset_folders)
@@ -97,6 +92,10 @@ module Docks
       yield Templates
     end
 
+    def custom_templates=(custom_templates)
+      Templates.register(custom_templates)
+    end
+
     def custom_symbol_sources
       yield SymbolSources
     end
@@ -120,22 +119,23 @@ module Docks
 
     def restore_defaults
       @configured = false
-      @copy_bundled_assets = true
       @sources = []
       @compiled_assets = []
       @github_repo = nil
       @paginate = :pattern
       @naming_convention = NamingConventions::BEM.instance
-      @theme = Themes::API.instance
+
+      # @theme = Themes::API.instance
+      @use_theme_assets = true
 
       @root = Pathname.pwd
       @cache_location = ".#{Docks::Cache::DIR}"
 
       # These options only apply for static site generation — Rails handles
       # these details when it's being used
-      @library_assets = Docks::ASSETS_DIR
+      @templates = "#{Docks::ASSETS_DIR}/templates"
       @destination = "public"
-      @asset_folders = OpenStruct.new Hash[%w(scripts styles templates images).map { |asset| [asset, asset] }]
+      @asset_folders = OpenStruct.new(scripts: "scripts", styles: "styles")
 
       @mount_at = "pattern-library"
     end

@@ -38,8 +38,10 @@ describe Docks::Configuration do
     expect(subject.root).to eq Pathname.pwd
     expect(subject.destination).to eq subject.root + "public"
     expect(subject.cache_location).to eq subject.root + ".#{Docks::Cache::DIR}"
-    expect(subject.library_assets).to eq subject.root + Docks::ASSETS_DIR
+    expect(subject.templates).to eq subject.root + "#{Docks::ASSETS_DIR}/templates"
+    expect(subject.asset_folders).to eq OpenStruct.new(styles: "styles", scripts: "scripts")
     expect(subject.mount_at).to eq "pattern-library"
+    expect(subject.use_theme_assets).to be true
   end
 
   describe "#root=" do
@@ -54,7 +56,7 @@ describe Docks::Configuration do
       expect(subject.root).to eq Pathname.new(test_dir_name).realpath
       expect(subject.destination).to eq subject.root + "public"
       expect(subject.cache_location).to eq subject.root + ".#{Docks::Cache::DIR}"
-      expect(subject.library_assets).to eq subject.root + Docks::ASSETS_DIR
+      expect(subject.templates).to eq subject.root + "#{Docks::ASSETS_DIR}/templates"
       expect(subject.sources).to eq [subject.root + "styles/foo.css"]
 
       FileUtils.rm_rf(test_dir_name)
@@ -74,22 +76,10 @@ describe Docks::Configuration do
     end
   end
 
-  describe "#templates=" do
-    it "passes the templates to Templates.register" do
-      templates = { foo: "bar", bar: "baz" }
-      expect(Docks::Templates).to receive(:register).with(templates)
-      subject.templates = templates
-    end
-  end
-
   describe "#asset_folders=" do
     it "merges the default asset folders" do
       defaults = subject.asset_folders
-      subject.asset_folders = { scripts: "javascripts" }
-      [:styles, :templates, :images].each do |asset|
-        expect(subject.asset_folders.send(asset)).to eq defaults.send(asset)
-      end
-
+      expect { subject.asset_folders = { scripts: "javascripts" } }.not_to change { defaults.styles }
       expect(subject.asset_folders.scripts).to eq "javascripts"
     end
   end
@@ -103,6 +93,14 @@ describe Docks::Configuration do
   describe "#custom_templates" do
     it "yields the template manager" do
       expect { |block| subject.custom_templates(&block) }.to yield_with_args Docks::Templates
+    end
+  end
+
+  describe "#custom_templates=" do
+    it "passes the templates to Templates.register" do
+      templates = { foo: "bar", bar: "baz" }
+      expect(Docks::Templates).to receive(:register).with(templates)
+      subject.custom_templates = templates
     end
   end
 

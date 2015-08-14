@@ -2,7 +2,7 @@ require "rubygems"
 
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path('../lib', __FILE__)
-require 'docks/version'
+require "docks/version"
 
 Gem::Specification.new do |s|
   s.name                  = 'docks'
@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.add_dependency "redcarpet",     "~> 3.1"
   s.add_dependency "activesupport"
 
-  s.add_development_dependency "railties", [">= 3.2.5", "< 5"]
   s.add_development_dependency "bundler", "~> 1.3"
   s.add_development_dependency "rubocop", "< 1.0"
   s.add_development_dependency "rake", "~> 10.4"
