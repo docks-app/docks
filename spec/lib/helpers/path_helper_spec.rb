@@ -178,8 +178,8 @@ describe Docks::Helpers::Path do
       expect(subject.docks_stylesheet(:demo)).to eq subject.stylesheet_link_tag("docks-demo.css")
     end
 
-    it "returns nothing when config.copy_bundled_assets is false" do
-      Docks.configure_with(copy_bundled_assets: false)
+    it "returns nothing when config.use_theme_assets is false" do
+      Docks.configure_with(use_theme_assets: false)
       expect(subject.docks_stylesheet).to be nil
     end
   end
@@ -193,8 +193,8 @@ describe Docks::Helpers::Path do
       expect(subject.docks_javascript(:demo)).to eq subject.javascript_include_tag("docks_demo.js")
     end
 
-    it "returns nothing when config.copy_bundled_assets is false" do
-      Docks.configure_with(copy_bundled_assets: false)
+    it "returns nothing when config.use_theme_assets is false" do
+      Docks.configure_with(use_theme_assets: false)
       expect(subject.docks_javascript).to be nil
     end
   end

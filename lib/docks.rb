@@ -10,6 +10,7 @@ require "active_support/inflector"
 
 module Docks
   ASSETS_DIR = "pattern_library_assets"
+  CONFIG_FILE = "docks_config.*"
 end
 
 require File.join(File.dirname(__FILE__), "docks", "types.rb")

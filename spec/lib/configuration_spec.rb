@@ -17,12 +17,17 @@ describe Docks do
     it "pre- and post-configures before configuration" do
       expect(subject).to receive(:pre_configuration)
       expect(subject).to receive(:post_configuration)
-      subject.configure
+      subject.configure {}
     end
 
     it "only runs the pre-configuration steps if it hasn't already been configured" do
       expect(subject).to receive(:pre_configuration).once
-      subject.configure
+      subject.configure {}
+      subject.configure {}
+    end
+
+    it "configures itself with the default config file if no block is passed" do
+      expect(subject).to receive(:configure_with).with Docks::CONFIG_FILE
       subject.configure
     end
   end
@@ -41,6 +46,7 @@ describe Docks::Configuration do
     expect(subject.templates).to eq subject.root + "#{Docks::ASSETS_DIR}/templates"
     expect(subject.asset_folders).to eq OpenStruct.new(styles: "styles", scripts: "scripts")
     expect(subject.mount_at).to eq "pattern-library"
+    expect(subject.theme).to eq Docks::Themes::API.instance
     expect(subject.use_theme_assets).to be true
   end
 

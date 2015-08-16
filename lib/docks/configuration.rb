@@ -125,7 +125,7 @@ module Docks
       @paginate = :pattern
       @naming_convention = NamingConventions::BEM.instance
 
-      # @theme = Themes::API.instance
+      @theme = Themes::API.instance
       @use_theme_assets = true
 
       @root = Pathname.pwd
@@ -188,8 +188,12 @@ module Docks
   end
 
   def self.configure
+    unless block_given?
+      return configure_with(CONFIG_FILE)
+    end
+
     pre_configuration unless @configuration.configured
-    yield @configuration if block_given?
+    yield @configuration
     post_configuration
   end
 

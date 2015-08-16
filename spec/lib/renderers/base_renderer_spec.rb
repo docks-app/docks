@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Docks::Renderers::Base do
   let(:fixture_dir) { File.expand_path("../../../fixtures/renderers", __FILE__) }
-  let(:template_dir) { File.join(fixture_dir, Docks.config.asset_folders.templates) }
+  let(:template_dir) { Docks.config.templates }
   let(:partials_dir) { File.join(template_dir, "partials") }
   let(:layouts_dir) { File.join(template_dir, "layouts") }
 
@@ -11,7 +11,7 @@ describe Docks::Renderers::Base do
   around do |example|
     Docks.configure do |config|
       config.root = fixture_dir
-      config.library_assets = ""
+      config.templates = "templates"
     end
 
     example.run

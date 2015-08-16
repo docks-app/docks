@@ -21,8 +21,9 @@ Gem::Specification.new do |s|
   s.executables           = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths         = ["lib"]
 
-  s.add_dependency "redcarpet",     "~> 3.1"
+  s.add_dependency "redcarpet", "~> 3.1"
   s.add_dependency "activesupport"
+  s.add_dependency "mustache", "~> 0.99.5"
 
   s.add_dependency "docks_theme_api"
 

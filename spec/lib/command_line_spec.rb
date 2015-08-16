@@ -35,7 +35,7 @@ describe Docks::CommandLine do
   describe "#init" do
     it "assigns reasonable defaults" do
       args = %w(init)
-      expect(Docks::Builder).to receive(:setup).with hash_including(config_type: "yaml", template_language: "erb", style_preprocessor: "scss", script_language: "javascript")
+      expect(Docks::Builder).to receive(:setup).with hash_including(config_type: "yaml", template_language: "erb", style_preprocessor: "scss", script_language: "javascript", theme: "API")
       subject.new(args).init
     end
 
@@ -64,6 +64,13 @@ describe Docks::CommandLine do
       language = "coffeescript"
       args = ["init", "--scripts=#{language}"]
       expect(Docks::Builder).to receive(:setup).with hash_including(script_language: language)
+      subject.new(args).init
+    end
+
+    it "assigns a theme" do
+      theme = "basic"
+      args = ["init", "--theme=#{theme}"]
+      expect(Docks::Builder).to receive(:setup).with hash_including(theme: theme)
       subject.new(args).init
     end
   end

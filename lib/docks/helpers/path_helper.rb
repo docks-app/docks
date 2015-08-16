@@ -34,13 +34,13 @@ module Docks
       end
 
       def docks_stylesheet(stylesheet = :main)
-        return unless Docks.config.copy_bundled_assets
+        return unless Docks.config.use_theme_assets
         postfix = (stylesheet.to_sym == :main ? "" : "-#{stylesheet.to_s}")
         stylesheet_link_tag("docks#{postfix}.css")
       end
 
       def docks_javascript(script = :main)
-        return unless Docks.config.copy_bundled_assets
+        return unless Docks.config.use_theme_assets
         postfix = (script.to_sym == :main ? "" : "_#{script.to_s}")
         javascript_include_tag("docks#{postfix}.js")
       end

@@ -1,8 +1,29 @@
 require "set"
 require "tempfile"
+require "mustache"
 
 module Docks
   class Builder
+    class Config < Mustache
+      attr_reader :options
+
+      def initialize(options)
+        @options = options
+      end
+
+      def default_config; @default_config ||= Docks.config end
+
+      def theme
+        options.theme || default_config.theme.class.name.demodulize
+      end
+    end
+
+    def self.make_config(options)
+      template = Config.new(options)
+      template.template = File.read(File.expand_path("../../../config/ruby/docks_config.rb", __FILE__))
+      template.render
+    end
+
     def self.parse(options = {})
       cache = Cache.new
       cache.clear if options.fetch(:clear_cache, false)
@@ -29,15 +50,22 @@ module Docks
     end
 
     def self.setup(options)
-      @template_dir = File.expand_path("../../../assets", __FILE__)
+      @options = OpenStruct.new(options)
       @assets_dir = File.join(Dir.pwd, Docks::ASSETS_DIR)
       FileUtils.mkdir_p(@assets_dir)
 
-      setup_config(options[:config_type])
-      setup_styles(options[:style_preprocessor])
-      setup_scripts(options[:script_language])
-      setup_templates(options[:template_language])
+      if Dir[CONFIG_FILE].empty?
+        setup_config
+      end
+
+      Docks.configure
+
+      return unless Docks.config.theme && Docks.config.theme.respond_to?(:setup)
+      Docks.config.theme.setup(self)
     end
+
+    def self.options; @options end
+    def self.add_assets(type, assets); end
 
     private
 
@@ -62,7 +90,7 @@ module Docks
     end
 
     def self.copy_library_assets
-      return unless Docks.config.copy_bundled_assets
+      return unless Docks.config.use_theme_assets
 
       Assets.styles.each do |style|
         destination = Docks.config.destination + Docks.config.asset_folders.styles + copied_name_for(style)
@@ -149,8 +177,15 @@ module Docks
       end
     end
 
-    def self.setup_config(config_type)
-      FileUtils.cp(Dir[File.join(@template_dir, "config", config_type, "*")].first, Dir.pwd)
+    def self.setup_config
+      config_folder = File.expand_path("../../../config", __FILE__)
+      config_file = Dir[File.join(config_folder, options.config_type, "*")].first
+      config_template = Config.new(options)
+      config_template.template = File.read(config_file)
+      target_file = File.basename(config_file)
+
+      File.open(target_file, "w") { |file| file.write(config_template.render) }
+      Messenger.file(target_file, :created)
     end
 
     def self.setup_styles(style_ext)

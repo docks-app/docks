@@ -26,41 +26,13 @@ Docks.configure do |config|
     "public/scripts/script.js"
   ]
 
-  # This option determines where Docks should look for assets of different
-  # types. This is primarily used in determining where templates for your pages
-  # are and by the path helpers in determining where stylesheets and script
-  # files should be in order to create the appropriate links to them from your
-  # templates. It is also used to determine where some of the bundled assets are
-  # for use by the default theme. If you change the folder names in your pattern
-  # library assets folder, make sure that those names correspond to these ones.
-  #
-  # These folders are relative to the root of your destination/ source assets
-  # directories, not to your project's root.
-  config.asset_folders = {
-    scripts:   "scripts",
-    styles:    "styles",
-    templates: "templates",
-    images:    "images"
-  }
-
-  # The folder in which the source assets for the static pattern library are
-  # located. You do not need to include your own assets in this folder — it is
-  # used primarily to contain the template files and the Docks-provided styles
-  # and scripts. If you use relative references for custom templates, though,
-  # they will be relative to the templates folder of this directory.
-  # Additionally, all compiled asset types (CSS, JavaScript, and images) will be
-  # copied from here to the destination folder during builds.
-  #
-  # When running `docks init`, the starter assets will be added to a folder named
-  # `pattern_library_assets`. If you rename that folder, please rename it here,
-  # also. This path should be relative to the root of your project.
-  config.library_assets = "pattern_library_assets"
+  config.templates = "pattern_library_assets/templates"
 
   # The root path of your pattern library. When generating a static version,
   # all pattern files will be nested inside this directory.
   config.mount_at = "pattern-library"
 
-  config.copy_bundled_assets = true
+  config.use_theme_assets = true
 
   # The name of the Github repo for this project. This can either be the URL or
   # in the form `<username>/<repo>`. The default theme uses this option, if
@@ -159,6 +131,6 @@ Docks.configure do |config|
   config.custom_symbol_sources do |symbol_sources|
   end
 
-  config.theme = Docks::Themes::API
+  config.theme = Docks::Themes::{{ theme }}
   config.paginate = :pattern
 end

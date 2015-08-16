@@ -137,11 +137,11 @@ describe Docks::Templates do
 
   describe ".last_template_update" do
     before(:each) do
-      Docks.configure_with(root: File.expand_path("../../fixtures/renderers", __FILE__), library_assets: "")
+      Docks.configure_with(root: File.expand_path("../../fixtures/renderers", __FILE__), templates: "templates")
     end
 
     it "returns the date of the most recently modified template" do
-      templates = Dir[Docks.config.library_assets + Docks.config.asset_folders.templates + "**/*.*"]
+      templates = Dir[Docks.config.templates + "**/*.*"]
       FileUtils.touch(templates.first)
       expect(subject.last_template_update).to eq File.mtime(templates.first)
     end

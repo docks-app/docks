@@ -72,7 +72,7 @@ module Docks
 
     def self.last_template_update
       @last_modified ||= begin
-        templates = Dir[Docks.config.library_assets + Docks.config.asset_folders.templates + "**/*.*"]
+        templates = Dir[Docks.config.templates + "**/*.*"]
         templates.map { |template| File.mtime(template) }.sort.last
       end
     end
@@ -95,7 +95,7 @@ module Docks
 
     def self.loose_search_for(path)
       return if path.nil?
-      path = Docks.config.library_assets + Docks.config.asset_folders.templates + path
+      path = Docks.config.templates + path
       path_pieces = path.to_s.sub(File.extname(path), "").split("/")
       path_pieces[path_pieces.length - 1] = "{_,}#{path_pieces.last}"
       Dir.glob("#{path_pieces.join("/")}.*").first

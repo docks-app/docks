@@ -11,7 +11,7 @@ module Docks
       end
 
       def load_stub(file)
-        ::JSON::load(File.read(file))
+        ::JSON::load(File.read(file).force_encoding("UTF-8"))
       end
     end
   end

@@ -22,7 +22,8 @@ describe Docks::Builder do
   end
 
   describe ".setup" do
-    assets_dir = File.join(empty_dir, "pattern_library_assets")
+    let(:assets_dir) { File.join(empty_dir, Docks::ASSETS_DIR) }
+    let(:config_dir) { File.expand_path("../../../config", __FILE__) }
 
     before :each do
       Dir[File.join(empty_dir, "*")].each do |file|
@@ -47,55 +48,59 @@ describe Docks::Builder do
     end
 
     %w(yaml json ruby).each do |config_type|
-      it "copies the #{config_type} config file to the current directory" do
+      it "creates the mustache-rendered #{config_type} config file to the current directory" do
         default_options[:config_type] = config_type
+        original_config = Dir[File.join(config_dir, config_type, "*.*")].first
+        template = subject::Config.new(OpenStruct.new(default_options))
+        template.template = File.read(original_config).force_encoding("UTF-8")
+
         subject.setup(default_options)
 
         config_file = Dir[File.join(empty_dir, "*.*")].first
-        config = File.read(config_file)
-        expect(config).to eq File.read(Dir[File.join(template_dir, "config", config_type, "*.*")].first)
+        config = File.read(config_file).force_encoding("UTF-8")
+        expect(config).to eq template.render
       end
     end
 
-    %w(scss sass less stylus).each do |preprocessor|
-      it "copies the #{preprocessor} style helpers to the pattern library assets folder" do
-        default_options[:style_preprocessor] = preprocessor
-        subject.setup(default_options)
+    it "does not copy the config file if one already exists" do
+      file = Dir[File.join(config_dir, "**/*.rb")].first
+      copied_file = File.join(empty_dir, File.basename(file))
+      FileUtils.cp(file, empty_dir)
+      File.open(copied_file, "w") { |file| file.write("# foo") }
 
-        copied_style_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.styles, "**/*")].select { |file| File.extname(file) != ".css" }.map { |file| File.basename(file) }
-        original_style_helpers = Dir[File.join(template_dir, "assets", "styles", preprocessor, "**/*")].map { |file| File.basename(file) }
+      subject.setup(default_options)
 
-        original_style_helpers.each do |style_helper|
-          expect(copied_style_helpers).to include style_helper
-        end
-      end
+      expect(File.read(copied_file)).to eq "# foo"
     end
 
-    %w(erb haml).each do |template_language|
-      it "copies the #{template_language} templates into the pattern library assets folder" do
-        default_options[:template_language] = template_language
-        subject.setup(default_options)
-
-        copied_templates = Dir[File.join(assets_dir, Docks.config.asset_folders.templates, "**/*")].map { |file| File.basename(file) }
-        original_templates = Dir[File.join(template_dir, "templates", template_language, "**/*")].map { |file| File.basename(file) }
-
-        expect(copied_templates).to eq original_templates
-      end
+    it "configures the pattern library with the new config file" do
+      expect(Docks).to receive(:configure).with no_args
+      subject.setup(default_options)
     end
 
-    %w(javascript coffeescript).each do |script_language|
-      it "copies the #{script_language} script helpers into the pattern library assets folder" do
-        default_options[:script_language] = script_language
-        subject.setup(default_options)
+    it "still configures the pattern library when there is already a config file" do
+      file = Dir[File.join(config_dir, "**/*.rb")].first
+      copied_file = File.join(empty_dir, File.basename(file))
+      FileUtils.cp(file, empty_dir)
+      File.open(copied_file, "w") { |file| file.write("# foo") }
 
-        copied_script_helpers = Dir[File.join(assets_dir, Docks.config.asset_folders.scripts, "**/*")].map { |file| File.basename(file) }
-        original_script_helpers = Dir[File.join(template_dir, "assets", "scripts", script_language, "**/*")].map { |file| File.basename(file) }
-
-        original_script_helpers.each do |script_helper|
-          expect(copied_script_helpers).to include script_helper
-        end
-      end
+      expect(Docks).to receive(:configure).with no_args
+      subject.setup(default_options)
     end
+
+    it "calls setup with configured theme" do
+      theme = double()
+      expect(Docks).to receive(:configure_with) do
+        Docks.configure { |config| config.theme = theme }
+      end
+
+      expect(theme).to receive(:setup).with(Docks::Builder)
+      subject.setup(default_options)
+    end
+  end
+
+  describe ".add_assets" do
+
   end
 
   describe ".parse" do
@@ -211,9 +216,9 @@ describe Docks::Builder do
       subject.build
     end
 
-    it "copies bundled assets only when config.copy_bundled_assets is true" do
+    it "copies bundled assets only when config.use_theme_assets is true" do
       allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
-      Docks.configure_with(copy_bundled_assets: false)
+      Docks.configure_with(use_theme_assets: false)
       (Docks::Assets.scripts + Docks::Assets.styles).each do |asset|
         expect(FileUtils).not_to receive(:cp).with(asset, anything)
       end

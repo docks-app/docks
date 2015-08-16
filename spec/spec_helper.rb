@@ -13,10 +13,14 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  current_dir = FileUtils.pwd
+
   config.around do |example|
     Docks::Tags.register_bundled_tags
 
     example.run
+
+    FileUtils.cd(current_dir)
 
     # Forces any partially-run, multi-stage processing to finish
     Docks::Process.process(Docks::Containers::Pattern.new)
