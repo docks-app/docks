@@ -13,15 +13,69 @@ module Docks
 
       def default_config; @default_config ||= Docks.config end
 
-      def theme
-        options.theme || default_config.theme.class.name.demodulize
+      def respond_to?(meth)
+        options.respond_to?(meth) || !default_config.instance_variable_get("@#{meth}".to_sym).nil? || super
       end
-    end
 
-    def self.make_config(options)
-      template = Config.new(options)
-      template.template = File.read(File.expand_path("../../../config/ruby/docks_config.rb", __FILE__))
-      template.render
+      def method_missing(meth)
+        if options.respond_to?(meth)
+          present(options.send(meth), meth)
+        elsif (result = default_config.instance_variable_get("@#{meth}".to_sym))
+          present(result, meth)
+        else
+          super
+        end
+      end
+
+      private
+
+      def needs_quotes?(string)
+        !yaml? || /[:\{\}\[\],&\*#\?\|\-<>=!%@\\]/ =~ string
+      end
+
+      def yaml?
+        options.config_type == "yaml"
+      end
+
+      def json?
+        options.config_type == "json"
+      end
+
+      def ruby?
+        options.config_type == "ruby"
+      end
+
+      def spaces
+        yaml? ? "" : "  "
+      end
+
+      def present(value, name = nil)
+        if value.kind_of?(Class) || (name && [:naming_convention, :theme].include?(name) && !value.kind_of?(String))
+          value = value.class.name.demodulize
+        end
+
+        value = case value
+                when Hash
+                  value = "\n#{value.map { |k, v| "#{spaces}  #{json? ? present(k) : k}: #{present(v)}" }.join("#{"," unless yaml?}\n")}"
+                  yaml? ? value : "{#{value}\n#{spaces}}"
+                when String
+                  needs_quotes?(value) ? "\"#{value}\"" : value
+                when Array
+                  if value.empty?
+                    "[]"
+                  elsif yaml?
+                    "\n#{value.map { |v| "#{spaces}  - #{present(v)}" }.join("\n")}"
+                  else
+                    "[\n#{value.map { |v| "#{spaces}  #{present(v)}" }.join(",\n")}\n#{spaces}]"
+                  end
+                when Symbol
+                  ruby? ? ":#{value}" : present(value.to_s)
+                else
+                  value
+                end
+
+        value
+      end
     end
 
     def self.parse(options = {})
@@ -42,7 +96,7 @@ module Docks
     def self.build
       prepare_destination
       Messenger.file_header("Assets:")
-      copy_library_assets
+      copy_theme_assets
 
       Messenger.file_header("Pages:")
       rendered_patterns = render_pattern_library
@@ -59,13 +113,36 @@ module Docks
       end
 
       Docks.configure
+      Docks.config.root = Pathname.pwd
 
       return unless Docks.config.theme && Docks.config.theme.respond_to?(:setup)
       Docks.config.theme.setup(self)
     end
 
     def self.options; @options end
-    def self.add_assets(type, assets); end
+
+    def self.add_assets(assets, options)
+      root = /#{Regexp.escape(options.fetch(:root, "").to_s)}\/?/
+      copy_to = case options[:type]
+                when :styles then Docks.config.root + ASSETS_DIR + Docks.config.asset_folders.styles
+                when :scripts then Docks.config.root + ASSETS_DIR + Docks.config.asset_folders.scripts
+                when :templates then Docks.config.templates
+                end
+
+      [assets].flatten.each do |asset|
+        asset = Pathname.new(asset)
+        destination_file = copy_to + asset.to_s.sub(root, "")
+        relative_path = destination_file.relative_path_from(Docks.config.root)
+        exists = destination_file.exist?
+
+        next if exists && FileUtils.identical?(asset, destination_file)
+
+        destination_dir = destination_file.dirname
+        FileUtils.mkdir_p(destination_dir)
+        FileUtils.cp(asset, destination_dir)
+        Messenger.file(relative_path, exists ? :updated : :created)
+      end
+    end
 
     private
 
@@ -89,21 +166,21 @@ module Docks
       rendered_patterns
     end
 
-    def self.copy_library_assets
-      return unless Docks.config.use_theme_assets
+    def self.copy_theme_assets
+      return unless theme = Docks.config.theme
 
-      Assets.styles.each do |style|
+      (theme.styles || []).each do |style|
         destination = Docks.config.destination + Docks.config.asset_folders.styles + copied_name_for(style)
-        copy_library_asset_file(style, destination)
+        copy_theme_asset_file(style, destination)
       end
 
-      Assets.scripts.each do |script|
+      (theme.scripts || []).each do |script|
         destination = Docks.config.destination + Docks.config.asset_folders.scripts + copied_name_for(script)
-        copy_library_asset_file(script, destination)
+        copy_theme_asset_file(script, destination)
       end
     end
 
-    def self.copy_library_asset_file(file, destination)
+    def self.copy_theme_asset_file(file, destination)
       update = File.exist?(destination)
       return if update && FileUtils.identical?(file, destination)
       FileUtils.mkdir_p(File.dirname(destination)) unless update
@@ -116,6 +193,7 @@ module Docks
       Messenger.file(file, update ? :updated : :created)
     end
 
+    # FIX THIS UP
     def self.copied_name_for(asset)
       File.basename(asset).sub(/pattern[\-_]library/, "docks")
     end
@@ -184,7 +262,7 @@ module Docks
       config_template.template = File.read(config_file)
       target_file = File.basename(config_file)
 
-      File.open(target_file, "w") { |file| file.write(config_template.render) }
+      File.open(target_file, "w") { |file| file.write(config_template.render.gsub(/ +$/m, "")) }
       Messenger.file(target_file, :created)
     end
 

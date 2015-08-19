@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 template_dir = File.expand_path("../../../assets", __FILE__)
 empty_dir = File.expand_path("../../fixtures/build/empty", __FILE__)
@@ -11,7 +11,7 @@ describe Docks::Builder do
     {
       config_type: "yaml",
       template_language: "erb",
-      style_preprocessor: "scss",
+      style_language: "scss",
       script_language: "javascript"
     }
   end
@@ -24,12 +24,6 @@ describe Docks::Builder do
   describe ".setup" do
     let(:assets_dir) { File.join(empty_dir, Docks::ASSETS_DIR) }
     let(:config_dir) { File.expand_path("../../../config", __FILE__) }
-
-    before :each do
-      Dir[File.join(empty_dir, "*")].each do |file|
-        FileUtils.rm_rf(file)
-      end
-    end
 
     around do |example|
       original_dir = Dir.pwd
@@ -47,18 +41,20 @@ describe Docks::Builder do
       expect(Dir.exists?(assets_dir)).to be true
     end
 
-    %w(yaml json ruby).each do |config_type|
+    %w(yaml ruby json).each do |config_type|
       it "creates the mustache-rendered #{config_type} config file to the current directory" do
         default_options[:config_type] = config_type
         original_config = Dir[File.join(config_dir, config_type, "*.*")].first
+
         template = subject::Config.new(OpenStruct.new(default_options))
         template.template = File.read(original_config).force_encoding("UTF-8")
+        template = template.render.gsub(/ +$/m, "")
 
         subject.setup(default_options)
 
         config_file = Dir[File.join(empty_dir, "*.*")].first
         config = File.read(config_file).force_encoding("UTF-8")
-        expect(config).to eq template.render
+        expect(config).to eq template
       end
     end
 
@@ -97,10 +93,92 @@ describe Docks::Builder do
       expect(theme).to receive(:setup).with(Docks::Builder)
       subject.setup(default_options)
     end
+
+    it "sets the theme to false when 'false' is provided" do
+      default_options[:theme] = "false"
+      subject.setup(default_options)
+      expect(Docks.config.theme).to be false
+    end
+
+    it "sets the theme to false when 'none' is provided" do
+      default_options[:theme] = "none"
+      subject.setup(default_options)
+      expect(Docks.config.theme).to be false
+    end
+
+    it "doesn't call configure with the theme if it doesn't exist" do
+      default_options[:theme] = "foo"
+      expect { subject.setup(default_options) }.not_to raise_error
+    end
   end
 
   describe ".add_assets" do
+    let(:root) { Pathname.new(File.expand_path("../../fixtures/build", __FILE__)) }
 
+    around do |example|
+      FileUtils.rm_rf(root + Docks::ASSETS_DIR)
+      Docks.configure { |config| config.root = root }
+
+      example.run
+
+      FileUtils.rm_rf(root + Docks::ASSETS_DIR)
+    end
+
+    %w(styles scripts templates).each do |type|
+      it "adds #{type} to the #{type} in the pattern library assets and annouces the root-relative location" do
+        source_root = root + type
+
+        destination_root = if type == "templates"
+          root + Docks.config.templates
+        else
+          root + File.join(Docks::ASSETS_DIR, Docks.config.asset_folders.send(type.to_sym))
+        end
+
+        add_assets = Dir[source_root + "**/*.*"]
+        allow(Docks::Messenger).to receive(:file).and_call_original
+
+        subject.add_assets(add_assets, type: type.to_sym, root: source_root)
+
+        added_assets = Dir[destination_root + "**/*.*"]
+        expect(added_assets.count).to be add_assets.count
+        added_assets.each do |asset|
+          asset = Pathname.new(asset)
+          relative_path = asset.relative_path_from(root)
+          original_asset = source_root + asset.relative_path_from(destination_root)
+          expect(FileUtils.identical?(asset, original_asset)).to be true
+          expect(Docks::Messenger).to have_received(:file).with(relative_path, :created)
+        end
+      end
+    end
+
+    it "updates non-identical assets and does nothing with identical ones" do
+      source_root = root + "scripts"
+      destination_root = root + File.join(Docks::ASSETS_DIR, Docks.config.asset_folders.scripts)
+      add_assets = Dir[source_root + "**/*.*"]
+
+      subject.add_assets(add_assets, type: :scripts, root: source_root)
+      allow(Docks::Messenger).to receive(:file).and_call_original
+
+      added_assets = Dir[destination_root + "**/*.*"]
+      updated = Pathname.new(added_assets.pop)
+      original_contents = File.read(add_assets.last)
+
+      begin
+        File.open(add_assets.last, "w") { |file| file.write("#{original_contents} updated") }
+
+        subject.add_assets(add_assets, type: :scripts, root: source_root)
+
+        updated_relative_path = updated.relative_path_from(root)
+        expect(Docks::Messenger).to have_received(:file).with(updated_relative_path, :updated)
+
+        added_assets.each do |asset|
+          relative_path = Pathname.new(asset).relative_path_from(root)
+          expect(Docks::Messenger).not_to have_received(:file).with(relative_path, anything)
+        end
+      ensure
+        File.open(add_assets.last, "w") { |file| file.write(original_contents) }
+      end
+    end
   end
 
   describe ".parse" do
@@ -178,11 +256,11 @@ describe Docks::Builder do
       expect(Dir.exists?(File.join(existing_dir, destination, mount_at))).to be true
     end
 
-    it "copies and renames the bundled stylesheets to the destination" do
+    it "copies and renames the theme stylesheets to the destination" do
       allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
       subject.build
 
-      original_stylesheets = Docks::Assets.styles.map { |file| File.basename(file).sub("pattern-library", "docks") }
+      original_stylesheets = Docks.config.theme.styles.map { |file| File.basename(file).sub("pattern-library", "docks") }
       copied_stylesheets = Dir[File.join(Docks.config.destination, Docks.config.asset_folders.styles, "*.css")].map { |file| File.basename(file) }
 
       original_stylesheets.each do |stylesheet|
@@ -190,11 +268,11 @@ describe Docks::Builder do
       end
     end
 
-    it "copies and renames the bundled javascripts to the destination" do
+    it "copies and renames the theme javascripts to the destination" do
       allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
       subject.build
 
-      original_scripts = Docks::Assets.scripts.map { |file| File.basename(file).sub("pattern_library", "docks") }
+      original_scripts = Docks.config.theme.scripts.map { |file| File.basename(file).sub("pattern_library", "docks") }
       copied_scripts = Dir[File.join(Docks.config.destination, Docks.config.asset_folders.scripts, "*.js")].map { |file| File.basename(file) }
 
       original_scripts.each do |script|
@@ -216,13 +294,10 @@ describe Docks::Builder do
       subject.build
     end
 
-    it "copies bundled assets only when config.use_theme_assets is true" do
+    it "copies bundled assets only when a theme is specified" do
       allow(Docks::Grouper).to receive(:group).and_return(Hash.new)
-      Docks.configure_with(use_theme_assets: false)
-      (Docks::Assets.scripts + Docks::Assets.styles).each do |asset|
-        expect(FileUtils).not_to receive(:cp).with(asset, anything)
-      end
-
+      Docks.configure_with(theme: false)
+      expect(FileUtils).not_to receive(:cp)
       subject.build
     end
 

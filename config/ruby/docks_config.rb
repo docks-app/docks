@@ -4,14 +4,11 @@ Docks.configure do |config|
   # sources for all of your library's patterns. Include any style, script,
   # markup, stub, and description files you have to document your patterns.
   # These paths should be relative to the root of your project.
-  config.sources = [
-    "styles/**/*.{css,scss,sass,less,styl}",
-    "scripts/**/*.{js,coffee,coffeescript}"
-  ]
+  config.sources = {{{sources}}}
 
   # The destination folder in which you would like to generate the static
   # pattern library. This path should be relative to the root of your project.
-  config.destination = "public"
+  config.destination = {{{destination}}}
 
   # When generating your static styleguide, these assets will be included
   # in the default layout file automatically (via a `link` tag when the asset
@@ -21,24 +18,21 @@ Docks.configure do |config|
   # automatically. Feel free to omit this option if you are going to manually
   # add the required asset tags to your layout file. These paths should be
   # relative to the root of your project.
-  config.compiled_assets = [
-    "public/styles/style.css",
-    "public/scripts/script.js"
-  ]
+  config.compiled_assets = {{{compiled_assets}}}
 
-  config.templates = "pattern_library_assets/templates"
+  config.templates = {{{templates}}}
 
   # The root path of your pattern library. When generating a static version,
   # all pattern files will be nested inside this directory.
-  config.mount_at = "pattern-library"
+  config.mount_at = {{{mount_at}}}
 
-  config.use_theme_assets = true
+  config.use_theme_assets = {{{use_theme_assets}}}
 
   # The name of the Github repo for this project. This can either be the URL or
   # in the form `<username>/<repo>`. The default theme uses this option, if
   # passed, to provide links to create issue and view source for your pattern
   # library's files.
-  config.github_repo = ""
+  config.github_repo = {{{github_repo}}}
 
   # Yields an object that allows you to register custom templates for particular
   # patterns. See `Docks::Templates` for all of the available template
@@ -58,10 +52,7 @@ Docks.configure do |config|
   # hash of pattern: template pairs, in which the keys will be used as the
   # "matcher" and the values will be the custom template to use for patterns
   # with a matching name.
-  config.custom_templates do |templates|
-    templates.fallback = "pattern"
-    templates.demo = "demo"
-  end
+  config.custom_templates = {{{custom_templates}}}
 
   # The naming convention to use for such things as identifying a state versus
   # a variant and determining the base class of a given variation. There are
@@ -70,7 +61,7 @@ Docks.configure do |config|
   # (capitalization is important) or pass an instance of a naming convention
   # class. If creating your own naming convention, make sure to inherit and
   # override all methods in `Docks::NamingConventions::Base`.
-  config.naming_convention = Docks::NamingConventions::BEM
+  config.naming_convention = {{{naming_convention}}}
 
   # A list of file names or Modules that contain helper modules needed to render
   # your components, or that you want available to be used inside your views.
@@ -81,7 +72,7 @@ Docks.configure do |config|
   #
   # If you pass a list of modules, no additional work is required on your part.
   # These will be included automatically in all template rendering.
-  config.helpers = []
+  config.helpers = {{{helpers}}}
 
   # This option allows you to provide a custom lambda to determine what pattern
   # a given string belongs to. The lambda should accept a single file name
@@ -131,6 +122,6 @@ Docks.configure do |config|
   config.custom_symbol_sources do |symbol_sources|
   end
 
-  config.theme = Docks::Themes::{{ theme }}
-  config.paginate = :pattern
+  config.theme = {{{theme}}}
+  config.paginate = {{{paginate}}}
 end

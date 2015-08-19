@@ -35,7 +35,7 @@ describe Docks::CommandLine do
   describe "#init" do
     it "assigns reasonable defaults" do
       args = %w(init)
-      expect(Docks::Builder).to receive(:setup).with hash_including(config_type: "yaml", template_language: "erb", style_preprocessor: "scss", script_language: "javascript", theme: "API")
+      expect(Docks::Builder).to receive(:setup).with hash_including(config_type: "yaml", template_language: "erb", style_language: "scss", script_language: "javascript")
       subject.new(args).init
     end
 
@@ -56,7 +56,7 @@ describe Docks::CommandLine do
     it "assigns a style preprocessor" do
       preprocessor = "less"
       args = ["init", "--styles=#{preprocessor}"]
-      expect(Docks::Builder).to receive(:setup).with hash_including(style_preprocessor: preprocessor)
+      expect(Docks::Builder).to receive(:setup).with hash_including(style_language: preprocessor)
       subject.new(args).init
     end
 

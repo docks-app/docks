@@ -16,8 +16,7 @@ module Docks
         config_type: "yaml",
         template_language: "erb",
         script_language: "javascript",
-        style_preprocessor: "scss",
-        theme: "API"
+        style_language: "scss"
       }
 
       OptionParser.new do |opt|
@@ -26,7 +25,7 @@ module Docks
         opt.on("--config TYPE", %w(yaml json ruby), "The type of config file to generate (yaml, json, or ruby; default is yaml)") { |type| options[:config_type] = type }
         opt.on("--template LANGUAGE", %w(erb haml), "The language of markup templates to generate (erb or haml; default is erb).") { |language| options[:template_language] = language }
         opt.on("--scripts LANGUAGE", %w(javascript coffeescript), "The scripting language to generate helpers for (javascript or coffeescript; default is javascript).") { |language| options[:script_language] = language }
-        opt.on("--styles PREPROCESSOR", %w(scss sass less stylus), "The CSS preprocessor to generate style helpers for (scss, sass, stylus or less; default is scss).") { |language| options[:style_preprocessor] = language }
+        opt.on("--styles PREPROCESSOR", %w(scss sass less stylus), "The CSS preprocessor to generate style helpers for (scss, sass, stylus or less; default is scss).") { |language| options[:style_language] = language }
         opt.on("--theme THEME", "The theme to to use as a starting point for your pattern library.") { |theme| options[:theme] = theme }
         opt.on_tail("-h", "--help", "Show this message again.") { puts opt; exit }
 

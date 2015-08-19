@@ -119,21 +119,28 @@ module Docks
 
     def restore_defaults
       @configured = false
-      @sources = []
+      @sources = [
+        "styles/**/*.{css,scss,sass,less,styl}",
+        "scripts/**/*.{js,coffee,coffeescript}"
+      ]
       @compiled_assets = []
-      @github_repo = nil
+      @github_repo = ""
       @paginate = :pattern
       @naming_convention = NamingConventions::BEM.instance
+      @helpers = []
 
-      @theme = Themes::API.instance
+      @theme = Themes.for("API")
       @use_theme_assets = true
 
       @root = Pathname.pwd
       @cache_location = ".#{Docks::Cache::DIR}"
 
-      # These options only apply for static site generation — Rails handles
-      # these details when it's being used
       @templates = "#{Docks::ASSETS_DIR}/templates"
+      @custom_templates = {
+        fallback: "pattern",
+        demo: "demo"
+      }
+
       @destination = "public"
       @asset_folders = OpenStruct.new(scripts: "scripts", styles: "styles")
 

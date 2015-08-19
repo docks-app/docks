@@ -21,6 +21,10 @@ describe Docks::Themes do
       expect(described_class.for(theme.instance)).to be_a theme
     end
 
+    it "sets the theme to be false if it can't be required" do
+      expect(described_class.for(:FOO)).to be false
+    end
+
     it "doesn't throw an error when it fails" do
       expect { described_class.for(:FOO) }.not_to raise_error
     end

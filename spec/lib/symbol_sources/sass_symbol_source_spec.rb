@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Docks::SymbolSources::Sass do
   subject { described_class.instance }

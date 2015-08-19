@@ -37,7 +37,10 @@ describe Docks::Configuration do
   subject { Docks::Configuration.instance }
 
   it "has the default configuration" do
-    expect(subject.sources).to eq []
+    expect(subject.sources).to eq [
+      subject.root + "styles/**/*.{css,scss,sass,less,styl}",
+      subject.root + "scripts/**/*.{js,coffee,coffeescript}"
+    ]
     expect(subject.compiled_assets).to eq []
     expect(subject.github_repo).to be nil
     expect(subject.root).to eq Pathname.pwd

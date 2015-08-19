@@ -22,7 +22,7 @@ describe Docks::Containers::Base do
       end
 
       it "does the default method missing when the method is not a recognized tag" do
-        expect { container.foo = :bar }.to raise_error
+        expect { container.foo = :bar }.to raise_error(NoMethodError)
       end
     end
 
@@ -33,7 +33,7 @@ describe Docks::Containers::Base do
       end
 
       it "does the default method missing when the method is not a recognized tag" do
-        expect { container.foos }.to raise_error
+        expect { container.foos }.to raise_error(NoMethodError)
       end
     end
 
@@ -49,7 +49,7 @@ describe Docks::Containers::Base do
       end
 
       it "does the default method missing when the method is not a recognized tag" do
-        expect { container.foo }.to raise_error
+        expect { container.foo }.to raise_error(NoMethodError)
       end
     end
   end
