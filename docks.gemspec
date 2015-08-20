@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "redcarpet", "~> 3.1"
   s.add_dependency "activesupport"
   s.add_dependency "mustache", "~> 0.99.5"
+  s.add_dependency "docks_theme_api", github: "docks-app/api_theme"
 
   s.add_development_dependency "bundler", "~> 1.3"
   s.add_development_dependency "rubocop", "< 1.0"
