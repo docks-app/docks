@@ -11,6 +11,7 @@ describe Docks::Helpers::Path do
   before(:each) do
     Docks::Languages.register_bundled_languages
     Docks.current_render_destination = Docks.config.destination + "baz/index.html"
+    Docks.configure_with(theme: "API")
     subject.instance_variable_set(:@pattern_library, pattern_library)
     subject.instance_variable_set(:@pattern, pattern)
   end
@@ -178,8 +179,8 @@ describe Docks::Helpers::Path do
       expect(subject.docks_stylesheet(:demo)).to eq subject.stylesheet_link_tag("docks-demo.css")
     end
 
-    it "returns nothing when config.use_theme_assets is false" do
-      Docks.configure_with(use_theme_assets: false)
+    it "returns nothing when there is no theme" do
+      Docks.configure_with(theme: false)
       expect(subject.docks_stylesheet).to be nil
     end
   end
@@ -193,8 +194,8 @@ describe Docks::Helpers::Path do
       expect(subject.docks_javascript(:demo)).to eq subject.javascript_include_tag("docks_demo.js")
     end
 
-    it "returns nothing when config.use_theme_assets is false" do
-      Docks.configure_with(use_theme_assets: false)
+    it "returns nothing when there is no theme" do
+      Docks.configure_with(theme: false)
       expect(subject.docks_javascript).to be nil
     end
   end

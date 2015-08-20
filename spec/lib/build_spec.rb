@@ -74,7 +74,6 @@ describe Docks::Builder do
       subject.setup(default_options)
       expect(Docks.config.theme).to be_a Docks::Themes::API
       expect(Docks.config.paginate).to eq "pattern"
-      puts File.read(File.join(empty_dir, "docks_config.yml"))
     end
 
     it "configures the pattern library with the new config file" do
@@ -191,7 +190,7 @@ describe Docks::Builder do
 
   describe ".parse" do
     before :each do
-      Docks.configure_with(root: empty_dir, library_assets: "")
+      Docks.configure_with(root: empty_dir)
     end
 
     it "adds the parse function to the top-level Docks namespace" do
@@ -236,7 +235,7 @@ describe Docks::Builder do
       FileUtils.mkdir_p(existing_dir)
       FileUtils.cd(existing_dir)
       Docks::Templates.send(:clean)
-      Docks.configure_with(destination: destination, root: existing_dir)
+      Docks.configure_with(destination: destination, root: existing_dir, theme: "API", paginate: "pattern")
 
       default_options[:script_language] = "coffeescript"
       subject.setup(default_options)

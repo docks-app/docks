@@ -49,8 +49,7 @@ describe Docks::Configuration do
     expect(subject.templates).to eq subject.root + "#{Docks::ASSETS_DIR}/templates"
     expect(subject.asset_folders).to eq OpenStruct.new(styles: "styles", scripts: "scripts")
     expect(subject.mount_at).to eq "pattern-library"
-    expect(subject.theme).to eq Docks::Themes::API.instance
-    expect(subject.use_theme_assets).to be true
+    expect(subject.theme).to be false
   end
 
   describe "#root=" do
