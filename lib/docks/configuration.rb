@@ -16,8 +16,7 @@ module Docks
       :sources,
       :destination,
       :cache_location,
-      :templates,
-      :helpers
+      :templates
     ]
 
     # Key details — these are required
@@ -28,7 +27,7 @@ module Docks
 
     # Random assortment of other stuff
     attr_accessor :github_repo, :mount_at, :helpers, :compiled_assets,
-                  :naming_convention, :pattern_id, :paginate, :use_theme_assets
+                  :naming_convention, :pattern_id, :paginate
 
     # Stateful stuff
     attr_reader :configured
@@ -68,6 +67,10 @@ module Docks
       !!@paginate
     end
 
+    def has_theme?
+      !!@theme
+    end
+
     def pattern_id(*args)
       Docks.pattern_id(*args)
     end
@@ -104,6 +107,16 @@ module Docks
       yield Parser
     end
 
+    def helpers
+      @helpers.map do |helper|
+        if helper.kind_of?(String)
+          make_path_absolute(helper)
+        else
+          helper
+        end
+      end
+    end
+
     ROOT_DEPENDENT_PATHS.each do |path|
       define_method(path) do
         paths = instance_variable_get("@#{path.to_s}".to_sym)
@@ -125,12 +138,11 @@ module Docks
       ]
       @compiled_assets = []
       @github_repo = ""
-      @paginate = :pattern
       @naming_convention = NamingConventions::BEM.instance
       @helpers = []
 
-      @theme = Themes.for("API")
-      @use_theme_assets = true
+      @theme = false
+      @paginate = false
 
       @root = Pathname.pwd
       @cache_location = ".#{Docks::Cache::DIR}"
@@ -186,7 +198,7 @@ module Docks
     end
 
     if File.extname(configurer) =~ /rb/
-      self.class_eval(File.read(configurer))
+      self.class_eval(File.read(configurer), configurer, 0)
     else
       Languages.register_bundled_languages
       language = Languages.language_for(configurer)

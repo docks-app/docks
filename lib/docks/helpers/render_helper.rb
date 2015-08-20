@@ -58,29 +58,16 @@ module Docks
       end
 
       def render_description(description, options = {})
-        @example_count ||= 0
         description.gsub! /(href\s*=\s*['"])@link\s([^'"]*)(.)/ do |match|
           "#{$1}#{docks_path($2, options)}#{$3}"
         end
 
-        render(layout: false, inline: description.gsub(/<fenced_code_block[^>]*>(.*?)<\/fenced_code_block>/m) { |match|
-          @example_count += 1
-          code = $1.dup
-          has_demo = match.include?("data-has-demo")
-          language = match.match(/data\-language=["']([^'"]*)/).captures.first
+        render(layout: false, inline: render_description_with_theme(description, options))
+      end
 
-          code_details = []
-          code_details << { code: code, language: language, label: "Helper" }
-
-          if has_demo
-            code_details << { code: render(inline: code, layout: false), language: "html", label: "Markup" }
-          end
-
-          docks_code_block code: code_details,
-                           hideable?: has_demo,
-                           id: "code-block--example-#{@example_count}",
-                           demo?: has_demo
-        })
+      # To be (optionally) overriden in themes
+      def render_description_with_theme(description, options = {})
+        description
       end
     end
   end

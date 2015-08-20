@@ -8,6 +8,7 @@ module Docks
       return unless renderer.respond_to?(:helpers)
 
       renderer.helpers(*bundled_helpers)
+      renderer.helpers(*Docks.config.theme.helpers) if Docks.config.has_theme?
       renderer.helpers(*Docks.config.helpers)
       renderer
     end

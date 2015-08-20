@@ -69,6 +69,14 @@ describe Docks::Builder do
       expect(File.read(copied_file)).to eq "# foo"
     end
 
+    it "preconfigures with the specified theme" do
+      default_options[:theme] = "API"
+      subject.setup(default_options)
+      expect(Docks.config.theme).to be_a Docks::Themes::API
+      expect(Docks.config.paginate).to eq "pattern"
+      puts File.read(File.join(empty_dir, "docks_config.yml"))
+    end
+
     it "configures the pattern library with the new config file" do
       expect(Docks).to receive(:configure).with no_args
       subject.setup(default_options)

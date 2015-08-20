@@ -9,7 +9,7 @@ module Docks
             if helper.kind_of?(Module)
               self.send(:extend, helper)
             elsif File.exists?(helper)
-              load_helpers.module_eval(File.read(helper))
+              load_helpers.module_eval(File.read(helper), helper, 0)
             end
           end
 

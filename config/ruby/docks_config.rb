@@ -26,8 +26,6 @@ Docks.configure do |config|
   # all pattern files will be nested inside this directory.
   config.mount_at = {{{mount_at}}}
 
-  config.use_theme_assets = {{{use_theme_assets}}}
-
   # The name of the Github repo for this project. This can either be the URL or
   # in the form `<username>/<repo>`. The default theme uses this option, if
   # passed, to provide links to create issue and view source for your pattern

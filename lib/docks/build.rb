@@ -20,7 +20,7 @@ module Docks
       def method_missing(meth)
         if options.respond_to?(meth)
           present(options.send(meth), meth)
-        elsif (result = default_config.instance_variable_get("@#{meth}".to_sym))
+        elsif !(result = default_config.instance_variable_get("@#{meth}".to_sym)).nil?
           present(result, meth)
         else
           super
@@ -104,9 +104,14 @@ module Docks
     end
 
     def self.setup(options)
-      @options = OpenStruct.new(options)
+      @options = options = OpenStruct.new(options)
       @assets_dir = File.join(Dir.pwd, Docks::ASSETS_DIR)
       FileUtils.mkdir_p(@assets_dir)
+
+      if options.theme
+        theme = Themes.for(options.theme)
+        theme.configure(Docks.config) if theme && theme.respond_to?(:configure)
+      end
 
       if Dir[CONFIG_FILE].empty?
         setup_config
